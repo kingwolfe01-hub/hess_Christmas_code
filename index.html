@@ -265,7 +265,7 @@ body {
 
   
 /* =========================================================================
-   ViewSonic IFP6550-3 (65吋 4K 16:9) 專屬自適應防跑版樣式修正
+   🎄 方案 A：全螢幕自由停靠與多顯示器自適應樣式 (大屏中央零遮擋架構)
    ========================================================================= */
 #sceneViewport {
   width: 100% !important;
@@ -274,25 +274,134 @@ body {
   max-width: calc((100vh - 56px - 215px) * 16 / 9) !important;
   margin: auto !important;
   position: relative !important;
+  z-index: 1;
 }
+
 .draggable-panel {
-  max-height: 82% !important;
+  max-height: calc(100% - 20px) !important;
   overflow-y: auto !important;
-  width: min(90vw, clamp(320px, 32vw, 480px)) !important;
-  touch-action: manipulation !important;
+  touch-action: none !important; /* 關鍵修復：設為 none，避免觸控白板滑動時觸發原生手勢中斷拖曳 */
+  z-index: 25 !important;
+  position: absolute !important;
+  cursor: grab;
 }
+
+.draggable-panel.is-dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+.drag-handle {
+  touch-action: none !important;
+  cursor: move;
+}
+
+/* 題目橫幅：預設靠螢幕最左上角停靠 (無 !important，允許 JS 動態拖曳即時接管) */
 #topPromptBanner {
-  max-width: min(92vw, 560px) !important;
+  top: 12px;
+  left: 16px;
+  right: auto;
+  width: min(92vw, clamp(320px, 28vw, 460px)) !important;
 }
+
+/* 單字/句型特寫看板：預設靠螢幕最右上角停靠 */
+#voxelZoomBox {
+  top: 12px;
+  right: 16px;
+  width: min(92vw, clamp(360px, 30vw, 500px)) !important;
+}
+
+/* 國際文化大看板：預設靠螢幕最右上角停靠 */
 #cultureCompareBoard {
-  width: min(92vw, clamp(360px, 40vw, 600px)) !important;
+  top: 12px;
+  right: 16px;
+  width: min(94vw, clamp(380px, 36vw, 620px)) !important;
 }
+
 button.mc-btn, .chunk-chip {
   touch-action: manipulation !important;
   user-select: none !important;
 }
 
-  </style>
+  
+/* =========================================================================
+   🦌 第二階段：動態體素馴鹿 Rudolph 與時空躍遷視覺特效
+   ========================================================================= */
+@keyframes reindeerShiver {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-1.5deg); }
+  50% { transform: translateY(1px) rotate(1.5deg); }
+  75% { transform: translateY(-2px) rotate(-1deg); }
+}
+
+.reindeer-shivering {
+  animation: reindeerShiver 0.38s ease-in-out infinite;
+}
+
+@keyframes redNoseGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px #ef4444) brightness(1.2); }
+  50% { filter: drop-shadow(0 0 18px #f43f5e) drop-shadow(0 0 28px #ef4444) brightness(1.8); }
+}
+
+.rudolph-red-nose {
+  animation: redNoseGlow 1.1s ease-in-out infinite;
+}
+
+@keyframes reindeerWalkToShelter {
+  0% { transform: translate(0, 0); }
+  30% { transform: translate(45px, -8px) scale(0.96); }
+  60% { transform: translate(90px, -15px) scale(0.94); }
+  100% { transform: translate(140px, -24px) scale(0.92); }
+}
+
+.reindeer-sheltered {
+  animation: reindeerWalkToShelter 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+}
+
+@keyframes screenRumbleAnim {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-5px, 4px) rotate(-0.3deg); }
+  40% { transform: translate(5px, -4px) rotate(0.3deg); }
+  60% { transform: translate(-4px, -2px); }
+  80% { transform: translate(3px, 3px); }
+}
+
+.screen-rumble {
+  animation: screenRumbleAnim 0.5s ease-in-out;
+}
+
+/* 雙人角色輪讀聚光燈 (Speaker Spotlight) */
+.spotlight-speaker-a {
+  background: rgba(250, 204, 21, 0.2) !important;
+  border-left: 6px solid #facc15 !important;
+  padding-left: 10px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.5) !important;
+  transition: all 0.25s ease !important;
+}
+
+.spotlight-speaker-b {
+  background: rgba(74, 222, 128, 0.2) !important;
+  border-left: 6px solid #4ade80 !important;
+  padding-left: 10px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 25px rgba(74, 222, 128, 0.5) !important;
+  transition: all 0.25s ease !important;
+}
+
+.backpack-item-uncollected {
+  background: rgba(24, 15, 10, 0.85);
+  border: 2px dashed #a37857;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.backpack-item-uncollected:hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: #facc15;
+  opacity: 1;
+}
+</style>
 </head>
 <body class="flex flex-col justify-between select-none">
 
@@ -338,6 +447,9 @@ button.mc-btn, .chunk-chip {
       <button id="resetLessonBtn" class="px-2.5 py-1 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-100 border-2 border-rose-400/50 text-xs sm:text-sm font-black">
         🔄 重置
       </button>
+      <button id="fullscreenToggleBtn" class="px-2.5 py-1 rounded-lg bg-sky-950/80 hover:bg-sky-900 text-sky-200 border-2 border-sky-400/60 text-xs sm:text-sm font-black flex items-center gap-1 transition mc-btn" title="切換全螢幕模式 (按 F 鍵)">
+        <span id="fullscreenIcon">⛶</span> <span id="fullscreenText" class="hidden sm:inline">全螢幕</span>
+      </button>
     </div>
   </header>
 
@@ -352,6 +464,64 @@ button.mc-btn, .chunk-chip {
         <img id="storySceneImgEl" src="" alt="Minecraft Story Scene" class="w-full h-full object-cover transition-all duration-700" />
         <!-- 暴風雪環境白霧覆蓋層 (第 5 幕啟用) -->
         <div id="blizzardFogOverlay" class="hidden absolute inset-0 w-full h-full blizzard-fog-overlay pointer-events-none z-5"></div>
+        <!-- 🦌 第 6 幕專用：動態 Minecraft 體素馴鹿 Rudolph 實體層 -->
+        <div id="rudolphOverlayContainer" class="hidden absolute bottom-[14%] left-[28%] sm:left-[32%] z-10 pointer-events-none transition-all duration-700">
+          <div id="rudolphSpriteBox" class="relative flex flex-col items-center reindeer-shivering">
+            <!-- 受凍氣泡標籤 -->
+            <div id="rudolphSpeechBubble" class="mb-2 px-3 py-1 rounded-xl bg-sky-950/90 border-2 border-sky-300 text-sky-200 font-black text-xs sm:text-sm shadow-xl flex items-center gap-1.5 animate-bounce">
+              <span id="rudolphBubbleIcon">❄️</span> <span id="rudolphBubbleText">Brrr! So cold!</span>
+            </div>
+            
+            <!-- 向量 Minecraft 體素馴鹿 SVG -->
+            <svg id="rudolphVoxelSvg" width="130" height="145" viewBox="0 0 130 145" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl">
+              <!-- 鹿角 (Antlers) -->
+              <path d="M 32 18 L 32 4 L 20 4 M 32 10 L 16 10" stroke="#8c6649" stroke-width="5" stroke-linecap="square" />
+              <path d="M 68 18 L 68 4 L 80 4 M 68 10 L 84 10" stroke="#8c6649" stroke-width="5" stroke-linecap="square" />
+
+              <!-- 耳朵 -->
+              <rect x="22" y="24" width="8" height="6" fill="#6b4c35" />
+              <rect x="70" y="24" width="8" height="6" fill="#6b4c35" />
+
+              <!-- 頭部 (體素方塊) -->
+              <rect x="28" y="20" width="44" height="38" rx="4" fill="#8c6649" stroke="#3b2a1e" stroke-width="3" />
+              <rect x="36" y="28" width="8" height="8" fill="#1c120c" />
+              <rect x="38" y="30" width="3" height="3" fill="#ffffff" />
+              <rect x="56" y="28" width="8" height="8" fill="#1c120c" />
+              <rect x="58" y="30" width="3" height="3" fill="#ffffff" />
+
+              <!-- 招牌紅鼻子 (Rudolph Glowing Red Nose) -->
+              <rect id="rudolphNoseEl" x="42" y="40" width="16" height="14" rx="3" fill="#ef4444" stroke="#b91c1c" stroke-width="2" class="rudolph-red-nose" />
+
+              <!-- 綠色聖誕節慶圍巾 -->
+              <rect x="26" y="56" width="48" height="10" rx="3" fill="#15803d" stroke="#166534" stroke-width="2" />
+              <rect x="36" y="64" width="10" height="18" fill="#16a34a" />
+
+              <!-- 身體 (體素大方塊) -->
+              <rect x="24" y="66" width="68" height="46" rx="6" fill="#78533b" stroke="#3b2a1e" stroke-width="3" />
+              <!-- 背部斑點 -->
+              <rect x="62" y="74" width="6" height="6" fill="#a37857" />
+              <rect x="74" y="80" width="8" height="6" fill="#a37857" />
+              <rect x="50" y="84" width="6" height="6" fill="#a37857" />
+
+              <!-- 四條像素腿與蹄子 -->
+              <rect x="28" y="112" width="10" height="26" fill="#6b4c35" />
+              <rect x="28" y="134" width="10" height="6" fill="#1c120c" />
+
+              <rect x="42" y="112" width="10" height="26" fill="#583e2b" />
+              <rect x="42" y="134" width="10" height="6" fill="#1c120c" />
+
+              <rect x="64" y="112" width="10" height="26" fill="#6b4c35" />
+              <rect x="64" y="134" width="10" height="6" fill="#1c120c" />
+
+              <rect x="78" y="112" width="10" height="26" fill="#583e2b" />
+              <rect x="78" y="134" width="10" height="6" fill="#1c120c" />
+
+              <!-- 尾巴 -->
+              <rect x="90" y="70" width="8" height="8" rx="2" fill="#8c6649" />
+            </svg>
+          </div>
+        </div>
+
         <!-- 故事互動觸發後的局部特效彈窗 (#storyActionModal) -->
         <div id="storyActionModal" class="hidden absolute bottom-4 right-4 max-w-[540px] mc-box-gold rounded-3xl p-4 sm:p-5 z-20 animate-bounce-short">
           <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b-2 border-amber-400/40">
@@ -409,6 +579,9 @@ button.mc-btn, .chunk-chip {
       <!-- 像素雪花與慶祝粒子畫布 -->
       <canvas id="snowCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
 
+    </div>
+
+    <!-- 全螢幕懸浮控制層 (支援拖曳至左右黑邊與全螢幕任意角落) -->
       <!-- 頂部情境對話 / 題目橫幅 (#topPromptBanner) - 可自由拖曳與按✕關閉 -->
       <div id="topPromptBanner" class="absolute top-2.5 left-3 right-3 sm:left-4 sm:right-auto sm:max-w-[56%] z-20 mc-box-gold rounded-2xl px-4 py-2.5 shadow-2xl cursor-default draggable-panel">
         <div id="promptBannerHeader" class="flex items-center justify-between gap-2 mb-1 drag-handle select-none border-b border-amber-400/20 pb-1">
@@ -424,6 +597,9 @@ button.mc-btn, .chunk-chip {
             </button>
             <button id="bannerSpeakBtn" class="px-2.5 py-1 rounded-lg bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs sm:text-sm mc-btn">
               🔊 朗讀
+            </button>
+            <button id="bannerRevealAnswerBtn" class="hidden px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-red-950 font-black text-xs sm:text-sm mc-btn shadow-md">
+              👁️ 揭曉答案
             </button>
             <button id="closePromptBannerBtn" class="w-7 h-7 rounded-lg bg-red-900/80 hover:bg-red-700 text-white font-black text-xs flex items-center justify-center mc-btn" title="關閉橫幅 (按 T 鍵或點左上角重開)">✕</button>
           </div>
@@ -568,10 +744,6 @@ button.mc-btn, .chunk-chip {
         <span id="gameToastEmoji" class="text-2xl sm:text-3xl">🎉</span>
         <span id="gameToastText">Great job!</span>
       </div>
-
-      </div>
-
-    </div>
   </main>
 
   <!-- =========================================================================
@@ -703,1398 +875,87 @@ button.mc-btn, .chunk-chip {
   
   <!-- 核心教學腳本整合 (輕量化架構版) -->
   <!-- 核心教學腳本整合 (單檔免安裝離線大屏版) -->
+<!-- =========================================================================
+       【模組化架構引進】
+       - audio.js: 音訊與語音核心引擎 (Web Audio Foley, 8-bit BGM, Google AI MP3 映射)
+       - story.js: 第 1 階段：故事 8 幕劇情與情境互動
+       - words.js: 第 2 階段：單字・拼讀・合成台・空間介系詞
+       - culture.js: 第 3 階段：7 國文化探索・台灣在地對照・國際文化搶答
+       - party.js: 第 4 階段：5 國祝福語・隨機抽題 PK 總決賽・煙火秀
+       ========================================================================= -->
+  <script src="audio.js"></script>
+  <script src="story.js"></script>
+  <script src="words.js"></script>
+  <script src="culture.js"></script>
+  <script src="party.js"></script>
+
+  <!-- =========================================================================
+       【主控調度腳本 (Main Controller)】
+       - 全域狀態管理 (State)
+       - 3D 麥塊木屋 SVG 場景初始化與星星進度列
+       - 全景雪花與慶祝粒子畫布 (Canvas)
+       - 全螢幕切換與自由拖曳自適應系統
+       ========================================================================= -->
   <script>
-/* =========================================================================
-   🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - 教學內容與環境設定檔
-   ========================================================================= */
-
-const ASSET_MANIFEST = {
-  "cabin_base": "assets/voxels/cabin_base.webp",
-  "layer_tree": "assets/voxels/layer_tree.webp",
-  "layer_ribbon": "assets/voxels/layer_ribbon.webp",
-  "layer_ball": "assets/voxels/layer_ball.webp",
-  "layer_star": "assets/voxels/layer_star.webp",
-  "layer_stocking": "assets/voxels/layer_stocking.webp",
-  "layer_gift": "assets/voxels/layer_gift.webp",
-  "layer_santa": "assets/voxels/layer_santa.webp",
-  "thumb_tree": "assets/voxels/thumb_tree.webp",
-  "thumb_ribbon": "assets/voxels/thumb_ribbon.webp",
-  "thumb_ball": "assets/voxels/thumb_ball.webp",
-  "thumb_star": "assets/voxels/thumb_star.webp",
-  "thumb_stocking": "assets/voxels/thumb_stocking.webp",
-  "thumb_gift": "assets/voxels/thumb_gift.webp",
-  "thumb_santa": "assets/voxels/thumb_santa.webp",
-  "story_taiwan_school": "assets/scenes/story_taiwan_school.webp",
-  "story_christmas_portal": "assets/scenes/story_christmas_portal.webp",
-  "story_nordic_blizzard": "assets/scenes/story_nordic_blizzard.webp",
-  "story_prep_backpack": "assets/scenes/story_prep_backpack.webp",
-  "story_vortex_tunnel": "assets/scenes/story_vortex_tunnel.webp"
-};
-
-const AZURE_VOICE_MAP = {
-  steve: { voice: "en-US-ChristopherNeural", lang: "en-US", pitch: 0, rateMult: 1.0 },
-  alex: { voice: "en-US-JennyNeural", lang: "en-US", pitch: 0, rateMult: 1.0 },
-  santa: { voice: "en-US-DavisNeural", lang: "en-US", pitch: -15, rateMult: 0.9 },
-  greeting_en: { voice: "en-US-JennyNeural", lang: "en-US", pitch: 0, rateMult: 0.95 },
-  greeting_es: { voice: "es-MX-DaliaNeural", lang: "es-MX", pitch: 0, rateMult: 0.95 },
-  greeting_de: { voice: "de-DE-KatjaNeural", lang: "de-DE", pitch: 0, rateMult: 0.95 },
-  greeting_fr: { voice: "fr-FR-DeniseNeural", lang: "fr-FR", pitch: 0, rateMult: 0.95 },
-  greeting_ja: { voice: "ja-JP-NanamiNeural", lang: "ja-JP", pitch: 0, rateMult: 0.95 },
-  default: { voice: "en-US-JennyNeural", lang: "en-US", pitch: 0, rateMult: 1.0 }
-};
-
-const LESSON_CONFIG = {
-  title: "🌍 World Christmas Craft (中高年級 3D 麥塊跨國冒險)",
-  speechRateSlow: 0.76,
-  speechRateNormal: 0.96,
-
-    storySteps: [
-    {
-      step: 1,
-      sceneType: "image",
-      assetKey: "story_taiwan_school",
-      badge: "Scene 1 / 8 · 🇹🇼 序曲：台灣冬日校園",
-      roleA: "🅰️ Steve: It's cold today in Taiwan!",
-      roleB: "🅱️ Alex: Look! An SOS map from Santa!",
-      roleASpeak: "steve",
-      roleBSpeak: "alex",
-      zhHint: "🇹🇼 序曲・從台灣出發：點擊下方「📜 打開求救捲軸」展開冒險！",
-      speakA: "It's cold today in Taiwan!",
-      speakB: "Look! An S O S map from Santa!",
-      actionBtnLabel: "📜 打開求救捲軸",
-      actionToast: "📜 收到北歐求救信：暴風雪吹走了 7 個聖誕方塊！請前往聖誕傳送門！",
-      actionOverlayTitle: "📜 來自北歐的緊急求救捲軸",
-      actionOverlayBody: "「Help! A huge blizzard hit our cabin and blew away all 7 Christmas blocks! Please help me! — Santa Claus 🎅」"
-    },
-    {
-      step: 2,
-      sceneType: "image",
-      assetKey: "story_prep_backpack",
-      badge: "Scene 2 / 8 · 🎒 啟程：冒險背包整備",
-      roleA: "🅰️ Steve: We need our backpack and compass!",
-      roleB: "🅱️ Alex: We have flint and steel. Let's go!",
-      roleASpeak: "steve",
-      roleBSpeak: "alex",
-      zhHint: "🎒 啟程・裝備檢查：點擊「🎒 檢查冒險背包」收集打火石與指南針！",
-      speakA: "We need our backpack and compass!",
-      speakB: "We have flint and steel. Let's go!",
-      actionBtnLabel: "🎒 檢查冒險背包 (收集裝備)",
-      actionToast: "🎒 裝備齊全：打火石 (flint and steel) 與指南針 (compass) 已備妥！",
-      actionOverlayTitle: "🎒 冒險者背包物品欄",
-      actionOverlayBody: "冒險物資已齊全！出發前往黑曜石傳送門！"
-    },
-    {
-      step: 3,
-      sceneType: "image",
-      assetKey: "story_christmas_portal",
-      badge: "Scene 3 / 8 · 🟣 密室：點亮麥塊傳送門",
-      roleA: "🅰️ Steve: Look at the Christmas Portal!",
-      roleB: "🅱️ Alex: Light it up with flint and steel! Go!",
-      roleASpeak: "steve",
-      roleBSpeak: "alex",
-      zhHint: "🟣 密室・點亮傳送門：點擊「⚡ 點燃打火石」啟動紫色星芒漩渦！",
-      speakA: "Look at the Christmas Portal!",
-      speakB: "Light it up with flint and steel! Go!",
-      actionBtnLabel: "⚡ 點燃打火石啟動傳送門",
-      actionToast: "⚡ 轟隆！紫色傳送門已啟動！準備穿越到北歐雪地！",
-      actionOverlayTitle: "🟣 聖誕傳送門已啟動",
-      actionOverlayBody: "座標鎖定：北歐瑞典！從溫暖台灣瞬間跨越進入暴風雪森林！"
-    },
-    {
-      step: 4,
-      sceneType: "image",
-      assetKey: "story_vortex_tunnel",
-      badge: "Scene 4 / 8 · 🌀 傳送：穿越時空蟲洞",
-      roleA: "🅰️ Steve: We are in the purple vortex!",
-      roleB: "🅱️ Alex: Hold on tight! It's getting cold!",
-      roleASpeak: "steve",
-      roleBSpeak: "alex",
-      zhHint: "🌀 傳送・維度躍遷：點擊「🌀 穩定時空蟲洞」穿過蟲洞！",
-      speakA: "We are in the purple vortex!",
-      speakB: "Hold on tight! It's getting cold!",
-      actionBtnLabel: "🌀 穩定時空蟲洞",
-      actionToast: "🌀 穿過時空蟲洞！氣溫急降至 -15°C！北歐暴風雪就在眼前！",
-      actionOverlayTitle: "🌀 維度躍遷完成",
-      actionOverlayBody: "抵達高緯度北歐！眼前是一片銀白冰雪世界！"
-    },
-    {
-      step: 5,
-      sceneType: "image",
-      assetKey: "story_nordic_blizzard",
-      badge: "Scene 5 / 8 · ❄️ 風雪：松林與失蹤方塊",
-      roleA: "🅰️ Steve: Brrr! It's freezing outside!",
-      roleB: "🅱️ Santa: The blizzard blew my seven blocks away!",
-      roleASpeak: "steve",
-      roleBSpeak: "santa",
-      zhHint: "❄️ 風雪・抵達松林：點擊「❄️ 啟動指南針」掃描雪地裡的 7 個方塊！",
-      speakA: "Brrr! It's freezing outside!",
-      speakB: "The blizzard blew my seven blocks away!",
-      actionBtnLabel: "❄️ 啟動指南針掃描",
-      actionToast: "❄️ 暴雪籠罩！指南針偵測到雪地裡有 7 個失落方塊！",
-      actionOverlayTitle: "🧭 指南針雷達掃描結果",
-      actionOverlayBody: "成功鎖定 7 個失落方塊：松樹、彩帶、彩球、星星、長襪、禮物、聖誕老人！"
-    },
-    {
-      step: 6,
-      sceneType: "image",
-      assetKey: "story_nordic_blizzard",
-      badge: "Scene 6 / 8 · 🦌 馴鹿：尋找避風松林",
-      roleA: "🅰️ Steve: Rudolph is cold in the blizzard!",
-      roleB: "🅱️ Santa: Look! The pine tree can shelter him!",
-      roleASpeak: "steve",
-      roleBSpeak: "santa",
-      zhHint: "🦌 馴鹿任務：點擊「🦌 拯救馴鹿」回答問題庇護 Rudolph！",
-      speakA: "Rudolph is cold in the blizzard!",
-      speakB: "Look! The pine tree can shelter him!",
-      actionBtnLabel: "🦌 拯救馴鹿・尋找避風松林",
-      actionToast: "🦌 請回答常青樹單字以庇護 Rudolph！",
-      actionOverlayTitle: "🦌 拯救馴鹿任務",
-      actionOverlayBody: "暴風雪很大，需要高大的常青松樹（pine tree）為馴鹿遮蔽寒風！",
-      quiz: {
-        questionEn: "Which green tree can shelter Rudolph the reindeer?",
-        questionZh: "🦌 提問：哪種雪地常青樹可以為馴鹿遮風避雪？",
-        options: [
-          { text: "🌲 pine tree (松樹)", correct: true, feedback: "答對了！pine tree 可以為馴鹿遮風避雪！" },
-          { text: "🌴 palm tree (棕櫚樹)", correct: false, feedback: "棕櫚樹生長在熱帶海灘喔！再試一次！" },
-          { text: "🌵 cactus (仙人掌)", correct: false, feedback: "仙人掌生長在沙漠喔！再試一次！" }
-        ],
-        correctSpeech: "Correct! The pine tree shelters Rudolph!"
-      }
-    },
-    {
-      step: 7,
-      sceneType: "cabin_dark_to_warm",
-      assetKey: "cabin_base",
-      badge: "Scene 7 / 8 · 🔥 木屋：點燃溫暖壁爐",
-      roleA: "🅰️ Steve: It is dark and cold in the cabin!",
-      roleB: "🅱️ Santa: Let's light the fireplace with flint!",
-      roleASpeak: "steve",
-      roleBSpeak: "santa",
-      zhHint: "🔥 木屋・點燃壁爐：點擊「🔥 點燃壁爐暖火」點亮木屋！",
-      speakA: "It is dark and cold in the cabin!",
-      speakB: "Let's light the fireplace with flint!",
-      actionBtnLabel: "🔥 點燃壁爐暖火",
-      actionToast: "🔥 壁爐點燃了，整間木屋變得溫暖明亮！",
-      actionOverlayTitle: "🔥 壁爐已點亮！",
-      actionOverlayBody: "房間暖和了，請回答傳統聖誕長襪懸掛的位置：",
-      quiz: {
-        questionEn: "Where do children hang their Christmas stockings?",
-        questionZh: "🔥 提問：小朋友習慣把聖誕長襪掛在哪裡？",
-        options: [
-          { text: "🧦 above the fireplace (在壁爐上方)", correct: true, feedback: "答對了！above the fireplace！" },
-          { text: "🧦 under the bed (在床底下)", correct: false, feedback: "床底下太黑了喔！再試一次！" },
-          { text: "🧦 outside in the snow (在雪地戶外)", correct: false, feedback: "襪子在雪地會結冰喔！再試一次！" }
-        ],
-        correctSpeech: "Correct! Stockings are above the fireplace!"
-      }
-    },
-    {
-      step: 8,
-      sceneType: "cabin_crafting_ready",
-      assetKey: "cabin_base",
-      badge: "Scene 8 / 8 · 🎄 慶典：聖誕大派對",
-      roleA: "🅰️ Steve: Look at the tree! It's party time!",
-      roleB: "🅱️ Santa: Merry Christmas! Let's celebrate!",
-      roleASpeak: "steve",
-      roleBSpeak: "santa",
-      zhHint: "🎄 慶典・聖誕派對：點擊「🎄 啟動聖誕派對」解鎖所有方塊！",
-      speakA: "Look at the tree! It's party time!",
-      speakB: "Merry Christmas! Let's celebrate!",
-      actionBtnLabel: "🎄 啟動聖誕派對",
-      actionToast: "🎄 叮叮噹！7 個失落方塊全部尋回，開始派對！",
-      actionOverlayTitle: "🎄 聖誕派對時間！",
-      actionOverlayBody: "冒險完成！7 個方塊已回到合成台，準備開始單字拼讀與文化挑戰！"
-    }
-  ],
-
-  globalGreetings: [
-    { flag: "🇺🇸🇬🇧", country: "美 / 英 (English)", phrase: "Merry Christmas!", phonetic: "Merry Christmas!", lang: "en-US", speakText: "Merry Christmas!", role: "greeting_en" },
-    { flag: "🇲🇽🇪🇸", country: "墨西哥 / 西班牙", phrase: "¡Feliz Navidad!", phonetic: "費利斯 納維達", lang: "es-ES", speakText: "Feliz Navidad!", role: "greeting_es" },
-    { flag: "🇩🇪", country: "德國 (German)", phrase: "Frohe Weihnachten!", phonetic: "弗洛赫 懷納赫滕", lang: "de-DE", speakText: "Frohe Weihnachten!", role: "greeting_de" },
-    { flag: "🇫🇷", country: "法國 (French)", phrase: "Joyeux Noël!", phonetic: "ジュワユ 諾艾爾", lang: "fr-FR", speakText: "Joyeux Noël!", role: "greeting_fr" },
-    { flag: "🇯🇵", country: "日本 (Japanese)", phrase: "メリークリスマス!", phonetic: "Merī Kurisumasu", lang: "ja-JP", speakText: "メリークリスマス", role: "greeting_ja" }
-  ],
-
-  words: [
-    {
-      id: "tree",
-      order: 1,
-      word: "pine tree",
-      baseWord: "tree",
-      chunks: ["pine", "tree"],
-      ttsChunks: ["pine", "tree"],
-      distractorChunks: ["palm", "cone", "bell"],
-      phonicsNote: "pine + tree ➔ pine tree (常綠松樹)",
-      zh: "針葉松樹",
-      emoji: "🌲",
-      color: "#84cc16",
-      prep: "by",
-      prepZh: "在…旁邊 (by)",
-      grammarTag: "單數問答 (Where is...? / It's...)",
-      qaQ: "Where is the pine tree?",
-      qaAHtml: "It's <span class='text-yellow-300 underline font-black'>by</span> the fireplace.",
-      qaASpeak: "Where is the pine tree? It's by the fireplace.",
-      culture: {
-        flag: "🇩🇪",
-        country: "德國 Germany",
-        title: "🇩🇪 德國：聖誕樹的故鄉",
-        enSentence: "In Germany, people put trees in the house.",
-        foreignFact: "德國是現代聖誕樹發源地，冬天將常綠松樹搬進屋內象徵長青與希望。",
-        taiwanCompare: "🇹🇼 台灣在地比較：就像台灣過年時，家裡會擺放開運竹或金桔樹象徵大吉大利！",
-        quizQEn: "In Germany 🇩🇪, people put green _____ in the house!",
-        quizQZh: "🇩🇪 國際文化挑戰：德國是聖誕樹的發源地，人們會把哪種樹搬進屋內裝飾？"
-      },
-      layerKey: "layer_tree",
-      thumbKey: "thumb_tree",
-      coordHint: "點擊壁爐旁邊的松樹",
-      layerRect: { x: 110, y: 135, w: 565, h: 560 },
-      hotspotRect: { x: 150, y: 430, w: 460, h: 120 },
-      labelPos: { x: 155, y: 475 },
-      arrowPos: { x: 380, y: 415 }
-    },
-    {
-      id: "ribbon",
-      order: 2,
-      word: "ribbon",
-      baseWord: "ribbon",
-      chunks: ["rib", "bon"],
-      ttsChunks: ["rib", "bon"],
-      distractorChunks: ["rob", "bin", "ton"],
-      phonicsNote: "rib-bon ➔ ribbon (裝飾絲帶)",
-      zh: "裝飾絲帶",
-      emoji: "🎀",
-      color: "#f43f5e",
-      prep: "around",
-      prepZh: "圍繞在…周圍 (around)",
-      grammarTag: "單數問答 (Where is...? / It's...)",
-      qaQ: "Where is the ribbon?",
-      qaAHtml: "It's <span class='text-yellow-300 underline font-black'>around</span> the pine tree.",
-      qaASpeak: "Where is the ribbon? It's around the pine tree.",
-      culture: {
-        flag: "🇫🇷",
-        country: "法國 France",
-        title: "🇫🇷 法國：優雅節慶緞帶",
-        enSentence: "In France, ribbons tie holiday joy together.",
-        foreignFact: "法國擁有悠久緞帶工藝，聖誕節用精緻絲帶包裝禮物，象徵把家人心意繫在一起。",
-        taiwanCompare: "🇹🇼 台灣在地比較：就像台灣過年時，我們會在盆栽與賀禮繫上吉祥紅色金蔥緞帶！",
-        quizQEn: "In France 🇫🇷, people tie colorful _____ on gifts!",
-        quizQZh: "🇫🇷 國際文化挑戰：法國人喜歡用什麼漂亮的裝飾把禮物與松樹繫在一起？"
-      },
-      layerKey: "layer_ribbon",
-      thumbKey: "thumb_ribbon",
-      coordHint: "點擊松樹上的絲帶",
-      layerRect: { x: 110, y: 135, w: 565, h: 560 },
-      hotspotRect: { x: 230, y: 205, w: 330, h: 105 },
-      labelPos: { x: 450, y: 225 },
-      arrowPos: { x: 395, y: 195 }
-    },
-    {
-      id: "ball",
-      order: 3,
-      word: "ornament",
-      baseWord: "ornament",
-      chunks: ["or", "na", "ment"],
-      ttsChunks: ["or", "na", "ment"],
-      distractorChunks: ["er", "ba", "tion"],
-      phonicsNote: "or-na-ment ➔ ornament (裝飾彩球)",
-      zh: "裝飾彩球",
-      emoji: "🔮",
-      color: "#ec4899",
-      prep: "on",
-      prepZh: "在…上面 (on)",
-      grammarTag: "複數問答 (Where are...? / They're...)",
-      qaQ: "Where are the ornaments?",
-      qaAHtml: "They're <span class='text-yellow-300 underline font-black'>on</span> the tree.",
-      qaASpeak: "Where are the ornaments? They're on the tree.",
-      culture: {
-        flag: "🇲🇽",
-        country: "墨西哥 Mexico",
-        title: "🇲🇽 墨西哥：手工彩色吊飾",
-        enSentence: "In Mexico, bright ornaments bring joy.",
-        foreignFact: "墨西哥聖誕節會懸掛五彩手工吹製玻璃飾品與裝滿糖果的星形皮納塔。",
-        taiwanCompare: "🇹🇼 台灣在地比較：就像台灣元宵節時孩子們提著色彩繽紛的花燈與生肖提燈！",
-        quizQEn: "In Mexico 🇲🇽, colorful _____ are hung for Christmas!",
-        quizQZh: "🇲🇽 國際文化挑戰：墨西哥慶典會懸掛色彩繽紛的什麼物品來帶來歡樂？"
-      },
-      layerKey: "layer_ball",
-      thumbKey: "thumb_ball",
-      coordHint: "點擊樹上的彩球吊飾",
-      layerRect: { x: 180, y: 168, w: 430, h: 400 },
-      hotspotRect: { x: 225, y: 318, w: 345, h: 105 },
-      labelPos: { x: 185, y: 340 },
-      arrowPos: { x: 410, y: 308 }
-    },
-    {
-      id: "star",
-      order: 4,
-      word: "star",
-      baseWord: "star",
-      chunks: ["st", "ar"],
-      ttsChunks: ["st", "ar"],
-      distractorChunks: ["sp", "or", "er"],
-      phonicsNote: "st-ar ➔ star (樹頂金星)",
-      zh: "樹頂星星",
-      emoji: "⭐",
-      color: "#eab308",
-      prep: "on top of",
-      prepZh: "在…頂端 (on top of)",
-      grammarTag: "單數問答 (Where is...? / It's...)",
-      qaQ: "Where is the star?",
-      qaAHtml: "It's <span class='text-yellow-300 underline font-black'>on top of</span> the tree.",
-      qaASpeak: "Where is the star? It's on top of the tree.",
-      culture: {
-        flag: "🇵🇭",
-        country: "菲律賓 Philippines",
-        title: "🇵🇭 菲律賓：星芒燈籠 Parol",
-        enSentence: "In the Philippines, star lanterns light the street.",
-        foreignFact: "菲律賓家家戶戶會在窗前掛上五角發光星芒燈籠 Parol，象徵引領希望之星。",
-        taiwanCompare: "🇹🇼 台灣在地比較：就像台灣元宵節大街小巷掛起美麗燈籠一樣熱鬧！",
-        quizQEn: "In the Philippines 🇵🇭, the bright _____ lantern is called a Parol!",
-        quizQZh: "🇵🇭 國際文化挑戰：菲律賓傳統的 Parol 是什麼形狀的希望燈籠？"
-      },
-      layerKey: "layer_star",
-      thumbKey: "thumb_star",
-      coordHint: "點擊松樹最頂端的黃金星星",
-      layerRect: { x: 305, y: 48, w: 175, h: 170 },
-      hotspotRect: { x: 310, y: 55, w: 165, h: 160 },
-      labelPos: { x: 395, y: 25 },
-      arrowPos: { x: 395, y: 40 }
-    },
-    {
-      id: "stocking",
-      order: 5,
-      word: "stocking",
-      baseWord: "stocking",
-      chunks: ["stock", "ing"],
-      ttsChunks: ["stock", "ing"],
-      distractorChunks: ["stick", "ang", "ong"],
-      phonicsNote: "stock-ing ➔ stocking (聖誕長襪)",
-      zh: "聖誕長襪",
-      emoji: "🧦",
-      color: "#ef4444",
-      prep: "above",
-      prepZh: "在…上方 (above)",
-      grammarTag: "單數問答 (Where is...? / It's...)",
-      qaQ: "Where is the stocking?",
-      qaAHtml: "It's <span class='text-yellow-300 underline font-black'>above</span> the fireplace.",
-      qaASpeak: "Where is the stocking? It's above the fireplace.",
-      culture: {
-        flag: "🇬🇧",
-        country: "英國 United Kingdom",
-        title: "🇬🇧 英國：壁爐長襪傳說",
-        enSentence: "In the UK, children hang stockings by the fire.",
-        foreignFact: "英國孩子傳統上把長襪掛在壁爐烘乾等待禮物，底部常放一顆象徵黃金的橘子。",
-        taiwanCompare: "🇹🇼 台灣在地比較：台灣多數家庭沒有壁爐，小朋友通常把聖誕襪掛在床頭或書桌旁等待驚喜！",
-        quizQEn: "In the UK 🇬🇧, children hang a _____ by the fire for gifts!",
-        quizQZh: "🇬🇧 國際文化挑戰：英國小朋友傳統上會把什麼掛在壁爐旁裝禮物？"
-      },
-      layerKey: "layer_stocking",
-      thumbKey: "thumb_stocking",
-      coordHint: "點擊壁爐上方的紅色長襪",
-      layerRect: { x: 740, y: 252, w: 418, h: 246 },
-      hotspotRect: { x: 750, y: 255, w: 390, h: 230 },
-      labelPos: { x: 830, y: 205 },
-      arrowPos: { x: 945, y: 240 }
-    },
-    {
-      id: "gift",
-      order: 6,
-      word: "present",
-      baseWord: "gift / present",
-      chunks: ["pre", "sent"],
-      ttsChunks: ["pre", "sent"],
-      distractorChunks: ["pro", "ment", "ting"],
-      phonicsNote: "pre-sent ➔ present (聖誕禮物)",
-      zh: "聖誕禮物",
-      emoji: "🎁",
-      color: "#a855f7",
-      prep: "under",
-      prepZh: "在…下方 (under)",
-      grammarTag: "複數問答 (Where are...? / They're...)",
-      qaQ: "Where are the presents?",
-      qaAHtml: "They're <span class='text-yellow-300 underline font-black'>under</span> the tree.",
-      qaASpeak: "Where are the presents? They're under the tree.",
-      culture: {
-        flag: "🇺🇸",
-        country: "美國 USA",
-        title: "🇺🇸 美國：聖誕樹下的驚喜禮物",
-        enSentence: "In the USA, presents wait under the tree.",
-        foreignFact: "美國家庭習慣將包裝好的禮物堆在聖誕樹下，等到 25 日早晨全家一起開心拆開。",
-        taiwanCompare: "🇹🇼 台灣在地比較：台灣學校在聖誕節最受歡迎的活動是全班一起玩『聖誕交換禮物』！",
-        quizQEn: "In the USA 🇺🇸, families put colorful _____ under the tree!",
-        quizQZh: "🇺🇸 國際文化挑戰：美國家庭習慣將什麼禮品堆在聖誕樹下？"
-      },
-      layerKey: "layer_gift",
-      thumbKey: "thumb_gift",
-      coordHint: "點擊松樹底下的禮物盒",
-      layerRect: { x: 65, y: 535, w: 630, h: 215 },
-      hotspotRect: { x: 85, y: 560, w: 590, h: 185 },
-      labelPos: { x: 260, y: 690 },
-      arrowPos: { x: 380, y: 545 }
-    },
-    {
-      id: "santa",
-      order: 7,
-      word: "Santa Claus",
-      baseWord: "Santa",
-      chunks: ["Santa", "Claus"],
-      ttsChunks: ["Santa", "Claus"],
-      distractorChunks: ["Sandy", "Cross", "Cloud"],
-      phonicsNote: "Santa + Claus ➔ Santa Claus (聖誕老人)",
-      zh: "聖誕老公公",
-      emoji: "🎅",
-      color: "#dc2626",
-      prep: "in",
-      prepZh: "在…裡面 (in the room)",
-      grammarTag: "單數問答 (Where is...? / He's...)",
-      qaQ: "Where is Santa Claus?",
-      qaAHtml: "He is <span class='text-yellow-300 underline font-black'>in</span> the room.",
-      qaASpeak: "Where is Santa Claus? He is in the room.",
-      culture: {
-        flag: "🇦🇺",
-        country: "澳洲 Australia",
-        title: "🇦🇺 澳洲：衝浪聖誕老人",
-        enSentence: "In Australia, Santa surfs at the sunny beach.",
-        foreignFact: "南半球 12 月是炎熱夏天，澳洲聖誕老人會換上短褲到海灘衝浪送禮物！",
-        taiwanCompare: "🇹🇼 台灣在地比較：台灣 12 月是涼爽冬天需要穿薄外套；澳洲卻是在海邊衝浪吃冰淇淋！",
-        quizQEn: "In Australia 🇦🇺, Santa wears shorts and surfs at the _____!",
-        quizQZh: "🇦🇺 國際文化挑戰：南半球 12 月是夏天，澳洲聖誕老人常在什麼地方衝浪？"
-      },
-      layerKey: "layer_santa",
-      thumbKey: "thumb_santa",
-      coordHint: "點擊木屋中央的聖誕老人",
-      layerRect: { x: 1055, y: 335, w: 300, h: 425 },
-      hotspotRect: { x: 1070, y: 345, w: 275, h: 410 },
-      labelPos: { x: 1060, y: 292 },
-      arrowPos: { x: 1205, y: 330 }
-    }
-  ]
-};
-
-/* =========================================================================
-   🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - 音效與語音引擎
-   - Web Audio API 擬真 Foley 音效合成 (打火石火花、傳送門共鳴、指南針雷達、壁爐柴火、鐵砧合成)
-   - 微軟 Azure AI 語音引擎 (Cognitive Services Neural TTS) 整合
-   - 本機 Web Speech API 智慧容錯回退機制
-   ========================================================================= */
-
-let audioCtx = null;
-
-function ensureAudioCtx() {
-  if (!audioCtx) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (Ctx) audioCtx = new Ctx();
-  }
-  if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
-  return audioCtx;
-}
-
-function playSfx(type) {
-  if (window.state && window.state.soundOn === false) return;
-  const ctx = ensureAudioCtx();
-  if (!ctx) return;
-
-  const now = ctx.currentTime;
-
-  switch (type) {
-    case "click": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(620, now);
-      osc.frequency.exponentialRampToValueAtTime(320, now + 0.05);
-      gain.gain.setValueAtTime(0.18, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.05);
-      break;
-    }
-
-    case "drop": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(440, now);
-      osc.frequency.exponentialRampToValueAtTime(180, now + 0.09);
-      gain.gain.setValueAtTime(0.24, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.09);
-      break;
-    }
-
-    case "blizzard_wind": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(140, now);
-      osc.frequency.linearRampToValueAtTime(280, now + 0.35);
-      osc.frequency.linearRampToValueAtTime(110, now + 0.75);
-      gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.22, now + 0.25);
-      gain.gain.linearRampToValueAtTime(0.001, now + 0.8);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.8);
-      break;
-    }
-
-    case "flint_steel": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(1400, now);
-      osc.frequency.exponentialRampToValueAtTime(3200, now + 0.04);
-      osc.frequency.exponentialRampToValueAtTime(400, now + 0.12);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.12);
-      break;
-    }
-
-    case "portal":
-    case "portal_hum": {
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc1.type = "sine";
-      osc2.type = "triangle";
-      osc1.frequency.setValueAtTime(110, now);
-      osc1.frequency.exponentialRampToValueAtTime(220, now + 0.4);
-      osc2.frequency.setValueAtTime(114, now);
-      osc2.frequency.exponentialRampToValueAtTime(228, now + 0.4);
-      gain.gain.setValueAtTime(0.3, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(ctx.destination);
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 0.55);
-      osc2.stop(now + 0.55);
-      break;
-    }
-
-    case "ding":
-    case "radar_ping": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(1860, now);
-      osc.frequency.setValueAtTime(2480, now + 0.08);
-      gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.28);
-      break;
-    }
-
-    case "fire":
-    case "fire_crackle": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(120, now);
-      osc.frequency.exponentialRampToValueAtTime(380, now + 0.15);
-      osc.frequency.exponentialRampToValueAtTime(80, now + 0.35);
-      gain.gain.setValueAtTime(0.35, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.4);
-      break;
-    }
-
-    case "anvil_craft": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "square";
-      osc.frequency.setValueAtTime(880, now);
-      osc.frequency.exponentialRampToValueAtTime(220, now + 0.18);
-      gain.gain.setValueAtTime(0.28, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.22);
-      break;
-    }
-
-    case "success": {
-      [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, now + i * 0.07);
-        gain.gain.setValueAtTime(0.2, now + i * 0.07);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.16);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + i * 0.07);
-        osc.stop(now + i * 0.07 + 0.16);
-      });
-      break;
-    }
-
-    case "error": {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(180, now);
-      osc.frequency.exponentialRampToValueAtTime(90, now + 0.18);
-      gain.gain.setValueAtTime(0.22, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.2);
-      break;
-    }
-
-    case "fanfare": {
-      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-      notes.forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, now + i * 0.11);
-        gain.gain.setValueAtTime(0.26, now + i * 0.11);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.11 + 0.35);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + i * 0.11);
-        osc.stop(now + i * 0.11 + 0.35);
-      });
-      break;
-    }
-
-    case "party_horn": {
-      const freqs = [392, 440, 523, 659];
-      freqs.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
-        gain.gain.setValueAtTime(0.18, now + idx * 0.06);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.25);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.06);
-        osc.stop(now + idx * 0.06 + 0.25);
-      });
-      break;
-    }
-    case "firework_blast": {
-      // (1) 煙火升空尖銳哨音 (280Hz -> 950Hz)
-      const whistleOsc = ctx.createOscillator();
-      const whistleGain = ctx.createGain();
-      whistleOsc.type = "sawtooth";
-      whistleOsc.frequency.setValueAtTime(280, now);
-      whistleOsc.frequency.exponentialRampToValueAtTime(950, now + 0.16);
-      whistleGain.gain.setValueAtTime(0.12, now);
-      whistleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-      whistleOsc.connect(whistleGain);
-      whistleGain.connect(ctx.destination);
-      whistleOsc.start(now);
-      whistleOsc.stop(now + 0.16);
-
-      // (2) 空中炸裂重低音 (140Hz -> 35Hz 震撼低頻)
-      const boomOsc = ctx.createOscillator();
-      const boomGain = ctx.createGain();
-      boomOsc.type = "triangle";
-      boomOsc.frequency.setValueAtTime(140, now + 0.16);
-      boomOsc.frequency.exponentialRampToValueAtTime(35, now + 0.55);
-      boomGain.gain.setValueAtTime(0.35, now + 0.16);
-      boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-      boomOsc.connect(boomGain);
-      boomGain.connect(ctx.destination);
-      boomOsc.start(now + 0.16);
-      boomOsc.stop(now + 0.55);
-      break;
-    }
-  }
-}
-
-
-
-
-/* =========================================================================
-   🎙️ Google AI 語音精確對照播放器 (修復 ReferenceError 與精準匹配)
-   ========================================================================= */
-
-// 全域音訊實例宣告 (修復 ReferenceError: currentAudioInstance is not defined)
-let currentAudioInstance = null;
-
-// 100% 精準對照截圖中 37 個實體 MP3 的檔名映射表
-const EXACT_AUDIO_MAP = {
-  // --- 8 幕對話 ---
-  "it's cold today in taiwan!": "it_s_cold_today_in_taiwan.mp3",
-  "look! an sos map from santa!": "look__an_s_o_s_map_from_santa.mp3",
-  "look! an s o s map from santa!": "look__an_s_o_s_map_from_santa.mp3",
-  "we need our backpack and compass!": "we_need_our_backpack_and_compass.mp3",
-  "we have flint and steel. let's go!": "we_have_flint_and_steel__let_s_go.mp3",
-  "look at the christmas portal!": "look_at_the_christmas_portal.mp3",
-  "light it up with flint and steel! go!": "light_it_up_with_flint_and_steel__go.mp3",
-  "we are in the purple vortex!": "we_are_in_the_purple_vortex.mp3",
-  "hold on tight! it's getting cold!": "hold_on_tight__it_s_getting_cold.mp3",
-  "brrr! it's freezing outside!": "brrr__it_s_freezing_outside.mp3",
-  "the blizzard blew my seven blocks away!": "the_blizzard_blew_my_seven_blocks_away.mp3",
-  "rudolph is cold in the blizzard!": "rudolph_is_cold_in_the_blizzard.mp3",
-  // 同時相容單底線與雙底線 (截圖為 look_the_pine_tree...)
-  "look! the pine tree can shelter him!": "look_the_pine_tree_can_shelter_him.mp3",
-  "look the pine tree can shelter him": "look_the_pine_tree_can_shelter_him.mp3",
-  "it is dark and cold in the cabin!": "it_is_dark_and_cold_in_the_cabin.mp3",
-  "let's light the fireplace with flint!": "let_s_light_the_fireplace_with_flint.mp3",
-  "look at the tree! it's party time!": "look_at_the_tree__it_s_party_time.mp3",
-  "merry christmas! let's celebrate!": "merry_christmas__let_s_celebrate.mp3",
-
-  // --- 7 個核心單字 ---
-  "pine tree": "pine_tree.mp3",
-  "ribbon": "ribbon.mp3",
-  "ornament": "ornament.mp3",
-  "star": "star.mp3",
-  "stocking": "stocking.mp3",
-  "present": "present.mp3",
-  "santa claus": "santa_claus.mp3",
-
-  // --- 7 個問答句 ---
-  "where is the pine tree? it's by the fireplace.": "where_is_the_pine_tree__it_s_by_the_fireplace.mp3",
-  "where is the ribbon? it's around the pine tree.": "where_is_the_ribbon__it_s_around_the_pine_tree.mp3",
-  "where are the ornaments? they're on the tree.": "where_are_the_ornaments__they_re_on_the_tree.mp3",
-  "where is the star? it's on top of the tree.": "where_is_the_star__it_s_on_top_of_the_tree.mp3",
-  "where is the stocking? it's above the fireplace.": "where_is_the_stocking__it_s_above_the_fireplace.mp3",
-  "where are the presents? they're under the tree.": "where_are_the_presents__they_re_under_the_tree.mp3",
-  "where is santa claus? he is in the room.": "where_is_santa_claus__he_is_in_the_room.mp3",
-
-  // --- 7 國文化短句 ---
-  "in germany, people put trees in the house.": "in_germany__people_put_trees_in_the_house.mp3",
-  "in france, ribbons tie holiday joy together.": "in_france__ribbons_tie_holiday_joy_together.mp3",
-  "in mexico, bright ornaments bring joy.": "in_mexico__bright_ornaments_bring_joy.mp3",
-  "in the philippines, star lanterns light the street.": "in_the_philippines__star_lanterns_light_the_street.mp3",
-  "in the uk, children hang stockings by the fire.": "in_the_uk__children_hang_stockings_by_the_fire.mp3",
-  "in the usa, presents wait under the tree.": "in_the_usa__presents_wait_under_the_tree.mp3",
-  "in australia, santa surfs at the sunny beach.": "in_australia__santa_surfs_at_the_sunny_beach.mp3"
-};
-
-function stopCurrentSpeech() {
-  if (currentAudioInstance) {
-    try {
-      currentAudioInstance.pause();
-      currentAudioInstance.currentTime = 0;
-      currentAudioInstance = null;
-    } catch (e) {}
-  }
-  if (typeof window !== "undefined" && "speechSynthesis" in window) {
-    try {
-      window.speechSynthesis.cancel();
-    } catch (e) {}
-  }
-}
-
-// 播放音訊輔助函式 (自動探查 audio/ 子目錄與同層目錄)
-
-/* =========================================================================
-   🎮 8-bit 麥塊像素風格《Jingle Bells》BGM 合成引擎 (免外部音檔，支援 Ducking 降音)
-   ========================================================================= */
-
-let chiptuneBgmCtx = null;
-let chiptuneBgmTimer = null;
-let chiptuneBgmGain = null;
-let chiptuneCurrentNoteIndex = 0;
-let isBgmDucked = false;
-
-// Jingle Bells 音符頻率 (Hz) 與拍長 (以 16 分音符為基準)
-const NOTE_FREQS = {
-  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23,
-  G4: 392.00, A4: 440.00, B4: 493.88, C5: 523.25,
-  D5: 587.33, REST: 0
-};
-
-// [音符名稱, 拍數 (1=160ms)]
-const JINGLE_BELLS_MELODY = [
-  // Jingle bells, jingle bells, jingle all the way
-  ['E4', 2], ['E4', 2], ['E4', 4],
-  ['E4', 2], ['E4', 2], ['E4', 4],
-  ['E4', 2], ['G4', 2], ['C4', 3], ['D4', 1], ['E4', 8],
-  
-  // Oh what fun it is to ride in a one-horse open sleigh, hey!
-  ['F4', 2], ['F4', 2], ['F4', 3], ['F4', 1],
-  ['F4', 2], ['E4', 2], ['E4', 2], ['E4', 1], ['E4', 1],
-  ['E4', 2], ['D4', 2], ['D4', 2], ['E4', 2], ['D4', 4], ['G4', 4],
-
-  // Jingle bells, jingle bells, jingle all the way
-  ['E4', 2], ['E4', 2], ['E4', 4],
-  ['E4', 2], ['E4', 2], ['E4', 4],
-  ['E4', 2], ['G4', 2], ['C4', 3], ['D4', 1], ['E4', 8],
-
-  // Oh what fun it is to ride in a one-horse open sleigh!
-  ['F4', 2], ['F4', 2], ['F4', 3], ['F4', 1],
-  ['F4', 2], ['E4', 2], ['E4', 2], ['E4', 1], ['E4', 1],
-  ['G4', 2], ['G4', 2], ['F4', 2], ['D4', 2], ['C4', 8],
-  ['REST', 4]
-];
-
-function initChiptuneBgm() {
-  if (!chiptuneBgmCtx) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioContextClass) chiptuneBgmCtx = new AudioContextClass();
-  }
-  if (chiptuneBgmCtx && chiptuneBgmCtx.state === 'suspended') {
-    chiptuneBgmCtx.resume();
-  }
-  if (!chiptuneBgmGain && chiptuneBgmCtx) {
-    chiptuneBgmGain = chiptuneBgmCtx.createGain();
-    chiptuneBgmGain.gain.setValueAtTime(0.14, chiptuneBgmCtx.currentTime);
-    chiptuneBgmGain.connect(chiptuneBgmCtx.destination);
-  }
-  return chiptuneBgmCtx;
-}
-
-// 智慧降音 (Ducking)：語音朗讀時降低至 15%，念完恢復
-function setBgmDucking(enable) {
-  isBgmDucked = enable;
-  if (!chiptuneBgmGain || !chiptuneBgmCtx) return;
-  const now = chiptuneBgmCtx.currentTime;
-  const targetGain = enable ? 0.025 : 0.14;
-  chiptuneBgmGain.gain.cancelScheduledValues(now);
-  chiptuneBgmGain.gain.linearRampToValueAtTime(targetGain, now + 0.25);
-}
-
-function play8BitNote(freq, durationSec) {
-  if (!chiptuneBgmCtx || freq === 0) return;
-  const now = chiptuneBgmCtx.currentTime;
-
-  // 主旋律：經典 8-bit 方波 (Square Wave)
-  const osc = chiptuneBgmCtx.createOscillator();
-  const noteGain = chiptuneBgmCtx.createGain();
-  osc.type = 'square';
-  osc.frequency.setValueAtTime(freq, now);
-
-  // 輕微顫音與像素包絡線
-  noteGain.gain.setValueAtTime(0.7, now);
-  noteGain.gain.exponentialRampToValueAtTime(0.01, now + durationSec * 0.92);
-
-  osc.connect(noteGain);
-  noteGain.connect(chiptuneBgmGain);
-
-  osc.start(now);
-  osc.stop(now + durationSec * 0.95);
-
-  // 次聲部低音：增加麥塊厚重感 (Triangle Wave)
-  const bassOsc = chiptuneBgmCtx.createOscillator();
-  const bassGain = chiptuneBgmCtx.createGain();
-  bassOsc.type = 'triangle';
-  bassOsc.frequency.setValueAtTime(freq / 2, now);
-  bassGain.gain.setValueAtTime(0.5, now);
-  bassGain.gain.exponentialRampToValueAtTime(0.01, now + durationSec * 0.9);
-
-  bassOsc.connect(bassGain);
-  bassGain.connect(chiptuneBgmGain);
-
-  bassOsc.start(now);
-  bassOsc.stop(now + durationSec * 0.95);
-}
-
-function tickChiptuneSequence() {
-  if (!state.playingMusic) return;
-  const noteData = JINGLE_BELLS_MELODY[chiptuneCurrentNoteIndex];
-  const noteName = noteData[0];
-  const beats = noteData[1];
-  const stepDurationSec = 0.115; // 速度約 130 BPM
-  const noteDurationSec = beats * stepDurationSec;
-
-  if (noteName !== 'REST') {
-    const freq = NOTE_FREQS[noteName] || 0;
-    play8BitNote(freq, noteDurationSec);
-  }
-
-  chiptuneCurrentNoteIndex = (chiptuneCurrentNoteIndex + 1) % JINGLE_BELLS_MELODY.length;
-  chiptuneBgmTimer = setTimeout(tickChiptuneSequence, noteDurationSec * 1000);
-}
-
-function startChiptuneBgm() {
-  initChiptuneBgm();
-  state.playingMusic = true;
-  chiptuneCurrentNoteIndex = 0;
-  clearTimeout(chiptuneBgmTimer);
-  document.getElementById("partyMusicBtnLabel").textContent = "⏹️ 停止音樂";
-  tickChiptuneSequence();
-}
-
-function stopChiptuneBgm() {
-  state.playingMusic = false;
-  clearTimeout(chiptuneBgmTimer);
-  chiptuneBgmTimer = null;
-  document.getElementById("partyMusicBtnLabel").textContent = "🎵 聖誕音樂";
-  if (chiptuneBgmGain && chiptuneBgmCtx) {
-    chiptuneBgmGain.gain.setValueAtTime(0.14, chiptuneBgmCtx.currentTime);
-  }
-}
-
-
-function playAudioFilePromise(filename, actualRate) {
-  return new Promise((resolve, reject) => {
-    const paths = [`audio/${filename}`, `${filename}`];
-    let pathIdx = 0;
-
-    function tryNext() {
-      if (pathIdx >= paths.length) {
-        return reject(new Error("找不到音檔：" + filename));
-      }
-      const audio = new Audio(paths[pathIdx]);
-      currentAudioInstance = audio;
-      audio.playbackRate = actualRate || 1.0;
-
-      audio.onended = () => {
-        currentAudioInstance = null;
-        resolve();
-      };
-
-      audio.onerror = () => {
-        pathIdx++;
-        tryNext();
-      };
-
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          pathIdx++;
-          tryNext();
-        });
-      }
-    }
-
-    tryNext();
-  });
-}
-
-async function speakText(text, rate = null, lang = "en-US", role = "default") {
-  if (!text) return;
-
-  const actualRate = rate !== null ? rate : (typeof LESSON_CONFIG !== "undefined" ? LESSON_CONFIG.speechRateNormal : 0.96);
-  stopCurrentSpeech();
-
-  // 朗讀前自動將 8-bit 背景音樂音量智慧降低 (Ducking)
-  setBgmDucking(true);
-
-  try {
-    const cleanText = text.trim().toLowerCase().replace(/\s+/g, " ");
-
-    // 特殊防護：五國祝福語中的純 Merry Christmas，絕不匹配帶有贅字 "let's celebrate!" 的第 8 幕對白
-    if (cleanText === "merry christmas!" || cleanText === "merry christmas") {
-      await speakBrowserSpeech("Merry Christmas!", actualRate, "en-US", "greeting_en");
-      return;
-    }
-
-    // 1. 優先嘗試 100% 精準匹配 MP3 檔案
-    let matchedFilename = EXACT_AUDIO_MAP[cleanText];
-
-    // 2. 嚴格防呆比對：僅允許「使用者點選複合問答題包含完整標題」時擴展，絕不允許長句反向匹配短音節！
-    if (!matchedFilename && cleanText.length > 5) {
-      for (const [key, fn] of Object.entries(EXACT_AUDIO_MAP)) {
-        if (cleanText.includes(key)) {
-          matchedFilename = fn;
-          break;
-        }
-      }
-    }
-
-    // 3. 若精準命中 MP3，播放 Google AI 錄製檔
-    if (matchedFilename) {
-      try {
-        await playAudioFilePromise(matchedFilename, actualRate);
-        return;
-      } catch (err) {
-        console.warn(`[MP3 播放失敗，啟用備用發音] 檔名: ${matchedFilename}`, err);
-      }
-    }
-
-    // 4. 音節方塊 (Chunks 如 p, ine, tr, ee, st, ar 等) 與短詞：由瀏覽器直接發出清晰自然發音，絕不誤放長句！
-    await speakBrowserSpeech(text, actualRate, lang, role);
-  } finally {
-    // 朗讀結束後恢復背景音樂原音量
-    setBgmDucking(false);
-  }
-}
-
-function speakBrowserSpeech(text, rate = 0.96, lang = "en-US", role = "default") {
-  return new Promise((resolve) => {
-    if (!("speechSynthesis" in window)) return resolve();
-    window.speechSynthesis.cancel();
-
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = rate;
-    utter.lang = lang;
-
-    if (role === "steve") {
-      utter.pitch = 0.95;
-    } else if (role === "santa") {
-      utter.pitch = 0.72;
-      utter.rate = Math.max(0.65, rate * 0.88);
-    } else if (role === "alex") {
-      utter.pitch = 1.15;
-    } else {
-      utter.pitch = 1.0;
-    }
-
-    const voices = window.speechSynthesis.getVoices();
-    if (voices && voices.length > 0) {
-      const cleanLang = (lang || "en-US").replace("_", "-");
-      const langVoices = voices.filter(v => v.lang && (v.lang.replace("_", "-").startsWith(cleanLang) || v.lang.startsWith(cleanLang.split("-")[0])));
-      const pool = langVoices.length > 0 ? langVoices : voices;
-
-      if (role === "steve" || role === "santa") {
-        const maleVoice = pool.find(v => /male|david|mark|george|christopher|guy|ichiro|keita/i.test(v.name));
-        if (maleVoice) utter.voice = maleVoice;
-        else if (pool[0]) utter.voice = pool[0];
-      } else if (role === "alex") {
-        const femaleVoice = pool.find(v => /female|zira|jenny|samantha|victoria|karen|nanami|ayumi/i.test(v.name));
-        if (femaleVoice) utter.voice = femaleVoice;
-        else if (pool[0]) utter.voice = pool[0];
-      } else {
-        if (pool[0]) utter.voice = pool[0];
-      }
-    }
-
-    utter.onend = () => resolve();
-    utter.onerror = () => resolve();
-
-    window.speechSynthesis.speak(utter);
-  });
-}
-
-async function speakPhonicsChunk(chunkText, phoneticSound) {
-  playSfx("click");
-  const spoken = phoneticSound || chunkText;
-  speakText(spoken, typeof LESSON_CONFIG !== "undefined" ? LESSON_CONFIG.speechRateSlow : 0.76, "en-US", "alex");
-}
-
-/* =========================================================================
-   🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - Canvas 粒子引擎
-   ========================================================================= */
-
-const snowParticles = [];
-const burstList = [];
-let snowCanvasCtx = null;
-let snowCanvasEl = null;
-
-function initSnowCanvas() {
-  snowCanvasEl = document.getElementById("snowCanvas");
-  if (!snowCanvasEl) return;
-
-  const resize = () => {
-    const rect = snowCanvasEl.parentElement ? snowCanvasEl.parentElement.getBoundingClientRect() : null;
-    snowCanvasEl.width = rect && rect.width ? rect.width : 1280;
-    snowCanvasEl.height = rect && rect.height ? rect.height : 720;
-  };
-  resize();
-  window.addEventListener("resize", resize);
-
-  snowCanvasCtx = snowCanvasEl.getContext("2d");
-
-  for (let i = 0; i < 65; i++) {
-    snowParticles.push({
-      x: Math.random() * 1280,
-      y: Math.random() * 720,
-      s: Math.floor(Math.random() * 5) + 4,
-      vy: Math.random() * 0.95 + 0.4,
-      vx: (Math.random() - 0.5) * 0.5,
-      phase: Math.random() * Math.PI * 2
-    });
-  }
-
-  function step() {
-    if (!snowCanvasCtx || !snowCanvasEl) return;
-    snowCanvasCtx.clearRect(0, 0, snowCanvasEl.width, snowCanvasEl.height);
-
-    const st = window.state || {};
-    const isTaiwanSunny = (st.stage === "story" && st.storyStepIdx === 0);
-    const count = isTaiwanSunny ? 12 : (st.heavySnow || st.stage === "party" ? snowParticles.length : 26);
-
-    for (let i = 0; i < count; i++) {
-      const p = snowParticles[i];
-      p.phase += 0.04;
-      p.y += p.vy * (st.heavySnow ? 2.5 : 1);
-      p.x += p.vx + Math.sin(p.phase) * 0.35;
-      if (p.y > snowCanvasEl.height) {
-        p.y = -8;
-        p.x = Math.random() * snowCanvasEl.width;
-      }
-      snowCanvasCtx.fillStyle = isTaiwanSunny
-        ? "rgba(253, 224, 71, 0.58)"
-        : (st.heavySnow ? "rgba(255, 255, 255, 0.92)" : "rgba(255, 255, 255, 0.65)");
-      snowCanvasCtx.fillRect(p.x, p.y, p.s, p.s);
-    }
-
-    for (let i = burstList.length - 1; i >= 0; i--) {
-      const b = burstList[i];
-      b.x += b.vx;
-      b.y += b.vy;
-      b.vy += 0.15;
-      b.life -= 0.035;
-      if (b.life <= 0) {
-        burstList.splice(i, 1);
-        continue;
-      }
-      snowCanvasCtx.fillStyle = b.color;
-      snowCanvasCtx.globalAlpha = Math.max(0, b.life);
-      snowCanvasCtx.fillRect(b.x, b.y, b.size, b.size);
-      snowCanvasCtx.globalAlpha = 1.0;
-    }
-
-    requestAnimationFrame(step);
-  }
-
-  requestAnimationFrame(step);
-}
-
-function triggerBurstParticles(originX, originY, baseColor = "#facc15") {
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-
-  const cx = originX !== undefined ? originX : canvas.width * 0.5;
-  const cy = originY !== undefined ? originY : canvas.height * 0.5;
-
-  const colors = [baseColor, "#38bdf8", "#4ade80", "#ffffff", "#f43f5e"];
-  for (let i = 0; i < 35; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 5.5 + 2.0;
-    burstList.push({
-      x: cx,
-      y: cy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 2.5,
-      size: Math.floor(Math.random() * 6) + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      life: 1.0
-    });
-  }
-}
-
-function triggerConfetti() {
-  playSfx("fanfare");
-  playSfx("party_horn");
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-
-  const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#facc15"];
-  for (let i = 0; i < 90; i++) {
-    burstList.push({
-      x: Math.random() * canvas.width,
-      y: canvas.height * 0.2 + Math.random() * 50,
-      vx: (Math.random() - 0.5) * 8,
-      vy: Math.random() * -6 - 2,
-      size: Math.floor(Math.random() * 8) + 5,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      life: 1.5
-    });
-  }
-}
-
-function triggerPortalVortex() {
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-  const cx = canvas.width * 0.5;
-  const cy = canvas.height * 0.5;
-  const colors = ["#a855f7", "#c084fc", "#e879f9", "#38bdf8", "#818cf8", "#ffffff"];
-  for (let i = 0; i < 75; i++) {
-    const angle = (i / 75) * Math.PI * 2 + Math.random() * 0.2;
-    const speed = Math.random() * 4.2 + 2.5;
-    burstList.push({
-      x: cx + Math.cos(angle) * (20 + Math.random() * 35),
-      y: cy + Math.sin(angle) * (20 + Math.random() * 35),
-      vx: -Math.sin(angle) * speed + (Math.random() - 0.5),
-      vy: Math.cos(angle) * speed + (Math.random() - 0.5),
-      size: Math.floor(Math.random() * 7) + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      life: 1.3
-    });
-  }
-}
-
-function triggerBlizzardBurst() {
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-  const colors = ["#ffffff", "#f0f9ff", "#e0f2fe", "#bae6fd", "#7dd3fc"];
-  for (let i = 0; i < 110; i++) {
-    burstList.push({
-      x: canvas.width + Math.random() * 120,
-      y: Math.random() * canvas.height,
-      vx: -(Math.random() * 14 + 8),
-      vy: Math.random() * 3.5 + 1.2,
-      size: Math.floor(Math.random() * 6) + 3,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      life: 1.4
-    });
-  }
-}
-
-function triggerFireplaceSparks() {
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-  const fx = canvas.width * 0.725;
-  const fy = canvas.height * 0.73;
-  const colors = ["#f97316", "#ef4444", "#fde047", "#fbbf24", "#ea580c"];
-  for (let i = 0; i < 55; i++) {
-    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
-    const speed = Math.random() * 5.2 + 2.2;
-    burstList.push({
-      x: fx + (Math.random() - 0.5) * 40,
-      y: fy + (Math.random() - 0.5) * 20,
-      vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.5,
-      vy: Math.sin(angle) * speed,
-      size: Math.floor(Math.random() * 5) + 3,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      life: 1.15
-    });
-  }
-}
-
-function triggerChimneySmoke() {
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-  const cx = canvas.width * 0.725;
-  const cy = canvas.height * 0.28;
-  const colors = ["rgba(203, 213, 225, 0.75)", "rgba(148, 163, 184, 0.65)", "rgba(241, 245, 249, 0.8)"];
-  for (let i = 0; i < 35; i++) {
-    burstList.push({
-      x: cx + (Math.random() - 0.5) * 25,
-      y: cy + (Math.random() - 0.5) * 15,
-      vx: (Math.random() - 0.2) * 1.6,
-      vy: -(Math.random() * 2.8 + 1.2),
-      size: Math.floor(Math.random() * 10) + 7,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      life: 1.5
-    });
-  }
-}
-
-
-
-/* =========================================================================
-   🎆 全景多色大煙火與派對暴風雪循環控制引擎 (含聲光同步)
-   ========================================================================= */
-
-let fireworkShowInterval = null;
-
-// 觸發隨機位置的像素大煙火 (60~80 顆五彩粒子擴散，含發射哨音與爆破震撼低頻)
-function triggerMegaFirework() {
-  playSfx("firework_blast");
-  const canvas = snowCanvasEl || document.getElementById("snowCanvas");
-  if (!canvas) return;
-
-  const originX = Math.random() * (canvas.width * 0.75) + (canvas.width * 0.12);
-  const originY = Math.random() * (canvas.height * 0.45) + (canvas.height * 0.12);
-  const palette = ["#facc15", "#f43f5e", "#38bdf8", "#4ade80", "#c084fc", "#fb923c", "#ffffff", "#e879f9"];
-
-  for (let i = 0; i < 75; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 6.5 + 2.0;
-    burstList.push({
-      x: originX,
-      y: originY,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 1.2,
-      size: Math.floor(Math.random() * 6) + 4,
-      color: palette[Math.floor(Math.random() * palette.length)],
-      life: 1.25
-    });
-  }
-}
-
-// 暴風雪與煙火循環控制切換
-function togglePartyFireworkShow() {
-  const btn = document.getElementById("partySnowBurstBtn");
-  if (fireworkShowInterval) {
-    // 停止循環
-    clearInterval(fireworkShowInterval);
-    fireworkShowInterval = null;
-    state.heavySnow = false;
-    if (btn) {
-      btn.querySelector("span:first-child").textContent = "❄️ 暴風雪";
-      btn.querySelector("span:last-child").textContent = "慶祝煙火";
-    }
-  } else {
-    // 啟動循環煙火狂歡
-    state.heavySnow = true;
-    if (btn) {
-      btn.querySelector("span:first-child").textContent = "⏹️ 停止狂歡";
-      btn.querySelector("span:last-child").textContent = "停止煙火秀";
-    }
-    triggerMegaFirework();
-    fireworkShowInterval = setInterval(() => {
-      if (!state.heavySnow || state.stage !== "party") {
-        clearInterval(fireworkShowInterval);
-        fireworkShowInterval = null;
-        if (btn) {
-          btn.querySelector("span:first-child").textContent = "❄️ 暴風雪";
-          btn.querySelector("span:last-child").textContent = "慶祝煙火";
-        }
-        return;
-      }
-      triggerMegaFirework();
-    }, 750);
-  }
-}
-
-
-/* =========================================================================
-   🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - 主遊戲邏輯
-   ========================================================================= */
-
-function getAsset(key) {
-  if (typeof window !== "undefined" && window.VOXEL_MASTER_ASSETS && window.VOXEL_MASTER_ASSETS[key]) {
-    return window.VOXEL_MASTER_ASSETS[key];
-  }
-  if (typeof ASSET_MANIFEST !== "undefined" && ASSET_MANIFEST[key]) {
-    return ASSET_MANIFEST[key];
-  }
-  return "";
-}
-
-const state = {
-      stage: "story",           // 'story' | 'words' | 'culture' | 'party'
-      storyStepIdx: 0,          // 0..4 (共 5 幕)
-      cabinFireplaceLit: false, // 第 4 幕壁爐是否已由學生點燃
-      focusedWordId: "tree",    // 當前聚焦單字 ID
-      wordsSubMode: "learn",    // 'learn' (單字句型特寫) | 'spell' (麥塊音節拼字台) | 'prep' (空間介系詞問答)
-      cultureSubMode: "explore",// 'explore' (7國文化與台灣比較看板) | 'quiz' (國際文化搶答)
-      unlockedIds: new Set(),   // 已解鎖的 3D 麥塊圖層 ID
-      gameQueueIdx: 0,          // 當前闖關目標單字索引 (0..6)
-      craftedChunks: [],        // 拼字模式下已填入合成槽的音節物件 [{ text, poolIndex }]
-      scoreRed: 0,              // 🔴 Redstone 隊分數
-      scoreGreen: 0,            // 🟢 Emerald 隊分數
+    const ASSET_MANIFEST = {
+      "cabin_base": "assets/voxels/cabin_base.webp",
+      "layer_tree": "assets/voxels/layer_tree.webp",
+      "layer_ribbon": "assets/voxels/layer_ribbon.webp",
+      "layer_ball": "assets/voxels/layer_ball.webp",
+      "layer_star": "assets/voxels/layer_star.webp",
+      "layer_stocking": "assets/voxels/layer_stocking.webp",
+      "layer_gift": "assets/voxels/layer_gift.webp",
+      "layer_santa": "assets/voxels/layer_santa.webp",
+      "thumb_tree": "assets/voxels/thumb_tree.webp",
+      "thumb_ribbon": "assets/voxels/thumb_ribbon.webp",
+      "thumb_ball": "assets/voxels/thumb_ball.webp",
+      "thumb_star": "assets/voxels/thumb_star.webp",
+      "thumb_stocking": "assets/voxels/thumb_stocking.webp",
+      "thumb_gift": "assets/voxels/thumb_gift.webp",
+      "thumb_santa": "assets/voxels/thumb_santa.webp",
+      "story_taiwan_school": "assets/scenes/story_taiwan_school.webp",
+      "story_christmas_portal": "assets/scenes/story_christmas_portal.webp",
+      "story_nordic_blizzard": "assets/scenes/story_nordic_blizzard.webp",
+      "story_prep_backpack": "assets/scenes/story_prep_backpack.webp",
+      "story_vortex_tunnel": "assets/scenes/story_vortex_tunnel.webp"
+    };
+
+    window.LESSON_CONFIG = window.LESSON_CONFIG || {};
+    LESSON_CONFIG.title = "🌍 World Christmas Craft (中高年級 3D 麥塊跨國冒險)";
+    LESSON_CONFIG.speechRateSlow = 0.76;
+    LESSON_CONFIG.speechRateNormal = 0.96;
+
+    const state = window.state = {
+      stage: "story",
+      storyStepIdx: 0,
+      cabinFireplaceLit: false,
+      focusedWordId: "tree",
+      wordsSubMode: "learn",
+      cultureSubMode: "explore",
+      unlockedIds: new Set(),
+      gameQueueIdx: 0,
+      craftedChunks: [],
+      scoreRed: 0,
+      scoreGreen: 0,
       soundOn: true,
       playingMusic: false,
-      musicInterval: null,
       heavySnow: false
     };
 
-    // Web Audio 合成音效（包含點燃打火石、傳送門星芒、經驗球叮咚、合成音效）
-
-function getWordObj(id) {
-      return LESSON_CONFIG.words.find(w => w.id === id) || LESSON_CONFIG.words[0];
+    function getAsset(key) {
+      if (typeof window !== "undefined" && window.VOXEL_MASTER_ASSETS && window.VOXEL_MASTER_ASSETS[key]) {
+        return window.VOXEL_MASTER_ASSETS[key];
+      }
+      if (typeof ASSET_MANIFEST !== "undefined" && ASSET_MANIFEST[key]) {
+        return ASSET_MANIFEST[key];
+      }
+      return "";
     }
 
-    // 一鍵關閉所有懸浮看板與彈窗，防遮擋畫面
     function closeAllOverlays() {
       document.getElementById("voxelZoomBox")?.classList.add("hidden");
       document.getElementById("cultureCompareBoard")?.classList.add("hidden");
       document.getElementById("storyActionModal")?.classList.add("hidden");
-      document.getElementById("azureSettingsModal")?.classList.add("hidden");
       const hintBox = document.getElementById("flashHintBox");
       if (hintBox) {
         hintBox.classList.add("hidden");
@@ -2102,38 +963,6 @@ function getWordObj(id) {
       }
     }
 
-    // 遊戲活動 1 秒閃示視覺提示功能（高亮 3D 物件並閃現 1 秒提示卡，絕不洩漏英文拼字）
-    function triggerFlashHint(target) {
-      if (!target) return;
-      playSfx("click");
-      const hintBox = document.getElementById("flashHintBox");
-      const hintImg = document.getElementById("flashHintImg");
-      const hintTitle = document.getElementById("flashHintTitle");
-      const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
-
-      hintImg.src = assets[target.thumbKey] || "";
-      // 關鍵防洩題設計：只顯示中文與 emoji，絕不顯示英文單字與音節！
-      hintTitle.textContent = `${target.emoji} 目標：${target.zh}`;
-
-      hintBox.classList.remove("hidden");
-      hintBox.classList.add("flash-hint-active");
-
-      // 3D 木屋 SVG 對應物件同步金黃色高亮 1 秒
-      const layerEl = document.getElementById(`voxel-layer-${target.id}`);
-      if (layerEl) {
-        layerEl.classList.add("voxel-hint-highlight");
-      }
-
-      setTimeout(() => {
-        hintBox.classList.add("hidden");
-        hintBox.classList.remove("flash-hint-active");
-        if (layerEl) {
-          layerEl.classList.remove("voxel-hint-highlight");
-        }
-      }, 1000);
-    }
-
-    // 初始化 3D 麥塊木屋 SVG 圖層與「升級單字＋空間介系詞＋代表國旗」名牌
     function initSvgScene() {
       const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
       const baseCabinEl = document.getElementById("svgBaseCabin");
@@ -2170,7 +999,6 @@ function getWordObj(id) {
         }
         layersGroup.appendChild(gLayer);
 
-        // 獨立不重疊熱區＋含國旗與介系詞的大名牌
         const gHs = document.createElementNS("http://www.w3.org/2000/svg", "g");
         gHs.setAttribute("id", `scene-hs-${item.id}`);
         gHs.setAttribute("class", "scene-hotspot");
@@ -2200,7 +1028,6 @@ function getWordObj(id) {
         gHs.appendChild(borderRect);
 
         gHs.addEventListener("click", () => {
-          // 闖關模式下禁止彈出解答大看板，避免洩題
           const isQuizActive =
             (state.stage === "words" && (state.wordsSubMode === "spell" || state.wordsSubMode === "prep")) ||
             (state.stage === "culture" && state.cultureSubMode === "quiz");
@@ -2215,16 +1042,15 @@ function getWordObj(id) {
 
           state.focusedWordId = item.id;
           if (state.stage === "culture") {
-            openCultureCompareBoard(item.id, null); // 不自動發音，由老師點擊
+            openCultureCompareBoard(item.id, null);
           } else {
-            openVoxelZoomBox(item.id, null); // 不自動發音，由老師點擊
+            openVoxelZoomBox(item.id, null);
           }
         });
         hotspotsGroup.appendChild(gHs);
       });
     }
 
-    // 更新頂部星星進度與 3D 場景圖層狀態
     function updateSceneAndStars() {
       const starRow = document.getElementById("starProgressRow");
       starRow.innerHTML = "";
@@ -2252,13 +1078,11 @@ function getWordObj(id) {
         const isUnlocked = state.unlockedIds.has(item.id);
         const isCurrentGameTarget = isQuizActive && LESSON_CONFIG.words[state.gameQueueIdx]?.id === item.id;
 
-        // 判斷當前聚焦狀態 (文化探索、單字預覽或慶典)
         const isCultureExplore = (state.stage === "culture" && state.cultureSubMode === "explore");
         const isWordsLearn = (state.stage === "words" && state.wordsSubMode === "learn");
         const isFocusedInExplore = (isCultureExplore || isWordsLearn) && state.focusedWordId === item.id;
         const isParty = (state.stage === "party");
 
-        // 1. 樣式圖層控制 (實現聚焦點亮與背景暗化)
         if (isParty) {
           layerEl.setAttribute("class", "voxel-unlocked");
         } else if (isCultureExplore || isWordsLearn) {
@@ -2283,7 +1107,6 @@ function getWordObj(id) {
           }
         }
 
-        // 2. 熱區邊框控制 (僅當前答題目標或探索聚焦項目顯示指引外框，避免全部出現造成干擾)
         if (isCurrentGameTarget || isFocusedInExplore) {
           hsEl.classList.add("is-focused", "is-active-target");
         } else {
@@ -2292,7 +1115,6 @@ function getWordObj(id) {
       });
 
       const arrowEl = document.getElementById("svgPointerArrow");
-      // 故事模式與闖關活動中隱藏指引箭頭，避免直接洩漏答案位置
       if (state.stage === "story" || isQuizActive) {
         arrowEl.classList.add("hidden");
       } else {
@@ -2302,827 +1124,210 @@ function getWordObj(id) {
           arrowEl.classList.remove("hidden");
         }
       }
-
     }
 
-    // =========================================================================
-    // 【階段 1：Story 麥塊 8 幕情境塑造與每幕局部互動特效】
-    // =========================================================================
-    async function speakStoryDialogue(stepObj, rate = null) {
-      if (!stepObj) return;
-      const actualRate = rate || (typeof LESSON_CONFIG !== "undefined" ? LESSON_CONFIG.speechRateNormal : 0.96);
-      if (stepObj.speakA) {
-        await speakText(stepObj.speakA, actualRate, "en-US", stepObj.roleASpeak || "steve");
-      }
-      await new Promise(r => setTimeout(r, 260));
-      if (stepObj.speakB) {
-        await speakText(stepObj.speakB, actualRate, "en-US", stepObj.roleBSpeak || "alex");
-      }
-    }
+    // ==========================================
+    // 粒子系統 (Snow & Particle Canvas)
+    // ==========================================
+    const snowParticles = [];
+    const burstList = [];
+    let snowCanvasCtx = null;
+    let snowCanvasEl = null;
 
-    function renderStoryStage(autoSpeak = false) {
-      const stepObj = LESSON_CONFIG.storySteps[state.storyStepIdx];
-      const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
-      const imgWrapper = document.getElementById("storySceneImgWrapper");
-      const imgEl = document.getElementById("storySceneImgEl");
-      const svgEl = document.getElementById("fireplaceSvg");
-      const fireGlow = document.getElementById("svgFireGlowCircle");
-      const unlitCover = document.getElementById("fireplaceUnlitCover");
-      const fogEl = document.getElementById("blizzardFogOverlay");
-      const modal = document.getElementById("storyActionModal");
+    function initSnowCanvas() {
+      snowCanvasEl = document.getElementById("snowCanvas");
+      if (!snowCanvasEl) return;
 
-      // 關閉其他階段看板與重設動畫狀態
-      document.getElementById("voxelZoomBox").classList.add("hidden");
-      document.getElementById("cultureCompareBoard").classList.add("hidden");
-      modal.classList.add("hidden");
-      imgEl.classList.remove("portal-energized", "portal-distortion");
-      svgEl.classList.remove("tree-sparkle-active");
+      const resize = () => {
+        const rect = snowCanvasEl.parentElement ? snowCanvasEl.parentElement.getBoundingClientRect() : null;
+        snowCanvasEl.width = rect && rect.width ? rect.width : 1280;
+        snowCanvasEl.height = rect && rect.height ? rect.height : 720;
+      };
+      resize();
+      window.addEventListener("resize", resize);
 
-      // 暴風雪霧效開關 (僅第 5 幕啟用)
-      if (fogEl) {
-        if (stepObj.step === 5 || stepObj.step === 6) {
-          fogEl.classList.remove("hidden");
-        } else {
-          fogEl.classList.add("hidden");
-        }
+      snowCanvasCtx = snowCanvasEl.getContext("2d");
+
+      for (let i = 0; i < 65; i++) {
+        snowParticles.push({
+          x: Math.random() * 1280,
+          y: Math.random() * 720,
+          s: Math.floor(Math.random() * 5) + 4,
+          vy: Math.random() * 0.95 + 0.4,
+          vx: (Math.random() - 0.5) * 0.5,
+          phase: Math.random() * Math.PI * 2
+        });
       }
 
-      // 隱藏互動熱區虛線邊框與指引箭頭，確保故事劇情畫面純淨沉浸
-      const hotspotsGroup = document.getElementById("svgHotspotsGroup");
-      if (hotspotsGroup) {
-        hotspotsGroup.style.display = "none";
-        hotspotsGroup.classList.add("hidden");
-      }
-      document.getElementById("svgPointerArrow")?.classList.add("hidden");
+      function step() {
+        if (!snowCanvasCtx || !snowCanvasEl) return;
+        snowCanvasCtx.clearRect(0, 0, snowCanvasEl.width, snowCanvasEl.height);
 
-      // 判斷本幕使用 3D 場景圖 (Scenes 1~5) 或 3D 木屋動態光影 (Scenes 6~8)
-      if (stepObj.sceneType === "image") {
-        imgWrapper.classList.remove("hidden");
-        svgEl.classList.add("hidden");
-        imgEl.src = assets[stepObj.assetKey] || "";
-        state.heavySnow = (stepObj.step === 5 || stepObj.step === 6); // 第 5、6 幕暴風雪松林開啟粒子
-        if (unlitCover) unlitCover.style.opacity = "0";
+        const st = window.state || {};
+        const isTaiwanSunny = (st.stage === "story" && st.storyStepIdx === 0);
+        const count = isTaiwanSunny ? 12 : (st.heavySnow || st.stage === "party" ? snowParticles.length : 26);
 
-        // 第 4 幕時空蟲洞預備微動態
-        if (stepObj.step === 4) {
-          imgEl.classList.add("portal-distortion");
-        }
-      } else if (stepObj.sceneType === "cabin_dark_to_warm") {
-        imgWrapper.classList.add("hidden");
-        svgEl.classList.remove("hidden");
-        state.heavySnow = false;
-        if (stepObj.step === 6) {
-          // 第 6 幕：深入冰封黑暗木屋 (壁爐熄滅、冷灰色調)
-          svgEl.setAttribute("class", "absolute inset-0 w-full h-full block cabin-frozen-dark");
-          if (fireGlow) fireGlow.style.opacity = "0";
-          if (unlitCover) unlitCover.style.opacity = "1";
-        } else if (stepObj.step === 7) {
-          // 第 7 幕：點燃壁爐熊熊暖火
-          if (state.cabinFireplaceLit) {
-            svgEl.setAttribute("class", "absolute inset-0 w-full h-full block cabin-warm-lit");
-            if (fireGlow) fireGlow.style.opacity = "1";
-            if (unlitCover) unlitCover.style.opacity = "0";
-          } else {
-            svgEl.setAttribute("class", "absolute inset-0 w-full h-full block cabin-frozen-dark");
-            if (fireGlow) fireGlow.style.opacity = "0";
-            if (unlitCover) unlitCover.style.opacity = "1";
+        for (let i = 0; i < count; i++) {
+          const p = snowParticles[i];
+          p.phase += 0.04;
+          p.y += p.vy * (st.heavySnow ? 2.5 : 1);
+          p.x += p.vx + Math.sin(p.phase) * 0.35;
+          if (p.y > snowCanvasEl.height) {
+            p.y = -8;
+            p.x = Math.random() * snowCanvasEl.width;
           }
+          snowCanvasCtx.fillStyle = isTaiwanSunny
+            ? "rgba(253, 224, 71, 0.58)"
+            : (st.heavySnow ? "rgba(255, 255, 255, 0.92)" : "rgba(255, 255, 255, 0.65)");
+          snowCanvasCtx.fillRect(p.x, p.y, p.s, p.s);
         }
-      } else {
-        // 第 8 幕或預設工作台準備 (壁爐已點燃、溫暖明亮)
-        imgWrapper.classList.add("hidden");
-        svgEl.classList.remove("hidden");
-        state.heavySnow = false;
-        svgEl.setAttribute("class", "absolute inset-0 w-full h-full block cabin-warm-lit");
-        if (fireGlow) fireGlow.style.opacity = "1";
-        if (unlitCover) unlitCover.style.opacity = "0";
-        svgEl.classList.add("tree-sparkle-active");
-      }
 
-      // 更新頂部對話橫幅
-      document.getElementById("promptStepBadge").textContent = stepObj.badge;
-      document.getElementById("promptLineA").textContent = stepObj.roleA;
-      document.getElementById("promptLineB").textContent = stepObj.roleB;
-      document.getElementById("promptLineB").classList.remove("hidden");
-      document.getElementById("promptSubZh").textContent = stepObj.zhHint;
-
-      // 更新底部 8 幕進度按鈕列 (完整繁中 8 幕標籤映射)
-      const dotsRow = document.getElementById("storySceneDotsRow");
-      dotsRow.innerHTML = "";
-      const sceneShortTitles = [
-        "1. 序曲",
-        "2. 啟程",
-        "3. 密室",
-        "4. 傳送",
-        "5. 風雪",
-        "6. 馴鹿",
-        "7. 木屋",
-        "8. 慶典"
-      ];
-      LESSON_CONFIG.storySteps.forEach((st, idx) => {
-        const btn = document.createElement("button");
-        const active = idx === state.storyStepIdx;
-        btn.className = `py-1.5 px-1 sm:px-2 rounded-lg font-black text-xs sm:text-sm transition border-2 ${
-          active
-            ? "bg-amber-400 text-red-950 border-yellow-200 shadow"
-            : "bg-[#38261a] text-amber-200 border-[#6e4c34] hover:bg-[#4e3626]"
-        }`;
-        btn.textContent = sceneShortTitles[idx] || `${idx + 1}. 幕 ${idx + 1}`;
-        btn.addEventListener("click", () => {
-          state.storyStepIdx = idx;
-          renderStoryStage(false); // 切換幕不自動朗讀，由老師主導
-        });
-        dotsRow.appendChild(btn);
-      });
-
-      // 更新互動道具按鈕文字
-      document.getElementById("storyTriggerPropLabel").textContent = stepObj.actionBtnLabel;
-
-      document.getElementById("storyPrevStepBtn").disabled = state.storyStepIdx === 0;
-      document.getElementById("storyPrevStepBtn").classList.toggle("opacity-40", state.storyStepIdx === 0);
-
-      const nextText = document.getElementById("storyNextStepText");
-      nextText.textContent = state.storyStepIdx === LESSON_CONFIG.storySteps.length - 1 ? "進入單字合成" : "下一幕";
-
-      updateSceneAndStars();
-      if (autoSpeak) {
-        speakStoryDialogue(stepObj, LESSON_CONFIG.speechRateNormal);
-      }
-    }
-
-    // 渲染故事英語單字卡提問互動 (掛載於第 6 幕拯救馴鹿、第 7 幕點燃壁爐)
-    function renderStoryQuiz(stepObj) {
-      const area = document.getElementById("storyModalQuizArea");
-      if (!area || !stepObj.quiz) {
-        if (area) area.classList.add("hidden");
-        return;
-      }
-      const q = stepObj.quiz;
-      area.classList.remove("hidden");
-      area.innerHTML = `
-        <div class="story-quiz-card rounded-2xl p-3 sm:p-4 text-left">
-          <div class="flex items-center justify-between gap-2 mb-2">
-            <span class="px-2.5 py-0.5 rounded-lg bg-amber-400 text-red-950 font-black text-xs sm:text-sm">
-              🎓 課堂互動挑戰 (Story Mini-Quiz)
-            </span>
-            <button id="speakQuizBtn" class="px-2 py-0.5 rounded bg-sky-500/80 hover:bg-sky-400 text-white font-black text-xs">
-              🔊 聽題目
-            </button>
-          </div>
-          <div class="font-black text-sm sm:text-base text-amber-200 leading-snug mb-1">${q.questionEn}</div>
-          <div class="text-xs sm:text-sm font-bold text-amber-100/90 mb-3">${q.questionZh}</div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="quizOptionsContainer"></div>
-          <div id="quizFeedback" class="hidden mt-2.5 p-2 rounded-xl text-xs sm:text-sm font-black"></div>
-        </div>
-      `;
-
-      document.getElementById("speakQuizBtn").addEventListener("click", () => {
-        speakText(q.questionEn, LESSON_CONFIG.speechRateNormal);
-      });
-
-      const optContainer = document.getElementById("quizOptionsContainer");
-      const fb = document.getElementById("quizFeedback");
-
-      q.options.forEach((opt) => {
-        const btn = document.createElement("button");
-        btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-[#38261a] border-[#8c6649] text-amber-100 font-black text-xs sm:text-sm hover:bg-[#4d3423] text-left";
-        btn.textContent = opt.text;
-        btn.addEventListener("click", () => {
-          if (opt.correct) {
-            playSfx("ding");
-            triggerBurstParticles();
-            state.stars++;
-            updateSceneAndStars();
-            speakText(q.correctSpeech, LESSON_CONFIG.speechRateNormal);
-            btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-lime-600 border-lime-300 text-white font-black text-xs sm:text-sm shadow";
-            fb.className = "mt-2.5 p-2 rounded-xl text-xs sm:text-sm font-black bg-lime-900/90 border border-lime-400 text-lime-200 block";
-            fb.innerHTML = `🎉 ${opt.feedback} <span class="text-amber-300">(+1 🌟 獲得星數！)</span>`;
-            showToast("答對了！+1 🌟 獲得學習星星！", "⭐", true);
-          } else {
-            playSfx("error");
-            btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-red-950/80 border-red-500 text-red-200 font-black text-xs sm:text-sm";
-            fb.className = "mt-2.5 p-2 rounded-xl text-xs sm:text-sm font-black bg-red-900/80 border border-red-400 text-amber-200 block";
-            fb.textContent = `❌ ${opt.feedback}`;
+        for (let i = burstList.length - 1; i >= 0; i--) {
+          const b = burstList[i];
+          b.x += b.vx;
+          b.y += b.vy;
+          b.vy += 0.15;
+          b.life -= 0.035;
+          if (b.life <= 0) {
+            burstList.splice(i, 1);
+            continue;
           }
-        });
-        optContainer.appendChild(btn);
-      });
-    }
-
-    // 觸發當前故事幕的專屬 3D 道具與動畫聯動 (Phase 4 核心重構)
-    function triggerStorySceneProp() {
-      const stepObj = LESSON_CONFIG.storySteps[state.storyStepIdx];
-      const modal = document.getElementById("storyActionModal");
-      const modalBody = document.getElementById("storyModalBody");
-      const imgEl = document.getElementById("storySceneImgEl");
-      const svgEl = document.getElementById("fireplaceSvg");
-      const fireGlow = document.getElementById("svgFireGlowCircle");
-      const unlitCover = document.getElementById("fireplaceUnlitCover");
-      const fogEl = document.getElementById("blizzardFogOverlay");
-
-      triggerBurstParticles();
-
-      if (stepObj.step === 1) {
-        // 第 1 幕（序曲）：信件啟程
-        playSfx("click");
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 2) {
-        // 第 2 幕（啟程/冒險背包）：觸發背包物品欄彈出與物品收集光效
-        playSfx("flint_steel");
-        playSfx("ding");
-        triggerBurstParticles(undefined, undefined, "#facc15");
-        modalBody.innerHTML = `
-          <div class="mb-2 text-sm sm:text-base">${stepObj.actionOverlayBody}</div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-            <div class="backpack-glow-slot rounded-2xl p-2.5 text-center flex flex-col items-center justify-center">
-              <span class="text-3xl">⚡</span>
-              <span class="font-black text-amber-300 text-xs sm:text-sm mt-1">打火石</span>
-              <span class="text-[11px] text-amber-100/90 font-mono">flint & steel</span>
-              <span class="mt-1 px-1.5 py-0.5 rounded bg-lime-500/80 text-black text-[10px] font-black">已裝備</span>
-            </div>
-            <div class="backpack-glow-slot rounded-2xl p-2.5 text-center flex flex-col items-center justify-center">
-              <span class="text-3xl">🧭</span>
-              <span class="font-black text-amber-300 text-xs sm:text-sm mt-1">指南針</span>
-              <span class="text-[11px] text-amber-100/90 font-mono">compass</span>
-              <span class="mt-1 px-1.5 py-0.5 rounded bg-lime-500/80 text-black text-[10px] font-black">已裝備</span>
-            </div>
-            <div class="backpack-glow-slot rounded-2xl p-2.5 text-center flex flex-col items-center justify-center">
-              <span class="text-3xl">🧥</span>
-              <span class="font-black text-amber-300 text-xs sm:text-sm mt-1">防寒大衣</span>
-              <span class="text-[11px] text-amber-100/90 font-mono">winter coat</span>
-              <span class="mt-1 px-1.5 py-0.5 rounded bg-lime-500/80 text-black text-[10px] font-black">已裝備</span>
-            </div>
-            <div class="backpack-glow-slot rounded-2xl p-2.5 text-center flex flex-col items-center justify-center">
-              <span class="text-3xl">🍎</span>
-              <span class="font-black text-amber-300 text-xs sm:text-sm mt-1">金蘋果</span>
-              <span class="text-[11px] text-amber-100/90 font-mono">golden apple</span>
-              <span class="mt-1 px-1.5 py-0.5 rounded bg-lime-500/80 text-black text-[10px] font-black">已裝備</span>
-            </div>
-          </div>
-        `;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 3) {
-        // 第 3 幕（密室/聖誕傳送門）：點亮傳送門紫色能量
-        playSfx("portal_hum");
-        imgEl.classList.add("portal-energized");
-        triggerBurstParticles(undefined, undefined, "#c084fc");
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 4) {
-        // 第 4 幕（傳送/時空蟲洞）：觸發粒子傳送門旋轉光環與空間扭曲著色
-        playSfx("portal_hum");
-        imgEl.classList.add("portal-distortion");
-        if (typeof triggerPortalVortex === "function") triggerPortalVortex();
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 5) {
-        // 第 5 幕（風雪/北歐松林）：啟動三維暴雪粒子流與環境霧效
-        state.heavySnow = true;
-        playSfx("radar_ping");
-        if (typeof playSfx === "function") playSfx("blizzard_wind");
-        if (typeof triggerBlizzardBurst === "function") triggerBlizzardBurst();
-        if (fogEl) fogEl.classList.remove("hidden");
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 6) {
-        // 第 6 幕（馴鹿/風雪松林拯救馴鹿）：雷達尋鹿聲效與單字提問
-        playSfx("radar_ping");
-        playSfx("ding");
-        triggerBurstParticles(undefined, undefined, "#38bdf8");
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 7) {
-        // 第 7 幕（木屋/點燃壁爐）：打火石生火與壁爐火焰煙囪特效
-        state.cabinFireplaceLit = true;
-        svgEl.classList.remove("hidden");
-        svgEl.setAttribute("class", "absolute inset-0 w-full h-full block cabin-warm-lit");
-        if (fireGlow) fireGlow.style.opacity = "1";
-        if (unlitCover) unlitCover.style.opacity = "0";
-        playSfx("flint_steel");
-        setTimeout(() => playSfx("fire_crackle"), 350);
-        playSfx("ding");
-        if (typeof triggerFireplaceSparks === "function") triggerFireplaceSparks();
-        if (typeof triggerChimneySmoke === "function") triggerChimneySmoke();
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      } else if (stepObj.step === 8) {
-        // 第 8 幕（慶典/聖誕派對）：觸發全景彩帶紙屑（Confetti）與聖誕樹閃爍
-        playSfx("fanfare");
-        playSfx("party_horn");
-        playSfx("anvil_craft");
-        if (typeof triggerConfetti === "function") triggerConfetti();
-        svgEl.classList.add("tree-sparkle-active");
-        LESSON_CONFIG.words.forEach(w => state.unlockedIds.add(w.id));
-        updateSceneAndStars();
-        modalBody.textContent = stepObj.actionOverlayBody;
-        renderStoryQuiz(stepObj);
-      }
-
-      document.getElementById("storyModalTitle").textContent = stepObj.actionOverlayTitle;
-      modal.classList.remove("hidden");
-      showToast(stepObj.actionToast, "✨", true);
-    }
-    // =========================================================================
-    // 【階段 2：Words & Craft 升級單字・擬音自然發音 (ttsChunks)・合成台與介系詞】
-    // =========================================================================
-    function openVoxelZoomBox(wordId, autoSpeakRate = null) {
-      state.focusedWordId = wordId;
-      const item = getWordObj(wordId);
-      const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
-
-      document.getElementById("cultureCompareBoard").classList.add("hidden");
-      const zoomBox = document.getElementById("voxelZoomBox");
-      document.getElementById("zoomGrammarBadge").textContent = `📍 ${item.grammarTag}`;
-      document.getElementById("zoomBoxImg").src = assets[item.thumbKey] || "";
-      document.getElementById("zoomWordZh").textContent = `${item.emoji} ${item.zh}`;
-      document.getElementById("zoomAltWordBadge").textContent = item.baseWord;
-
-      // 渲染音節高亮單字
-      const colors = ["text-yellow-300", "text-lime-300", "text-sky-300", "text-pink-300"];
-      document.getElementById("zoomGiantWord").innerHTML = item.chunks
-        .map((ch, idx) => `<span class="${colors[idx % colors.length]}">${ch}</span>`)
-        .join("");
-
-      // 渲染可點擊的音節方塊按鈕（使用 ttsChunks 發出正確自然發音，避免唸出字母名）
-      const chunksRow = document.getElementById("zoomChunksRow");
-      chunksRow.innerHTML = "";
-      item.chunks.forEach((ch, idx) => {
-        const ttsSound = (item.ttsChunks && item.ttsChunks[idx]) ? item.ttsChunks[idx] : ch;
-        const btn = document.createElement("button");
-        btn.className = "px-2.5 py-1 rounded-lg bg-black/80 hover:bg-amber-400 hover:text-red-950 border-2 border-amber-300 font-black text-base sm:text-lg text-white transition mc-btn";
-        btn.textContent = ch;
-        btn.title = "點擊聽自然發音";
-        btn.addEventListener("click", () => {
-          playSfx("click");
-          speakText(ttsSound, LESSON_CONFIG.speechRateSlow);
-        });
-        chunksRow.appendChild(btn);
-      });
-
-      document.getElementById("zoomPhonicsNote").textContent = item.phonicsNote;
-      document.getElementById("zoomPrepBadge").textContent = `介系詞：${item.prepZh}`;
-      document.getElementById("zoomQaQuestion").textContent = `Q: ${item.qaQ}`;
-      document.getElementById("zoomQaAnswer").innerHTML = `A: ${item.qaAHtml}`;
-
-      zoomBox.classList.remove("hidden");
-      updateSceneAndStars();
-
-      if (autoSpeakRate !== null) {
-        speakText(`${item.word}. ${item.qaASpeak}`, autoSpeakRate);
-      }
-    }
-
-    function renderWordsStage(autoSpeak = false) {
-      document.getElementById("storySceneImgWrapper").classList.add("hidden");
-      document.getElementById("fireplaceSvg").classList.remove("hidden");
-      document.getElementById("cultureCompareBoard").classList.add("hidden");
-
-      // 更新左側 3 個子模式按鈕樣式
-      const subBtns = [
-        { id: "wordsSubModeLearnBtn", mode: "learn" },
-        { id: "wordsSubModeSpellBtn", mode: "spell" },
-        { id: "wordsSubModePrepBtn", mode: "prep" }
-      ];
-      subBtns.forEach(b => {
-        const el = document.getElementById(b.id);
-        const active = state.wordsSubMode === b.mode;
-        el.className = active
-          ? "py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950 ring-2 ring-yellow-200"
-          : "py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]";
-      });
-
-      const zone = document.getElementById("wordsInteractiveZone");
-      zone.innerHTML = "";
-      const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
-
-      // 子模式 1：🔍 單字＆句型特寫（7 張升級單字圖卡列）
-      if (state.wordsSubMode === "learn") {
-        document.getElementById("promptStepBadge").textContent = "🔤 Words & Grammar · 升級單字、音節拆解與單複數空間句型";
-        document.getElementById("promptLineA").textContent = "Click a block! Practice Phonics & 'Where is / Where are...?'";
-        document.getElementById("promptLineB").classList.add("hidden");
-        document.getElementById("promptSubZh").textContent = "點選下方 7 張圖卡，帶全班練習自然發音音節拆解，以及單數 (It's) 與複數 (They're) 的空間介系詞問答！";
-
-        const grid = document.createElement("div");
-        grid.className = "w-full grid grid-cols-7 gap-1.5 sm:gap-2.5";
-        LESSON_CONFIG.words.forEach(item => {
-          const active = state.focusedWordId === item.id;
-          const btn = document.createElement("button");
-          btn.className = `h-[118px] sm:h-[128px] rounded-2xl p-1.5 flex flex-col items-center justify-between transition mc-btn relative ${
-            active
-              ? "bg-amber-400 text-red-950 ring-4 ring-yellow-200 scale-[1.03]"
-              : "bg-[#38261a] hover:bg-[#4e3626] text-white"
-          }`;
-          btn.innerHTML = `
-            <span class="absolute top-1 left-1.5 text-xs sm:text-sm bg-black/70 px-1 rounded">${item.emoji}</span>
-            <span class="absolute top-1 right-1.5 text-[10px] sm:text-xs font-black px-1.5 py-0.2 rounded ${active ? "bg-red-950 text-amber-200" : "bg-emerald-900 text-lime-200"}">${item.prep}</span>
-            <img src="${assets[item.thumbKey] || ""}" alt="${item.word}" class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border-2 ${active ? "border-red-950" : "border-amber-300/70"} shadow mt-3" />
-            <span class="text-xs sm:text-base font-black leading-none tracking-tight truncate w-full text-center">${item.word}</span>
-            <span class="text-[10px] sm:text-xs font-bold ${active ? "text-red-900" : "text-amber-200"} truncate w-full text-center">${item.zh.split(" ")[0]}</span>
-          `;
-          btn.addEventListener("click", () => {
-            state.focusedWordId = item.id;
-            renderWordsStage(false);
-            openVoxelZoomBox(item.id, LESSON_CONFIG.speechRateNormal);
-          });
-          grid.appendChild(btn);
-        });
-        zone.appendChild(grid);
-        openVoxelZoomBox(state.focusedWordId, autoSpeak ? LESSON_CONFIG.speechRateNormal : null);
-        return;
-      }
-
-      // 闖關模式：找出下一個未解鎖單字
-      document.getElementById("voxelZoomBox").classList.add("hidden");
-      const remainingIdx = LESSON_CONFIG.words.findIndex(w => !state.unlockedIds.has(w.id));
-      if (remainingIdx === -1) {
-        state.unlockedIds.clear();
-        state.gameQueueIdx = 0;
-      } else {
-        state.gameQueueIdx = remainingIdx;
-      }
-      const target = LESSON_CONFIG.words[state.gameQueueIdx];
-
-      // 子模式 2：🔤 麥塊音節拼字合成台（不洩題頂部橫幅 ＋ 點擊合成槽可退回單一音節）
-      if (state.wordsSubMode === "spell") {
-        state.craftedChunks = [];
-        document.getElementById("promptStepBadge").textContent = `🔤 麥塊合成台拼字挑戰 (${state.unlockedIds.size + 1} / 7)`;
-        
-        // 實體音節槽位視覺鷹架引導
-        const slotCount = target.chunks.length;
-        const slotGuide = target.chunks.map((_, i) => `【方塊 ${i + 1}】`).join(" + ");
-        document.getElementById("promptLineA").textContent = `👂 Listen & Craft: ${target.emoji} "${target.zh}"  [ ${slotGuide} ]`;
-        document.getElementById("promptLineB").classList.add("hidden");
-        document.getElementById("promptSubZh").textContent = `請聽發音，將下方「${slotCount} 個音節磚」依序合成單字！（若拼錯，系統會保留正確方塊，僅退回放錯的方塊）`;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "w-full flex items-center justify-between gap-3 sm:gap-4 bg-black/55 p-3 rounded-2xl border-3 border-amber-400/60";
-
-        // 左：目標 3D 縮圖 + 發音鈕 + 放大版合成槽 (Crafting Slots)
-        const slotsArea = document.createElement("div");
-        slotsArea.className = "flex items-center gap-3 shrink-0";
-        slotsArea.innerHTML = `
-          <button id="spellListenTargetBtn" class="relative w-18 h-18 sm:w-22 sm:h-22 rounded-2xl border-4 border-amber-300 overflow-hidden shadow-xl shrink-0 group transition hover:scale-105" title="點擊重聽單字發音">
-            <img src="${assets[target.thumbKey] || ""}" alt="${target.zh}" class="w-full h-full object-cover" />
-            <span class="absolute inset-0 bg-black/35 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition">🔊</span>
-          </button>
-          <div>
-            <div class="text-xs sm:text-sm font-black text-amber-300 mb-1 flex items-center gap-1.5">
-              <span>⚒️ 麥塊合成槽</span>
-              <span class="text-[11px] text-amber-200/80 font-bold">（點擊已填入格子可退回）</span>
-            </div>
-            <div id="craftingSlotsRow" class="flex items-center gap-2"></div>
-          </div>
-        `;
-
-        // 中：大屏寬敞音節方塊池 (含干擾音節)
-        const poolArea = document.createElement("div");
-        poolArea.id = "craftingPoolRow";
-        poolArea.className = "flex-1 flex items-center justify-center gap-2.5 sm:gap-3 flex-wrap";
-
-        // 右：視覺提示與清空重拼鈕組
-        const btnCol = document.createElement("div");
-        btnCol.className = "flex flex-col gap-2 shrink-0";
-
-        const hintBtn = document.createElement("button");
-        hintBtn.id = "spellHintBtn";
-        hintBtn.className = "h-[42px] sm:h-[46px] px-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5 shadow-lg";
-        hintBtn.innerHTML = "💡 視覺提示";
-        hintBtn.title = "在 3D 木屋閃示目標物件 1 秒鐘 (不洩漏英文拼字)";
-        hintBtn.addEventListener("click", () => triggerFlashHint(target));
-
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "h-[42px] sm:h-[46px] px-3.5 rounded-xl bg-rose-900/85 hover:bg-rose-800 text-rose-100 font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5";
-        clearBtn.innerHTML = "🔄 清空";
-        clearBtn.addEventListener("click", () => renderWordsStage(false));
-
-        btnCol.appendChild(hintBtn);
-        btnCol.appendChild(clearBtn);
-
-        wrapper.appendChild(slotsArea);
-        wrapper.appendChild(poolArea);
-        wrapper.appendChild(btnCol);
-        zone.appendChild(wrapper);
-
-        document.getElementById("spellListenTargetBtn").addEventListener("click", () => {
-          speakText(target.word, LESSON_CONFIG.speechRateSlow);
-        });
-
-        // 洗牌音節方塊池 (自然音節 + 干擾音節)
-        const rawPool = [
-          ...target.chunks.map((ch, idx) => ({
-            text: ch,
-            tts: (target.ttsChunks && target.ttsChunks[idx]) ? target.ttsChunks[idx] : ch
-          })),
-          ...target.distractorChunks.slice(0, 2).map(ch => ({ text: ch, tts: ch }))
-        ];
-        const shift = (state.gameQueueIdx + 1) % rawPool.length;
-        const shuffledPool = rawPool.slice(shift).concat(rawPool.slice(0, shift));
-        const poolButtons = [];
-
-        // 刷新大屏合成槽 UI (加大尺寸、支援紅綠燈回饋標記)
-        function refreshCraftingSlotsUI(validationStates = null) {
-          const slotsRow = document.getElementById("craftingSlotsRow");
-          if (!slotsRow) return;
-          slotsRow.innerHTML = "";
-
-          target.chunks.forEach((correctChunk, slotIdx) => {
-            const entry = state.craftedChunks[slotIdx];
-            const slotBtn = document.createElement("button");
-            
-            // 判斷回饋狀態 (null: 一般, true: 綠燈正確, false: 紅燈錯誤)
-            let colorClasses = "mc-slot-dark text-amber-200/40 cursor-default border-3 border-[#6e4c34]";
-            if (entry) {
-              if (validationStates && validationStates[slotIdx] === true) {
-                colorClasses = "bg-emerald-600 text-white border-4 border-lime-300 shadow-[0_0_15px_rgba(74,222,128,0.8)]";
-              } else if (validationStates && validationStates[slotIdx] === false) {
-                colorClasses = "bg-rose-600 text-white border-4 border-red-300 shadow-[0_0_15px_rgba(244,63,94,0.8)]";
-              } else {
-                colorClasses = "bg-amber-400 hover:bg-amber-300 text-red-950 border-4 border-yellow-200 shadow cursor-pointer";
-              }
-            }
-
-            // 大屏專用觸控熱區：寬 76px~92px，高 64px~76px
-            slotBtn.className = `px-3 h-16 sm:h-20 min-w-[76px] sm:min-w-[92px] rounded-2xl flex flex-col items-center justify-center font-black text-xl sm:text-3xl transition-all ${colorClasses}`;
-            
-            if (entry) {
-              slotBtn.innerHTML = `
-                <span>${entry.text}</span>
-                <span class="text-[10px] text-red-950/70 font-bold">✕ 退回</span>
-              `;
-              slotBtn.title = "點擊退回這個音節方塊";
-              slotBtn.addEventListener("click", () => {
-                playSfx("click");
-                const removed = state.craftedChunks.splice(slotIdx, 1)[0];
-                if (removed && poolButtons[removed.poolIndex]) {
-                  poolButtons[removed.poolIndex].disabled = false;
-                  poolButtons[removed.poolIndex].classList.remove("opacity-30", "pointer-events-none");
-                }
-                refreshCraftingSlotsUI();
-              });
-            } else {
-              slotBtn.innerHTML = `<span class="opacity-30 text-2xl">?</span>`;
-            }
-            slotsRow.appendChild(slotBtn);
-          });
+          snowCanvasCtx.fillStyle = b.color;
+          snowCanvasCtx.globalAlpha = Math.max(0, b.life);
+          snowCanvasCtx.fillRect(b.x, b.y, b.size, b.size);
+          snowCanvasCtx.globalAlpha = 1.0;
         }
 
-        // 產生待選音節方塊池 (熱區加大、觸控高反饋)
-        shuffledPool.forEach((chunkObj, poolIdx) => {
-          const cBtn = document.createElement("button");
-          // 大屏專用按鈕高度與字型尺寸
-          cBtn.className = "h-16 sm:h-20 px-5 sm:px-6 rounded-2xl bg-[#38261a] hover:bg-[#4e3626] border-4 border-amber-300 text-white font-black text-2xl sm:text-3xl mc-btn shadow-lg transition active:scale-95";
-          cBtn.textContent = chunkObj.text;
-          poolButtons.push(cBtn);
-
-          cBtn.addEventListener("click", () => {
-            if (state.craftedChunks.length >= target.chunks.length) return;
-            playSfx("click");
-            
-            // 點擊音節時：發出標準清晰自然發音
-            speakText(chunkObj.tts, LESSON_CONFIG.speechRateSlow);
-
-            state.craftedChunks.push({ text: chunkObj.text, poolIndex: poolIdx });
-            cBtn.disabled = true;
-            cBtn.classList.add("opacity-30", "pointer-events-none");
-            refreshCraftingSlotsUI();
-
-            // 當所有合成槽填滿時：執行診斷式紅綠燈檢查
-            if (state.craftedChunks.length === target.chunks.length) {
-              const validationStates = state.craftedChunks.map((item, i) => item.text === target.chunks[i]);
-              const isAllCorrect = validationStates.every(v => v === true);
-
-              // 立即渲染紅綠燈回饋邊框
-              refreshCraftingSlotsUI(validationStates);
-
-              if (isAllCorrect) {
-                handleQuizSuccess(target, "words");
-              } else {
-                playSfx("oops");
-                speakText(`Listen: ${target.word}. Try again!`, LESSON_CONFIG.speechRateSlow);
-                showToast(`部分方塊放錯囉！已為您保留正確的綠燈方塊，請補齊放錯的方塊！`, "💡", false);
-
-                // 800ms 後自動把「放錯的紅燈方塊」彈回待選池，保留「放對的綠燈方塊」！
-                setTimeout(() => {
-                  for (let i = state.craftedChunks.length - 1; i >= 0; i--) {
-                    if (validationStates[i] === false) {
-                      const wrongItem = state.craftedChunks.splice(i, 1)[0];
-                      if (wrongItem && poolButtons[wrongItem.poolIndex]) {
-                        poolButtons[wrongItem.poolIndex].disabled = false;
-                        poolButtons[wrongItem.poolIndex].classList.remove("opacity-30", "pointer-events-none");
-                      }
-                    }
-                  }
-                  refreshCraftingSlotsUI();
-                }, 850);
-              }
-            }
-          });
-          poolArea.appendChild(cBtn);
-        });
-
-        refreshCraftingSlotsUI();
-        updateSceneAndStars();
-        if (autoSpeak) speakText(target.word, LESSON_CONFIG.speechRateNormal);
+        requestAnimationFrame(step);
       }
 
-      // 子模式 3：📍 空間介系詞與單複數問答挑戰
-      else if (state.wordsSubMode === "prep") {
-        document.getElementById("promptStepBadge").textContent = `📍 空間位置問答挑戰 (${state.unlockedIds.size + 1} / 7)`;
-        document.getElementById("promptLineA").textContent = `${target.qaQ}`;
-        document.getElementById("promptLineB").classList.remove("hidden");
-        document.getElementById("promptLineB").innerHTML = target.qaAHtml.replace(/<span[^>]*>[^<]+<\/span>/, "<span class='text-yellow-300 underline font-black px-2 bg-black/40 rounded'>[ ? ]</span>");
-        document.getElementById("promptSubZh").textContent = `觀察 3D 木屋畫面：「${target.zh} (${target.word})」在哪裡？請選擇正確的空間介系詞！`;
+      requestAnimationFrame(step);
+    }
 
-        const ALL_PREPOSITIONS = [
-          { prep: "by", icon: "◀️", zh: "在…旁邊 (by)" },
-          { prep: "around", icon: "🔄", zh: "圍繞在…周圍 (around)" },
-          { prep: "on", icon: "🔼", zh: "在…上面 (on)" },
-          { prep: "at the top of", icon: "⭐", zh: "在…頂端 (at the top of)" },
-          { prep: "above", icon: "⬆️", zh: "在…正上方 (above)" },
-          { prep: "under", icon: "🔽", zh: "在…下方 (under)" },
-          { prep: "in front of", icon: "🧍", zh: "在…正前方 (in front of)" }
-        ];
+    function triggerBurstParticles(originX, originY, baseColor = "#facc15") {
+      const canvas = snowCanvasEl || document.getElementById("snowCanvas");
+      if (!canvas) return;
 
-        // 取得當前題目的正確介系詞
-        const correctPrepObj = ALL_PREPOSITIONS.find(p => p.prep === target.prep) || {
-          prep: target.prep,
-          icon: "📍",
-          zh: target.prepZh || target.prep
-        };
+      const cx = originX !== undefined ? originX : canvas.width * 0.5;
+      const cy = originY !== undefined ? originY : canvas.height * 0.5;
 
-        // 從其餘介系詞中隨機取出 2 個干擾項
-        const distractors = ALL_PREPOSITIONS.filter(p => p.prep !== target.prep);
-        const shuffledDistractors = [...distractors].sort(() => Math.random() - 0.5).slice(0, 2);
-
-        // 合併正確答案與干擾項並洗牌成 3 個按鈕
-        const prepOptions = [correctPrepObj, ...shuffledDistractors].sort(() => Math.random() - 0.5);
-
-        const grid = document.createElement("div");
-        grid.className = "w-full grid grid-cols-3 gap-3 sm:gap-4";
-        prepOptions.forEach(opt => {
-          const btn = document.createElement("button");
-          btn.className = "h-[115px] sm:h-[125px] rounded-2xl bg-[#38261a] hover:bg-[#4e3626] border-4 border-lime-300/80 px-2 sm:px-4 py-2 flex items-center justify-center gap-2 sm:gap-3 mc-btn shadow-xl transition-all";
-          btn.innerHTML = `
-            <span class="text-3xl sm:text-5xl flex-shrink-0">${opt.icon}</span>
-            <div class="text-left overflow-hidden">
-              <div class="text-xl sm:text-3xl lg:text-4xl font-black text-yellow-300 leading-tight truncate">${opt.prep}</div>
-              <div class="text-xs sm:text-sm font-bold text-white mt-1 line-clamp-1">${opt.zh}</div>
-            </div>
-          `;
-          btn.addEventListener("click", () => {
-            if (opt.prep === target.prep) {
-              handleQuizSuccess(target, "words");
-            } else {
-              playSfx("oops");
-              btn.classList.add("opacity-45", "border-rose-400");
-              speakText(`Try again! ${target.qaQ}`, LESSON_CONFIG.speechRateSlow);
-              showToast(`再觀察一下畫面喔！提示：${target.prepZh}`, "👀", false);
-            }
-          });
-          grid.appendChild(btn);
+      const colors = [baseColor, "#38bdf8", "#4ade80", "#ffffff", "#f43f5e"];
+      for (let i = 0; i < 35; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5.5 + 2.0;
+        burstList.push({
+          x: cx,
+          y: cy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2.5,
+          size: Math.floor(Math.random() * 6) + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.0
         });
-        zone.appendChild(grid);
-        updateSceneAndStars();
-        if (autoSpeak) speakText(target.qaQ, LESSON_CONFIG.speechRateNormal);
       }
     }
 
-    // =========================================================================
-    // 【階段 3：World Culture 7 國聖誕文化與台灣比較專區】
-    // =========================================================================
-    function openCultureCompareBoard(wordId, autoSpeakRate = null) {
-      state.focusedWordId = wordId;
-      const item = getWordObj(wordId);
-      const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
+    function triggerConfetti() {
+      playSfx("fanfare");
+      playSfx("party_horn");
+      const canvas = snowCanvasEl || document.getElementById("snowCanvas");
+      if (!canvas) return;
 
-      document.getElementById("voxelZoomBox").classList.add("hidden");
-      const board = document.getElementById("cultureCompareBoard");
-      document.getElementById("cultureBoardFlag").textContent = item.culture.flag;
-      document.getElementById("cultureBoardTitle").textContent = item.culture.title;
-      document.getElementById("cultureBoardThumb").src = assets[item.thumbKey] || "";
-      document.getElementById("cultureBoardEnSentence").textContent = `"${item.culture.enSentence}"`;
-      document.getElementById("cultureBoardForeignText").textContent = item.culture.foreignFact;
-      document.getElementById("cultureBoardTaiwanText").textContent = item.culture.taiwanCompare;
-
-      board.classList.remove("hidden");
-      updateSceneAndStars();
-
-      if (autoSpeakRate !== null) {
-        speakText(item.culture.enSentence, autoSpeakRate);
+      const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6", "#facc15"];
+      for (let i = 0; i < 90; i++) {
+        burstList.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height * 0.2 + Math.random() * 50,
+          vx: (Math.random() - 0.5) * 8,
+          vy: Math.random() * -6 - 2,
+          size: Math.floor(Math.random() * 8) + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.5
+        });
       }
     }
 
-    function renderCultureStage(autoSpeak = false) {
-      document.getElementById("storySceneImgWrapper").classList.add("hidden");
-      document.getElementById("fireplaceSvg").classList.remove("hidden");
-      document.getElementById("voxelZoomBox").classList.add("hidden");
-
-      const isExplore = state.cultureSubMode === "explore";
-      document.getElementById("cultureSubModeExploreBtn").className = isExplore
-        ? "py-3 px-3 rounded-xl font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 bg-amber-400 text-red-950 ring-2 ring-yellow-200"
-        : "py-3 px-3 rounded-xl font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 bg-[#38261a] text-amber-200 hover:bg-[#4e3626]";
-      document.getElementById("cultureSubModeQuizBtn").className = !isExplore
-        ? "py-3 px-3 rounded-xl font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 bg-amber-400 text-red-950 ring-2 ring-yellow-200"
-        : "py-3 px-3 rounded-xl font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 bg-[#38261a] text-amber-200 hover:bg-[#4e3626]";
-
-      const zone = document.getElementById("cultureInteractiveZone");
-      zone.innerHTML = "";
-      const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
-
-      // 子模式 1：🌍 7 國文化探索看板
-      if (isExplore) {
-        document.getElementById("promptStepBadge").textContent = "🌍 World Culture · 7 國聖誕習俗與台灣在地比較";
-        document.getElementById("promptLineA").textContent = "Explore 7 Countries! Compare World Traditions with Taiwan!";
-        document.getElementById("promptLineB").classList.add("hidden");
-        document.getElementById("promptSubZh").textContent = "點選下方 7 個國家的聖誕方塊，對照「外國傳統由來」與「台灣在地生活差異」！";
-
-        const grid = document.createElement("div");
-        grid.className = "w-full grid grid-cols-7 gap-1.5 sm:gap-2.5";
-        LESSON_CONFIG.words.forEach(item => {
-          const active = state.focusedWordId === item.id;
-          const btn = document.createElement("button");
-          btn.className = `h-[118px] sm:h-[128px] rounded-2xl p-1.5 flex flex-col items-center justify-between transition mc-btn relative ${
-            active
-              ? "bg-amber-400 text-red-950 ring-4 ring-yellow-200 scale-[1.03]"
-              : "bg-[#38261a] hover:bg-[#4e3626] text-white"
-          }`;
-          btn.innerHTML = `
-            <span class="text-xl sm:text-2xl leading-none">${item.culture.flag}</span>
-            <img src="${assets[item.thumbKey] || ""}" alt="${item.word}" class="w-11 h-11 sm:w-13 sm:h-13 rounded-xl object-cover border-2 ${active ? "border-red-950" : "border-amber-300/70"} shadow" />
-            <span class="text-xs sm:text-sm font-black leading-none truncate w-full text-center">${item.culture.country.split(" ")[0]}</span>
-            <span class="text-[11px] font-bold ${active ? "text-red-900" : "text-sky-300"} truncate w-full text-center">${item.word}</span>
-          `;
-          btn.addEventListener("click", () => {
-            state.focusedWordId = item.id;
-            renderCultureStage(false);
-            openCultureCompareBoard(item.id, LESSON_CONFIG.speechRateNormal);
-          });
-          grid.appendChild(btn);
+    function triggerPortalVortex() {
+      const canvas = snowCanvasEl || document.getElementById("snowCanvas");
+      if (!canvas) return;
+      const cx = canvas.width * 0.5;
+      const cy = canvas.height * 0.5;
+      const colors = ["#a855f7", "#c084fc", "#e879f9", "#38bdf8", "#818cf8", "#ffffff"];
+      for (let i = 0; i < 75; i++) {
+        const angle = (i / 75) * Math.PI * 2 + Math.random() * 0.2;
+        const speed = Math.random() * 4.2 + 2.5;
+        burstList.push({
+          x: cx + Math.cos(angle) * (20 + Math.random() * 35),
+          y: cy + Math.sin(angle) * (20 + Math.random() * 35),
+          vx: -Math.sin(angle) * speed + (Math.random() - 0.5),
+          vy: Math.cos(angle) * speed + (Math.random() - 0.5),
+          size: Math.floor(Math.random() * 7) + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.3
         });
-        zone.appendChild(grid);
-        openCultureCompareBoard(state.focusedWordId, autoSpeak ? LESSON_CONFIG.speechRateNormal : null);
       }
-      // 子模式 2：🎯 國際文化搶答挑戰
-      else {
-        document.getElementById("cultureCompareBoard").classList.add("hidden");
-        const remainingIdx = LESSON_CONFIG.words.findIndex(w => !state.unlockedIds.has(w.id));
-        if (remainingIdx === -1) {
-          state.unlockedIds.clear();
-          state.gameQueueIdx = 0;
-        } else {
-          state.gameQueueIdx = remainingIdx;
-        }
-        const target = LESSON_CONFIG.words[state.gameQueueIdx];
+    }
 
-        document.getElementById("promptStepBadge").textContent = `🎯 國際文化搶答 (${state.unlockedIds.size + 1} / 7) · ${target.culture.country}`;
-        document.getElementById("promptLineA").textContent = target.culture.quizQEn;
-        document.getElementById("promptLineB").classList.add("hidden");
-        document.getElementById("promptSubZh").textContent = target.culture.quizQZh;
-
-        const distractors = LESSON_CONFIG.words.filter(w => w.id !== target.id);
-        const shift = (state.gameQueueIdx * 2 + 1) % distractors.length;
-        const choices = [
-          target,
-          distractors[shift % distractors.length],
-          distractors[(shift + 2) % distractors.length]
-        ];
-        const rot = (state.gameQueueIdx + 1) % choices.length;
-        const rotated = choices.slice(rot).concat(choices.slice(0, rot));
-
-        const grid = document.createElement("div");
-        grid.className = "w-full grid grid-cols-3 gap-3 sm:gap-4";
-        rotated.forEach(choice => {
-          const btn = document.createElement("button");
-          btn.className = "h-[115px] sm:h-[125px] rounded-2xl bg-[#38261a] hover:bg-[#4e3626] border-4 border-amber-300/80 px-3 py-2 flex items-center justify-center gap-3 mc-btn shadow-xl";
-          btn.innerHTML = `
-            <img src="${assets[choice.thumbKey] || ""}" alt="${choice.word}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border-2 border-amber-300 shrink-0" />
-            <div class="text-left min-w-0">
-              <div class="text-xs sm:text-sm font-black text-sky-300">${choice.culture.flag} ${choice.culture.country.split(" ")[0]}</div>
-              <div class="text-xl sm:text-3xl font-black text-white leading-tight my-0.5 truncate">${choice.word}</div>
-              <div class="text-xs sm:text-sm font-bold text-amber-300 truncate">${choice.emoji} ${choice.zh}</div>
-            </div>
-          `;
-          btn.addEventListener("click", () => {
-            if (choice.id === target.id) {
-              handleQuizSuccess(target, "culture");
-            } else {
-              playSfx("oops");
-              btn.classList.add("opacity-45", "border-rose-400");
-              speakText(`Try again! ${target.culture.enSentence}`, LESSON_CONFIG.speechRateSlow);
-              showToast(`再想一下喔！提示：${target.culture.country} · ${target.zh}`, "🌍", false);
-            }
-          });
-          grid.appendChild(btn);
+    function triggerBlizzardBurst() {
+      const canvas = snowCanvasEl || document.getElementById("snowCanvas");
+      if (!canvas) return;
+      const colors = ["#ffffff", "#f0f9ff", "#e0f2fe", "#bae6fd", "#7dd3fc"];
+      for (let i = 0; i < 110; i++) {
+        burstList.push({
+          x: canvas.width + Math.random() * 120,
+          y: Math.random() * canvas.height,
+          vx: -(Math.random() * 14 + 8),
+          vy: Math.random() * 3.5 + 1.2,
+          size: Math.floor(Math.random() * 6) + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.4
         });
-        zone.appendChild(grid);
-        updateSceneAndStars();
-        if (autoSpeak) speakText(target.culture.enSentence, LESSON_CONFIG.speechRateNormal);
+      }
+    }
+
+    function triggerFireplaceSparks() {
+      const canvas = snowCanvasEl || document.getElementById("snowCanvas");
+      if (!canvas) return;
+      const fx = canvas.width * 0.725;
+      const fy = canvas.height * 0.73;
+      const colors = ["#f97316", "#ef4444", "#fde047", "#fbbf24", "#ea580c"];
+      for (let i = 0; i < 55; i++) {
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2;
+        const speed = Math.random() * 5.2 + 2.2;
+        burstList.push({
+          x: fx + (Math.random() - 0.5) * 40,
+          y: fy + (Math.random() - 0.5) * 20,
+          vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.5,
+          vy: Math.sin(angle) * speed,
+          size: Math.floor(Math.random() * 5) + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.15
+        });
+      }
+    }
+
+    function triggerChimneySmoke() {
+      const canvas = snowCanvasEl || document.getElementById("snowCanvas");
+      if (!canvas) return;
+      const cx = canvas.width * 0.725;
+      const cy = canvas.height * 0.28;
+      const colors = ["rgba(203, 213, 225, 0.75)", "rgba(148, 163, 184, 0.65)", "rgba(241, 245, 249, 0.8)"];
+      for (let i = 0; i < 35; i++) {
+        burstList.push({
+          x: cx + (Math.random() - 0.5) * 25,
+          y: cy + (Math.random() - 0.5) * 15,
+          vx: (Math.random() - 0.2) * 1.6,
+          vy: -(Math.random() * 2.8 + 1.2),
+          size: Math.floor(Math.random() * 10) + 7,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 1.5
+        });
       }
     }
 
     function showToast(text, emoji, isSuccess) {
       const toast = document.getElementById("gameToastBanner");
+      if (!toast) return;
       document.getElementById("gameToastEmoji").textContent = emoji;
       document.getElementById("gameToastText").textContent = text;
       toast.className = `absolute bottom-3 left-1/2 -translate-x-1/2 z-30 px-6 py-2.5 rounded-2xl border-4 font-black text-base sm:text-2xl shadow-2xl flex items-center gap-3 ${
@@ -3139,7 +1344,6 @@ function getWordObj(id) {
       playSfx("ding");
       triggerBurstParticles();
 
-      // 闖關成功時在 3D 木屋給予物件金色光芒獎勵，不開啟常駐特寫大板遮擋下一題
       const layerEl = document.getElementById(`voxel-layer-${target.id}`);
       if (layerEl) {
         layerEl.classList.add("voxel-hint-highlight");
@@ -3147,23 +1351,30 @@ function getWordObj(id) {
       }
 
       if (sourceStage === "culture") {
-        speakText(`Awesome! ${target.culture.enSentence}`, LESSON_CONFIG.speechRateNormal);
+        (async () => {
+          await speakText("Awesome!", LESSON_CONFIG.speechRateNormal);
+          await new Promise(r => setTimeout(r, 380));
+          await speakText(target.culture.enSentence, LESSON_CONFIG.speechRateNormal);
+        })();
       } else {
-        speakText(`Great job! ${target.word}!`, LESSON_CONFIG.speechRateNormal);
+        (async () => {
+          await speakText("Great job!", LESSON_CONFIG.speechRateNormal);
+          await new Promise(r => setTimeout(r, 380));
+          await speakText(target.word, LESSON_CONFIG.speechRateNormal);
+        })();
       }
 
       showToast(`合成成功！${target.culture.flag} ${target.word} (${target.zh}) 已放進木屋！`, "🌟", true);
 
       setTimeout(() => {
         if (state.unlockedIds.size === LESSON_CONFIG.words.length) {
-          playSfx("carol");
+          playSfx("fanfare");
           if (sourceStage === "words") {
             switchStage("culture");
           } else {
             switchStage("party");
           }
         } else {
-          // 下一題切換保持安靜不自動朗讀，由老師掌控教學步調
           if (sourceStage === "culture") {
             renderCultureStage(false);
           } else {
@@ -3173,78 +1384,20 @@ function getWordObj(id) {
       }, 1600);
     }
 
-    // =========================================================================
-    // 【階段 4：Party 5 國語言聖誕快樂祝福 ＆ 雙隊隨機抽題 PK】
-    // =========================================================================
-    function renderPartyGreetings() {
-      const grid = document.getElementById("partyGreetingsGrid");
-      grid.innerHTML = "";
-      LESSON_CONFIG.globalGreetings.forEach(g => {
-        const btn = document.createElement("button");
-        btn.className = "py-2 px-2 rounded-xl bg-[#38261a] hover:bg-amber-400 hover:text-red-950 text-white border-2 border-amber-300/60 transition flex flex-col items-center justify-center mc-btn";
-        btn.innerHTML = `
-          <span class="text-sm sm:text-base font-black">${g.flag} ${g.country.split(" ")[0]}</span>
-          <span class="text-xs sm:text-sm font-black text-yellow-300 truncate w-full text-center">${g.phrase}</span>
-        `;
-        btn.addEventListener("click", () => {
-          triggerBurstParticles();
-          speakText(g.speakText, 0.9, g.lang, g.role);
-          document.getElementById("promptStepBadge").textContent = `🌍 世界聖誕祝福語 · ${g.country}`;
-          document.getElementById("promptLineA").textContent = `${g.flag} "${g.phrase}" (${g.phonetic})`;
-          document.getElementById("promptSubZh").textContent = `點擊上方 🔴 Redstone 或 🟢 Emerald 的「+1」按鈕，幫大聲唸出來的小組加分！`;
-        });
-        grid.appendChild(btn);
-      });
-    }
-
-    function runRandomPkSpinner() {
-      let ticks = 0;
-      const maxTicks = 10;
-      const timer = setInterval(() => {
-        const randItem = LESSON_CONFIG.words[Math.floor(Math.random() * LESSON_CONFIG.words.length)];
-        state.focusedWordId = randItem.id;
-        updateSceneAndStars();
-        ticks++;
-        if (ticks >= maxTicks) {
-          clearInterval(timer);
-          playSfx("ding");
-          const challengeTypes = [
-            {
-              type: "🔤 音節拼字 PK (+1分)",
-              board: "words",
-              lineA: `🎲 PK Challenge: Spell "${randItem.zh}" (${randItem.chunks.length} chunks)!`,
-              subZh: `請兩隊搶答拼出「${randItem.chunks.join(" - ")}」！答對由老師點擊上方隊伍 +1 分！`
-            },
-            {
-              type: "📍 單複數空間句型 PK (+1分)",
-              board: "words",
-              lineA: `🎲 PK Challenge: ${randItem.qaQ}`,
-              subZh: `請用完整英文句子回答位置（注意 It's / They're 與 ${randItem.prep}）！答對 +1 分！`
-            },
-            {
-              type: "🌍 國際文化與台灣比較 PK (+2分)",
-              board: "culture",
-              lineA: `🎲 Culture PK: ${randItem.culture.flag} ${randItem.culture.enSentence}`,
-              subZh: `國際文化雙倍題：請說出「${randItem.zh}」在 ${randItem.culture.country} 的習俗與台灣有何不同！`
-            }
-          ];
-          const picked = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
-          if (picked.board === "culture") {
-            openCultureCompareBoard(randItem.id, LESSON_CONFIG.speechRateNormal);
-          } else {
-            openVoxelZoomBox(randItem.id, LESSON_CONFIG.speechRateNormal);
-          }
-          document.getElementById("promptStepBadge").textContent = picked.type;
-          document.getElementById("promptLineA").textContent = picked.lineA;
-          document.getElementById("promptLineB").classList.add("hidden");
-          document.getElementById("promptSubZh").textContent = picked.subZh;
-        }
-      }, 110);
-    }
-
-    // 切換 40 分鐘 4 階段教學流程
+    // ==========================================
+    // 階段導航切換 (Stage Switching)
+    // ==========================================
     function switchStage(newStage) {
       state.stage = newStage;
+      const revealBtn = document.getElementById("bannerRevealAnswerBtn");
+      if (revealBtn) revealBtn.classList.add("hidden");
+      currentPkAnswerRevealer = null;
+
+      // 切換出故事模式時，停止故事專屬情境背景音樂
+      if (newStage !== "story" && typeof stopStorySceneBgm === "function") {
+        stopStorySceneBgm();
+      }
+
       if (newStage !== "party" && fireworkShowInterval) {
         clearInterval(fireworkShowInterval);
         fireworkShowInterval = null;
@@ -3254,26 +1407,29 @@ function getWordObj(id) {
           snowBtn.querySelector("span:last-child").textContent = "慶祝煙火";
         }
       }
-      // 切換階段時立即關閉所有懸浮看板與彈窗，防擋到木屋畫面
+
       closeAllOverlays();
-      // 確保頂部題目橫幅恢復可見，讓師生清楚掌握新關卡指引
       document.getElementById("topPromptBanner")?.classList.remove("hidden");
       document.getElementById("reopenPromptBannerBtn")?.classList.add("hidden");
 
       const svgEl = document.getElementById("fireplaceSvg");
       const imgWrapper = document.getElementById("storySceneImgWrapper");
       if (newStage !== "story") {
-        imgWrapper.classList.add("hidden");
-        svgEl.classList.remove("hidden");
+        imgWrapper?.classList.add("hidden");
+        svgEl?.classList.remove("hidden");
       }
-      svgEl.setAttribute("class", `absolute inset-0 w-full h-full block cabin-warm-lit`);
-      document.getElementById("svgFireGlowCircle").style.opacity = "1";
-      const unlitCover = document.getElementById("fireplaceUnlitCover"); if (unlitCover) unlitCover.style.opacity = "0";
+      if (svgEl) {
+        svgEl.setAttribute("class", `absolute inset-0 w-full h-full block cabin-warm-lit`);
+      }
+      const fireGlow = document.getElementById("svgFireGlowCircle");
+      if (fireGlow) fireGlow.style.opacity = "1";
+      const unlitCover = document.getElementById("fireplaceUnlitCover");
+      if (unlitCover) unlitCover.style.opacity = "0";
 
-      document.getElementById("bottomDeckStory").classList.toggle("hidden", newStage !== "story");
-      document.getElementById("bottomDeckWords").classList.toggle("hidden", newStage !== "words");
-      document.getElementById("bottomDeckCulture").classList.toggle("hidden", newStage !== "culture");
-      document.getElementById("bottomDeckParty").classList.toggle("hidden", newStage !== "party");
+      document.getElementById("bottomDeckStory")?.classList.toggle("hidden", newStage !== "story");
+      document.getElementById("bottomDeckWords")?.classList.toggle("hidden", newStage !== "words");
+      document.getElementById("bottomDeckCulture")?.classList.toggle("hidden", newStage !== "culture");
+      document.getElementById("bottomDeckParty")?.classList.toggle("hidden", newStage !== "party");
 
       document.querySelectorAll(".stage-nav-btn").forEach(btn => {
         const isCurrent = btn.getAttribute("data-stage") === newStage;
@@ -3288,27 +1444,27 @@ function getWordObj(id) {
           hotspotsGroup.style.display = "none";
           hotspotsGroup.classList.add("hidden");
         }
-        renderStoryStage(false); // 切換不自動朗讀，由老師自行點擊
+        renderStoryStage(false);
       } else if (newStage === "words") {
         if (hotspotsGroup) {
           hotspotsGroup.style.display = "";
           hotspotsGroup.classList.remove("hidden");
         }
         state.heavySnow = false;
-        renderWordsStage(false); // 切換不自動朗讀
+        renderWordsStage(false);
       } else if (newStage === "culture") {
         if (hotspotsGroup) {
           hotspotsGroup.style.display = "";
           hotspotsGroup.classList.remove("hidden");
         }
         state.heavySnow = false;
-        renderCultureStage(false); // 切換不自動朗讀
+        renderCultureStage(false);
       } else if (newStage === "party") {
         if (hotspotsGroup) {
           hotspotsGroup.style.display = "none";
           hotspotsGroup.classList.add("hidden");
         }
-        document.getElementById("storySceneImgWrapper").classList.add("hidden");
+        document.getElementById("storySceneImgWrapper")?.classList.add("hidden");
         LESSON_CONFIG.words.forEach(w => state.unlockedIds.add(w.id));
         document.getElementById("promptStepBadge").textContent = "🎉 Party · 世界聖誕祝福與雙隊 PK 總決賽";
         document.getElementById("promptLineA").textContent = "Merry Christmas Around the World! 🌎🎄";
@@ -3319,273 +1475,183 @@ function getWordObj(id) {
       }
     }
 
-    // 像素雪花與慶祝粒子畫布
+    // ==========================================
+    // 方案 A 自由拖曳系統 (Bulletproof Draggable)
+    // ==========================================
+    function makeDraggable(panel, handle = null, container = null) {
+      if (!panel) return;
+      const dragHandle = handle || panel;
+      const parentContainer = container || panel.parentElement || document.querySelector("main") || document.body;
 
-// =========================================================================
-    // 教師 Azure AI 語音設定懸浮視窗控制器
-    // =========================================================================
-    let azureControllerInitialized = false;
+      let isDragging = false;
+      let startPointerX = 0;
+      let startPointerY = 0;
+      let startLeft = 0;
+      let startTop = 0;
 
-    function updateAzureModalUI() {
-      const statusBadge = document.getElementById("azureStatusBadge");
-      const apiKeyInput = document.getElementById("azureApiKeyInput");
-      const regionSelect = document.getElementById("azureRegionSelect");
-      const customRegionInput = document.getElementById("azureCustomRegionInput");
+      dragHandle.classList.add("drag-handle");
+      panel.classList.add("draggable-panel");
 
-      if (!statusBadge) return;
-
-      const hasKey = !!(azureConfig.apiKey && azureConfig.apiKey.trim());
-      const isEnabled = azureConfig.enabled && hasKey;
-      const currentRegion = getEffectiveAzureRegion();
-
-      if (isEnabled) {
-        statusBadge.className = "font-black px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-xs shadow";
-        statusBadge.textContent = `🟢 已啟用微軟 AI 語音 (${currentRegion})`;
-      } else if (hasKey) {
-        statusBadge.className = "font-black px-2.5 py-0.5 rounded-full bg-amber-600 text-white text-xs shadow";
-        statusBadge.textContent = `🟡 金鑰已儲存（未啟用）`;
-      } else {
-        statusBadge.className = "font-black px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-200 text-xs";
-        statusBadge.textContent = `⚪ 尚未設定金鑰（使用瀏覽器本機語音）`;
-      }
-
-      if (apiKeyInput) apiKeyInput.value = azureConfig.apiKey || "";
-
-      const standardRegions = ["eastasia", "southeastasia", "japaneast", "eastus", "westus"];
-      if (regionSelect) {
-        if (standardRegions.includes(azureConfig.region)) {
-          regionSelect.value = azureConfig.region;
-          customRegionInput?.classList.add("hidden");
-        } else if (azureConfig.region === "custom" || (azureConfig.region && !standardRegions.includes(azureConfig.region))) {
-          regionSelect.value = "custom";
-          if (customRegionInput) {
-            customRegionInput.value = azureConfig.customRegion || azureConfig.region || "";
-            customRegionInput.classList.remove("hidden");
-          }
-        } else {
-          regionSelect.value = "eastasia";
-          customRegionInput?.classList.add("hidden");
-        }
-      }
-    }
-
-    function initAzureSettingsController() {
-      loadAzureConfig();
-      updateAzureModalUI();
-
-      if (azureControllerInitialized) return;
-      azureControllerInitialized = true;
-
-      const modal = document.getElementById("azureSettingsModal");
-      const openBtn = document.getElementById("azureSettingsBtn");
-      const closeBtn = document.getElementById("closeAzureSettingsBtn");
-      const toggleKeyVisBtn = document.getElementById("toggleAzureKeyVisibilityBtn");
-      const keyInput = document.getElementById("azureApiKeyInput");
-      const regionSelect = document.getElementById("azureRegionSelect");
-      const customRegionInput = document.getElementById("azureCustomRegionInput");
-      const saveBtn = document.getElementById("saveAzureConfigBtn");
-      const clearBtn = document.getElementById("clearAzureConfigBtn");
-      const testConnBtn = document.getElementById("testAzureConnectionBtn");
-      const testSteveBtn = document.getElementById("testSteveVoiceBtn");
-      const testAlexBtn = document.getElementById("testAlexVoiceBtn");
-      const testSantaBtn = document.getElementById("testSantaVoiceBtn");
-      const feedbackEl = document.getElementById("azureTestFeedback");
-
-      if (openBtn) {
-        openBtn.addEventListener("click", () => {
-          playSfx("click");
-          updateAzureModalUI();
-          if (feedbackEl) feedbackEl.textContent = "";
-          modal?.classList.remove("hidden");
-        });
-      }
-
-      if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-          playSfx("click");
-          modal?.classList.add("hidden");
-        });
-      }
-
-      if (modal) {
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) {
-            playSfx("click");
-            modal.classList.add("hidden");
-          }
-        });
-      }
-
-      if (toggleKeyVisBtn && keyInput) {
-        toggleKeyVisBtn.addEventListener("click", () => {
-          const isPwd = keyInput.type === "password";
-          keyInput.type = isPwd ? "text" : "password";
-          toggleKeyVisBtn.textContent = isPwd ? "🙈" : "👁️";
-        });
-      }
-
-      if (regionSelect && customRegionInput) {
-        regionSelect.addEventListener("change", () => {
-          if (regionSelect.value === "custom") {
-            customRegionInput.classList.remove("hidden");
-            customRegionInput.focus();
-          } else {
-            customRegionInput.classList.add("hidden");
-          }
-        });
-      }
-
-      async function runVoiceSample(role, sampleText, roleName) {
-        const key = keyInput?.value?.trim() || azureConfig.apiKey?.trim();
-        const selReg = regionSelect?.value || azureConfig.region || "eastasia";
-        const custReg = customRegionInput?.value?.trim() || azureConfig.customRegion || "";
-        const reg = selReg === "custom" ? custReg : selReg;
-
-        if (!key) {
-          if (feedbackEl) {
-            feedbackEl.className = "text-xs font-bold text-rose-400";
-            feedbackEl.textContent = "❌ 請先在上方輸入微軟 Azure Speech API Key 再進行試聽！";
-          }
-          playSfx("click");
+      const onPointerDown = (e) => {
+        if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest("a")) {
           return;
         }
 
-        if (feedbackEl) {
-          feedbackEl.className = "text-xs font-bold text-sky-300 animate-pulse";
-          feedbackEl.textContent = `⏳ 正在連接微軟雲端合成 ${roleName} 語音中...`;
-        }
-
+        isDragging = true;
+        panel.classList.add("is-dragging");
         try {
-          const roleSetting = AZURE_VOICE_MAP[role] || AZURE_VOICE_MAP.default;
-          stopCurrentSpeech();
-          const audioUrl = await synthesizeAzureSpeech(
-            sampleText,
-            roleSetting.voice,
-            roleSetting.lang,
-            roleSetting.rateMult || 1.0,
-            roleSetting.pitch || 0,
-            key,
-            reg
-          );
-          const audio = new Audio(audioUrl);
-          currentAudioInstance = audio;
-          await audio.play();
-          if (feedbackEl) {
-            feedbackEl.className = "text-xs font-bold text-lime-400";
-            feedbackEl.textContent = `✅ ${roleName} 試聽成功！連線正常。`;
-          }
-        } catch (e) {
-          if (feedbackEl) {
-            feedbackEl.className = "text-xs font-bold text-rose-400";
-            feedbackEl.textContent = `❌ 試聽失敗：${e.message}`;
-          }
+          dragHandle.setPointerCapture(e.pointerId);
+        } catch (_) {}
+
+        const panelRect = panel.getBoundingClientRect();
+        const containerRect = parentContainer.getBoundingClientRect();
+
+        startPointerX = e.clientX;
+        startPointerY = e.clientY;
+        startLeft = panelRect.left - containerRect.left;
+        startTop = panelRect.top - containerRect.top;
+
+        panel.style.setProperty("left", `${startLeft}px`, "important");
+        panel.style.setProperty("top", `${startTop}px`, "important");
+        panel.style.setProperty("right", "auto", "important");
+        panel.style.setProperty("bottom", "auto", "important");
+        panel.style.setProperty("margin", "0", "important");
+
+        e.preventDefault();
+      };
+
+      const onPointerMove = (e) => {
+        if (!isDragging) return;
+
+        const dx = e.clientX - startPointerX;
+        const dy = e.clientY - startPointerY;
+
+        let newLeft = startLeft + dx;
+        let newTop = startTop + dy;
+
+        const containerRect = parentContainer.getBoundingClientRect();
+        const panelWidth = panel.offsetWidth;
+        const panelHeight = panel.offsetHeight;
+
+        const minLeft = 8;
+        const maxLeft = Math.max(minLeft, containerRect.width - panelWidth - 8);
+        const minTop = 8;
+        const maxTop = Math.max(minTop, containerRect.height - panelHeight - 8);
+
+        newLeft = Math.min(Math.max(minLeft, newLeft), maxLeft);
+        newTop = Math.min(Math.max(minTop, newTop), maxTop);
+
+        panel.style.setProperty("left", `${newLeft}px`, "important");
+        panel.style.setProperty("top", `${newTop}px`, "important");
+      };
+
+      const onPointerUp = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        panel.classList.remove("is-dragging");
+        try {
+          dragHandle.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      };
+
+      dragHandle.addEventListener("pointerdown", onPointerDown);
+      dragHandle.addEventListener("pointermove", onPointerMove);
+      dragHandle.addEventListener("pointerup", onPointerUp);
+      dragHandle.addEventListener("pointercancel", onPointerUp);
+
+      window.addEventListener("pointermove", (e) => {
+        if (isDragging) onPointerMove(e);
+      });
+      window.addEventListener("pointerup", (e) => {
+        if (isDragging) onPointerUp(e);
+      });
+
+      dragHandle.addEventListener("dblclick", () => {
+        panel.style.removeProperty("left");
+        panel.style.removeProperty("top");
+        panel.style.removeProperty("right");
+        panel.style.removeProperty("bottom");
+        panel.style.removeProperty("margin");
+        playSfx("click");
+      });
+    }
+
+    // ==========================================
+    // ⛶ 全螢幕切換控制引擎
+    // ==========================================
+    function toggleFullScreen() {
+      const doc = window.document;
+      const docEl = doc.documentElement;
+
+      const requestFS = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+      const exitFS = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+      const currentFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+
+      if (!currentFS) {
+        if (requestFS) {
+          requestFS.call(docEl).catch(err => {
+            console.warn("全螢幕請求受限:", err);
+            showToast("全螢幕請求受限，可按 F11 切換", "⚠️", false);
+          });
         }
-      }
-
-      if (testSteveBtn) {
-        testSteveBtn.addEventListener("click", () => {
-          runVoiceSample("steve", "Hello Taiwan adventurers! It is sunny and warm at school today!", "Steve 陽光美式男聲");
-        });
-      }
-
-      if (testAlexBtn) {
-        testAlexBtn.addEventListener("click", () => {
-          runVoiceSample("alex", "Look! A glowing SOS map from Santa Claus! Let's craft together!", "Alex 活潑親切女聲");
-        });
-      }
-
-      if (testSantaBtn) {
-        testSantaBtn.addEventListener("click", () => {
-          runVoiceSample("santa", "Ho ho ho! Merry Christmas to all the students in Taiwan! Light the fireplace!", "Santa 低沉慈祥老人聲");
-        });
-      }
-
-      if (testConnBtn) {
-        testConnBtn.addEventListener("click", () => {
-          runVoiceSample("steve", "Microsoft Azure Cognitive Services Speech connected successfully!", "微軟連線測試");
-        });
-      }
-
-      if (saveBtn) {
-        saveBtn.addEventListener("click", () => {
-          const key = keyInput?.value?.trim() || "";
-          const selReg = regionSelect?.value || "eastasia";
-          const custReg = customRegionInput?.value?.trim() || "";
-
-          if (!key) {
-            if (feedbackEl) {
-              feedbackEl.className = "text-xs font-bold text-rose-400";
-              feedbackEl.textContent = "❌ 請輸入有效的 API Key 才能啟用！";
-            }
-            return;
-          }
-
-          azureConfig.apiKey = key;
-          azureConfig.region = selReg;
-          azureConfig.customRegion = custReg;
-          azureConfig.enabled = true;
-          saveAzureConfig();
-          audioCache.clear();
-
-          updateAzureModalUI();
-          if (feedbackEl) {
-            feedbackEl.className = "text-xs font-bold text-lime-400";
-            feedbackEl.textContent = "🎉 設定已成功儲存至瀏覽器！微軟 AI 語音已正式啟用！";
-          }
-          playSfx("ding");
-
-          setTimeout(() => {
-            modal?.classList.add("hidden");
-          }, 1200);
-        });
-      }
-
-      if (clearBtn) {
-        clearBtn.addEventListener("click", () => {
-          azureConfig.apiKey = "";
-          azureConfig.enabled = false;
-          saveAzureConfig();
-          audioCache.clear();
-          if (keyInput) keyInput.value = "";
-          updateAzureModalUI();
-          if (feedbackEl) {
-            feedbackEl.className = "text-xs font-bold text-amber-300";
-            feedbackEl.textContent = "🗑️ 已清除 API 金鑰，系統已平順恢復為本機瀏覽器語音。";
-          }
-          playSfx("click");
-        });
+      } else {
+        if (exitFS) {
+          exitFS.call(doc).catch(err => console.warn(err));
+        }
       }
     }
 
-window.addEventListener("DOMContentLoaded", () => {
+    function updateFullscreenUI() {
+      const doc = window.document;
+      const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+      const icon = document.getElementById("fullscreenIcon");
+      const text = document.getElementById("fullscreenText");
+      const btn = document.getElementById("fullscreenToggleBtn");
+      if (icon && text) {
+        if (isFs) {
+          icon.textContent = "🗗";
+          text.textContent = "視窗";
+          btn?.classList.replace("border-sky-400/60", "border-amber-400/80");
+        } else {
+          icon.textContent = "⛶";
+          text.textContent = "全螢幕";
+          btn?.classList.replace("border-amber-400/80", "border-sky-400/60");
+        }
+      }
+    }
+
+    ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange", "MSFullscreenChange"].forEach(evt => {
+      document.addEventListener(evt, updateFullscreenUI);
+    });
+
+    // ==========================================
+    // DOM 初始化與事件綁定
+    // ==========================================
+    window.addEventListener("DOMContentLoaded", () => {
       initSvgScene();
       initSnowCanvas();
       renderPartyGreetings();
-      // Azure settings removed
       switchStage("story");
 
-      // 底部 4 大階段切換鈕
       document.querySelectorAll(".stage-nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           switchStage(btn.getAttribute("data-stage"));
         });
       });
 
-      // 頂部紅綠雙隊加分鈕
-      document.getElementById("addRedScoreBtn").addEventListener("click", () => {
+      document.getElementById("addRedScoreBtn")?.addEventListener("click", () => {
         state.scoreRed++;
         document.getElementById("scoreRedText").textContent = state.scoreRed;
         playSfx("ding");
         triggerBurstParticles();
       });
-      document.getElementById("addGreenScoreBtn").addEventListener("click", () => {
+      document.getElementById("addGreenScoreBtn")?.addEventListener("click", () => {
         state.scoreGreen++;
         document.getElementById("scoreGreenText").textContent = state.scoreGreen;
         playSfx("ding");
         triggerBurstParticles();
       });
 
-      // 頂部橫幅雙語速發音鈕
       function speakBannerCurrent(rate) {
         if (state.stage === "story") {
           const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
@@ -3593,33 +1659,57 @@ window.addEventListener("DOMContentLoaded", () => {
         } else if (state.stage === "words") {
           if (state.wordsSubMode === "learn") {
             const cur = getWordObj(state.focusedWordId);
-            speakText(`${cur.word}. ${cur.qaASpeak}`, rate);
+            speakText(cur.qaASpeak, rate);
           } else {
             const target = LESSON_CONFIG.words[state.gameQueueIdx];
             if (!target) return;
             speakText(state.wordsSubMode === "prep" ? target.qaQ : target.word, rate);
           }
         } else if (state.stage === "culture") {
-          const item = state.cultureSubMode === "quiz"
-            ? LESSON_CONFIG.words[state.gameQueueIdx]
-            : getWordObj(state.focusedWordId);
-          if (item) speakText(item.culture.enSentence, rate);
+          if (state.cultureSubMode === "quiz") {
+            const target = LESSON_CONFIG.words[state.gameQueueIdx];
+            if (target && target.culture && target.culture.quizQEn) {
+              speakText(target.culture.quizQEn, rate);
+            }
+          } else {
+            const item = getWordObj(state.focusedWordId);
+            if (item) speakText(item.culture.enSentence, rate);
+          }
         } else {
-          const cur = getWordObj(state.focusedWordId);
-          speakText(cur.qaASpeak, rate);
+          const lineAEl = document.getElementById("promptLineA");
+          const lineAText = lineAEl ? lineAEl.textContent.trim() : "";
+          if (lineAText) {
+            speakText(lineAText, rate);
+          } else {
+            speakText("Merry Christmas!", rate);
+          }
         }
       }
-      document.getElementById("bannerSpeakSlowBtn").addEventListener("click", () => speakBannerCurrent(LESSON_CONFIG.speechRateSlow));
-      document.getElementById("bannerSpeakBtn").addEventListener("click", () => speakBannerCurrent(LESSON_CONFIG.speechRateNormal));
 
-      // Story 階段控制鈕（切換幕不自動朗讀）
-      document.getElementById("storyPrevStepBtn").addEventListener("click", () => {
+      document.getElementById("bannerSpeakSlowBtn")?.addEventListener("click", () => speakBannerCurrent(LESSON_CONFIG.speechRateSlow));
+      document.getElementById("bannerSpeakBtn")?.addEventListener("click", () => speakBannerCurrent(LESSON_CONFIG.speechRateNormal));
+
+      document.getElementById("bannerRevealAnswerBtn")?.addEventListener("click", () => {
+        if (typeof currentPkAnswerRevealer === "function") {
+          playSfx("ding");
+          triggerBurstParticles();
+          currentPkAnswerRevealer();
+          currentPkAnswerRevealer = null;
+          const btn = document.getElementById("bannerRevealAnswerBtn");
+          if (btn) {
+            btn.textContent = "✅ 已揭曉答案";
+            btn.disabled = true;
+          }
+        }
+      });
+
+      document.getElementById("storyPrevStepBtn")?.addEventListener("click", () => {
         if (state.storyStepIdx > 0) {
           state.storyStepIdx--;
           renderStoryStage(false);
         }
       });
-      document.getElementById("storyNextStepBtn").addEventListener("click", () => {
+      document.getElementById("storyNextStepBtn")?.addEventListener("click", () => {
         if (state.storyStepIdx < LESSON_CONFIG.storySteps.length - 1) {
           state.storyStepIdx++;
           renderStoryStage(false);
@@ -3627,181 +1717,91 @@ window.addEventListener("DOMContentLoaded", () => {
           switchStage("words");
         }
       });
-      document.getElementById("storySpeakABtn").addEventListener("click", () => {
+      document.getElementById("storySpeakABtn")?.addEventListener("click", () => {
         const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
         speakText(st.speakA, LESSON_CONFIG.speechRateNormal, "en-US", st.roleASpeak || "steve");
       });
-      document.getElementById("storySpeakBBtn").addEventListener("click", () => {
+      document.getElementById("storySpeakBBtn")?.addEventListener("click", () => {
         const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
         speakText(st.speakB, LESSON_CONFIG.speechRateNormal, "en-US", st.roleBSpeak || "alex");
       });
-      document.getElementById("storyTriggerPropBtn").addEventListener("click", triggerStorySceneProp);
-      document.getElementById("closeStoryModalBtn").addEventListener("click", () => {
-        document.getElementById("storyActionModal").classList.add("hidden");
+      document.getElementById("storyTriggerPropBtn")?.addEventListener("click", triggerStorySceneProp);
+      document.getElementById("closeStoryModalBtn")?.addEventListener("click", () => {
+        document.getElementById("storyActionModal")?.classList.add("hidden");
       });
 
-      // Stage 2 (Words & Craft) 子模式切換（切換時關閉看板，且不自動朗讀）
-      document.getElementById("wordsSubModeLearnBtn").addEventListener("click", () => {
+      document.getElementById("wordsSubModeLearnBtn")?.addEventListener("click", () => {
         state.wordsSubMode = "learn";
         renderWordsStage(false);
       });
-      document.getElementById("wordsSubModeSpellBtn").addEventListener("click", () => {
+      document.getElementById("wordsSubModeSpellBtn")?.addEventListener("click", () => {
         state.wordsSubMode = "spell";
         closeAllOverlays();
         renderWordsStage(false);
       });
-      document.getElementById("wordsSubModePrepBtn").addEventListener("click", () => {
+      document.getElementById("wordsSubModePrepBtn")?.addEventListener("click", () => {
         state.wordsSubMode = "prep";
         closeAllOverlays();
         renderWordsStage(false);
       });
 
-      /**
-       * 通用自由拖曳函式 (支援滑鼠、大屏/電子白板/平板 Touch 觸控)
-       * 使用 Pointer Events API + setPointerCapture 確保零延遲、不被子元素干擾
-       */
-      function makeDraggable(panel, handle = null, container = null) {
-        if (!panel) return;
-        const dragHandle = handle || panel;
-        const parentContainer = container || panel.parentElement || document.getElementById("sceneViewport") || document.body;
-
-        let isDragging = false;
-        let startPointerX = 0;
-        let startPointerY = 0;
-        let startLeft = 0;
-        let startTop = 0;
-
-        dragHandle.classList.add("drag-handle");
-        panel.classList.add("draggable-panel");
-
-        dragHandle.addEventListener("pointerdown", (e) => {
-          // 若點擊的是按鈕或控制元件，不觸發拖曳
-          if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest("a")) {
-            return;
-          }
-
-          isDragging = true;
-          panel.classList.add("is-dragging");
-          try {
-            dragHandle.setPointerCapture(e.pointerId);
-          } catch (_) {}
-
-          // 取得 panel 當前相對於 parentContainer 的精確 offset
-          const panelRect = panel.getBoundingClientRect();
-          const containerRect = parentContainer.getBoundingClientRect();
-
-          startPointerX = e.clientX;
-          startPointerY = e.clientY;
-          startLeft = panelRect.left - containerRect.left;
-          startTop = panelRect.top - containerRect.top;
-
-          // 解除 CSS 中的 right / bottom / margin 等定位限制，轉為精準像素 left / top
-          panel.style.left = `${startLeft}px`;
-          panel.style.top = `${startTop}px`;
-          panel.style.right = "auto";
-          panel.style.bottom = "auto";
-          panel.style.margin = "0";
-
-          e.preventDefault();
-        });
-
-        dragHandle.addEventListener("pointermove", (e) => {
-          if (!isDragging) return;
-
-          const dx = e.clientX - startPointerX;
-          const dy = e.clientY - startPointerY;
-
-          let newLeft = startLeft + dx;
-          let newTop = startTop + dy;
-
-          // 邊界限制：防止拖移超出 sceneViewport 邊界
-          const containerRect = parentContainer.getBoundingClientRect();
-          const panelWidth = panel.offsetWidth;
-          const panelHeight = panel.offsetHeight;
-
-          const minLeft = 6;
-          const maxLeft = Math.max(minLeft, containerRect.width - panelWidth - 6);
-          const minTop = 6;
-          const maxTop = Math.max(minTop, containerRect.height - panelHeight - 6);
-
-          newLeft = Math.min(Math.max(minLeft, newLeft), maxLeft);
-          newTop = Math.min(Math.max(minTop, newTop), maxTop);
-
-          panel.style.left = `${newLeft}px`;
-          panel.style.top = `${newTop}px`;
-        });
-
-        const stopDrag = (e) => {
-          if (!isDragging) return;
-          isDragging = false;
-          panel.classList.remove("is-dragging");
-          try {
-            dragHandle.releasePointerCapture(e.pointerId);
-          } catch (_) {}
-        };
-
-        dragHandle.addEventListener("pointerup", stopDrag);
-        dragHandle.addEventListener("pointercancel", stopDrag);
-
-        // 雙擊把手快速重置至預設初始位置
-        dragHandle.addEventListener("dblclick", () => {
-          panel.style.left = "";
-          panel.style.top = "";
-          panel.style.right = "";
-          panel.style.bottom = "";
-          panel.style.margin = "";
-          playSfx("click");
-        });
-      }
-
-      // 初始化各懸浮看板拖曳功能
-      const viewportEl = document.getElementById("sceneViewport");
+      const mainContainerEl = document.querySelector("main") || document.body;
       const topPromptEl = document.getElementById("topPromptBanner");
       const topPromptHeaderEl = document.getElementById("promptBannerHeader");
-      if (topPromptEl) makeDraggable(topPromptEl, topPromptHeaderEl || topPromptEl, viewportEl);
+      if (topPromptEl) makeDraggable(topPromptEl, topPromptHeaderEl || topPromptEl, mainContainerEl);
 
       const zoomBoxEl = document.getElementById("voxelZoomBox");
       const zoomBoxHeaderEl = document.getElementById("zoomBoxHeader");
-      if (zoomBoxEl) makeDraggable(zoomBoxEl, zoomBoxHeaderEl || zoomBoxEl, viewportEl);
+      if (zoomBoxEl) makeDraggable(zoomBoxEl, zoomBoxHeaderEl || zoomBoxEl, mainContainerEl);
 
       const cultureBoardEl = document.getElementById("cultureCompareBoard");
       const cultureBoardHeaderEl = document.getElementById("cultureBoardHeader");
-      if (cultureBoardEl) makeDraggable(cultureBoardEl, cultureBoardHeaderEl || cultureBoardEl, viewportEl);
+      if (cultureBoardEl) makeDraggable(cultureBoardEl, cultureBoardHeaderEl || cultureBoardEl, mainContainerEl);
 
-      // 情境橫幅 X 關閉與隨時喚回按鈕
+      window.addEventListener("resize", () => {
+        const mRect = mainContainerEl.getBoundingClientRect();
+        [topPromptEl, zoomBoxEl, cultureBoardEl].forEach(panel => {
+          if (!panel || panel.classList.contains("hidden")) return;
+          const curLeft = parseFloat(panel.style.left);
+          const curTop = parseFloat(panel.style.top);
+          if (!isNaN(curLeft)) {
+            const maxL = Math.max(8, mRect.width - panel.offsetWidth - 8);
+            if (curLeft > maxL) panel.style.left = `${maxL}px`;
+            if (curLeft < 8) panel.style.left = "8px";
+          }
+          if (!isNaN(curTop)) {
+            const maxT = Math.max(8, mRect.height - panel.offsetHeight - 8);
+            if (curTop > maxT) panel.style.top = `${maxT}px`;
+            if (curTop < 8) panel.style.top = "8px";
+          }
+        });
+      });
+
       document.getElementById("closePromptBannerBtn")?.addEventListener("click", () => {
         document.getElementById("topPromptBanner")?.classList.add("hidden");
         document.getElementById("reopenPromptBannerBtn")?.classList.remove("hidden");
         playSfx("click");
       });
-
       document.getElementById("reopenPromptBannerBtn")?.addEventListener("click", () => {
         document.getElementById("topPromptBanner")?.classList.remove("hidden");
         document.getElementById("reopenPromptBannerBtn")?.classList.add("hidden");
         playSfx("click");
       });
-
-      // 視窗專用右上角 X 關閉鈕
       document.getElementById("closeZoomBoxBtn")?.addEventListener("click", () => {
-        document.getElementById("voxelZoomBox").classList.add("hidden");
+        document.getElementById("voxelZoomBox")?.classList.add("hidden");
         playSfx("click");
       });
       document.getElementById("closeCultureBoardBtn")?.addEventListener("click", () => {
-        document.getElementById("cultureCompareBoard").classList.add("hidden");
+        document.getElementById("cultureCompareBoard")?.classList.add("hidden");
         playSfx("click");
       });
 
-      // 滑鼠右鍵關閉次級懸浮視窗，防遮擋畫面
       window.addEventListener("contextmenu", (e) => {
-        const zoomBox = document.getElementById("voxelZoomBox");
-        const cultureBoard = document.getElementById("cultureCompareBoard");
-        const storyModal = document.getElementById("storyActionModal");
-        const hintBox = document.getElementById("flashHintBox");
         const isAnyOpen =
-          (zoomBox && !zoomBox.classList.contains("hidden")) ||
-          (cultureBoard && !cultureBoard.classList.contains("hidden")) ||
-          (storyModal && !storyModal.classList.contains("hidden")) ||
-          (hintBox && !hintBox.classList.contains("hidden"));
+          document.getElementById("voxelZoomBox")?.offsetParent !== null ||
+          document.getElementById("cultureCompareBoard")?.offsetParent !== null ||
+          document.getElementById("storyActionModal")?.offsetParent !== null ||
+          document.getElementById("flashHintBox")?.offsetParent !== null;
 
         if (isAnyOpen) {
           e.preventDefault();
@@ -3810,7 +1810,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      // 鍵盤快捷鍵：Escape 關閉懸浮面板，T 鍵快速切換題目對話橫幅
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           closeAllOverlays();
@@ -3827,44 +1826,56 @@ window.addEventListener("DOMContentLoaded", () => {
             }
             playSfx("click");
           }
+        } else if ((e.key === "f" || e.key === "F") && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
+          toggleFullScreen();
         }
       });
-      document.getElementById("zoomSlowWordBtn").addEventListener("click", () => {
+
+      document.getElementById("zoomSlowWordBtn")?.addEventListener("click", async () => {
         const item = getWordObj(state.focusedWordId);
-        const phoneticSeq = (item.ttsChunks || item.chunks).join(", ");
-        speakText(`${phoneticSeq}. ${item.word}`, LESSON_CONFIG.speechRateSlow);
+        stopCurrentSpeech();
+        setBgmDucking(true);
+        try {
+          const chunks = item.ttsChunks || item.chunks;
+          for (let i = 0; i < chunks.length; i++) {
+            await speakBrowserSpeech(chunks[i], LESSON_CONFIG.speechRateSlow, "en-US", "alex");
+            await new Promise(r => setTimeout(r, 280));
+          }
+          await new Promise(r => setTimeout(r, 220));
+          await speakText(item.word, LESSON_CONFIG.speechRateSlow);
+        } finally {
+          setBgmDucking(false);
+        }
       });
-      document.getElementById("zoomNormalWordBtn").addEventListener("click", () => {
+      document.getElementById("zoomNormalWordBtn")?.addEventListener("click", () => {
         const item = getWordObj(state.focusedWordId);
         speakText(item.word, LESSON_CONFIG.speechRateNormal);
       });
-      document.getElementById("zoomSpeakQaBtn").addEventListener("click", () => {
+      document.getElementById("zoomSpeakQaBtn")?.addEventListener("click", () => {
         const item = getWordObj(state.focusedWordId);
         speakText(item.qaASpeak, LESSON_CONFIG.speechRateNormal);
       });
 
-      // Stage 3 (World Culture) 子模式切換與語音按鈕
-      document.getElementById("cultureSubModeExploreBtn").addEventListener("click", () => {
+      document.getElementById("cultureSubModeExploreBtn")?.addEventListener("click", () => {
         state.cultureSubMode = "explore";
         renderCultureStage(false);
       });
-      document.getElementById("cultureSubModeQuizBtn").addEventListener("click", () => {
+      document.getElementById("cultureSubModeQuizBtn")?.addEventListener("click", () => {
         state.cultureSubMode = "quiz";
         closeAllOverlays();
         renderCultureStage(false);
       });
-      document.getElementById("cultureSlowSpeakBtn").addEventListener("click", () => {
+      document.getElementById("cultureSlowSpeakBtn")?.addEventListener("click", () => {
         const item = getWordObj(state.focusedWordId);
         speakText(item.culture.enSentence, LESSON_CONFIG.speechRateSlow);
       });
-      document.getElementById("cultureNormalSpeakBtn").addEventListener("click", () => {
+      document.getElementById("cultureNormalSpeakBtn")?.addEventListener("click", () => {
         const item = getWordObj(state.focusedWordId);
         speakText(item.culture.enSentence, LESSON_CONFIG.speechRateNormal);
       });
 
-      // Stage 4 (Party) 控制鈕
-      document.getElementById("partyRandomQuizBtn").addEventListener("click", runRandomPkSpinner);
-      document.getElementById("partyMusicBtn").addEventListener("click", () => {
+      document.getElementById("partyRandomQuizBtn")?.addEventListener("click", runRandomPkSpinner);
+      document.getElementById("partyMusicBtn")?.addEventListener("click", () => {
         if (state.playingMusic) {
           stopChiptuneBgm();
         } else {
@@ -3872,10 +1883,9 @@ window.addEventListener("DOMContentLoaded", () => {
           triggerBurstParticles();
         }
       });
-      document.getElementById("partySnowBurstBtn").addEventListener("click", togglePartyFireworkShow);
+      document.getElementById("partySnowBurstBtn")?.addEventListener("click", togglePartyFireworkShow);
 
-      // 頂部教師控場工具列
-      document.getElementById("teacherUnlockAllBtn").addEventListener("click", () => {
+      document.getElementById("teacherUnlockAllBtn")?.addEventListener("click", () => {
         if (state.unlockedIds.size === LESSON_CONFIG.words.length) {
           state.unlockedIds.clear();
           updateSceneAndStars();
@@ -3886,7 +1896,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      document.getElementById("soundMuteBtn").addEventListener("click", () => {
+      document.getElementById("soundMuteBtn")?.addEventListener("click", () => {
         state.soundOn = !state.soundOn;
         document.getElementById("soundMuteIcon").textContent = state.soundOn ? "🔊" : "🔇";
         if (!state.soundOn && "speechSynthesis" in window) {
@@ -3894,7 +1904,12 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      document.getElementById("resetLessonBtn").addEventListener("click", () => {
+      document.getElementById("fullscreenToggleBtn")?.addEventListener("click", () => {
+        playSfx("click");
+        toggleFullScreen();
+      });
+
+      document.getElementById("resetLessonBtn")?.addEventListener("click", () => {
         if (fireworkShowInterval) {
           clearInterval(fireworkShowInterval);
           fireworkShowInterval = null;
@@ -3916,7 +1931,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (state.playingMusic) {
           stopChiptuneBgm();
         }
-        updateAzureModalUI();
         switchStage("story");
       });
     });
