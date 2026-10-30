@@ -296,12 +296,54 @@ body {
   cursor: move;
 }
 
-/* 題目橫幅：預設靠螢幕最左上角停靠 (無 !important，允許 JS 動態拖曳即時接管) */
+/* 題目橫幅：預設停靠與排版樣式 */
 #topPromptBanner {
   top: 12px;
   left: 16px;
   right: auto;
   width: min(92vw, clamp(320px, 28vw, 460px)) !important;
+}
+
+/* 劇情模式專用：【方向 A】輕量級劇院寬幅透明字幕條 (Cinema Subtitle Bar) */
+.story-dialogue-dock-bottom {
+  top: auto !important;
+  bottom: 8px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  width: min(98%, 1080px) !important;
+  max-width: 98vw !important;
+  background: rgba(14, 9, 6, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 2px solid rgba(250, 204, 21, 0.65) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85), inset 0 0 15px rgba(250, 204, 21, 0.12) !important;
+  border-radius: 1.1rem !important;
+  padding: 5px 14px 6px 14px !important;
+  z-index: 25 !important;
+  overflow: visible !important;
+}
+
+.story-dialogue-dock-bottom #promptBannerHeader {
+  margin-bottom: 2px !important;
+  padding-bottom: 2px !important;
+  border-bottom: 1px solid rgba(250, 204, 21, 0.25) !important;
+}
+
+.story-dialogue-dock-bottom #promptLineA,
+.story-dialogue-dock-bottom #promptLineB {
+  white-space: nowrap !important;
+  overflow-x: auto !important;
+  font-size: clamp(14px, 1.7vw, 21px) !important;
+  line-height: 1.25 !important;
+  padding: 1px 0 !important;
+}
+
+.story-dialogue-dock-bottom #promptSubZh {
+  margin-top: 2px !important;
+  padding: 2px 10px !important;
+  font-size: clamp(11px, 1.1vw, 13px) !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(250, 204, 21, 0.2) !important;
 }
 
 /* 單字/句型特寫看板：預設靠螢幕最右上角停靠 */
@@ -417,26 +459,26 @@ button.mc-btn, .chunk-chip {
       <span id="progressCounterText" class="text-xs sm:text-sm font-black text-lime-300">0/7</span>
     </div>
 
-    <!-- 中：⚔️ 紅石隊 (Redstone) vs. 綠寶石隊 (Emerald) 課堂即時加分板 -->
+    <!-- 中：⚔️ 左半班 (第一組) vs. 右半班 (第二組) 課堂即時加分板 -->
     <div class="flex items-center gap-2 bg-black/55 px-2.5 py-1 rounded-xl border-2 border-[#5c4028]">
       <div class="flex items-center gap-1.5">
-        <span class="text-xs sm:text-sm font-black text-rose-400">🔴 Redstone</span>
+        <span class="text-xs sm:text-sm font-black text-rose-400">🔴 左半班 (第一組)</span>
         <span id="scoreRedText" class="px-2 py-0.5 rounded bg-rose-950 border border-rose-400 text-white font-black text-sm sm:text-base">0</span>
-        <button id="addRedScoreBtn" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-black text-xs sm:text-sm mc-btn" title="紅隊 +1 分">+1</button>
+        <button id="addRedScoreBtn" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-black text-xs sm:text-sm mc-btn" title="左半班 +1 分">+1</button>
       </div>
       <span class="text-amber-400 font-black text-xs">VS</span>
       <div class="flex items-center gap-1.5">
-        <span class="text-xs sm:text-sm font-black text-emerald-400">🟢 Emerald</span>
+        <span class="text-xs sm:text-sm font-black text-emerald-400">🟢 右半班 (第二組)</span>
         <span id="scoreGreenText" class="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-400 text-white font-black text-sm sm:text-base">0</span>
-        <button id="addGreenScoreBtn" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs sm:text-sm mc-btn" title="綠隊 +1 分">+1</button>
+        <button id="addGreenScoreBtn" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs sm:text-sm mc-btn" title="右半班 +1 分">+1</button>
       </div>
     </div>
 
     <!-- 右：教師控場工具與微軟 AI 語音設定 -->
     <div class="flex items-center gap-1.5">
 
-      <button id="toggleLabelsBtn" class="px-2.5 py-1 rounded-lg bg-[#38261a] hover:bg-[#4d3423] text-lime-200 border-2 border-lime-400/60 text-xs sm:text-sm font-black flex items-center gap-1 transition">
-        <span>🏷️</span> <span id="toggleLabelsText" class="hidden sm:inline">位置名牌</span>
+      <button id="gameRulesBtn" class="px-2.5 py-1 rounded-lg bg-[#38261a] hover:bg-[#4d3423] text-lime-200 border-2 border-lime-400/60 text-xs sm:text-sm font-black flex items-center gap-1 transition mc-btn" title="查看操作流程與得分規則">
+        <span>❓</span> <span class="hidden sm:inline">玩法說明</span>
       </button>
       <button id="teacherUnlockAllBtn" class="px-2.5 py-1 rounded-lg bg-amber-400/20 hover:bg-amber-400/35 text-amber-200 border-2 border-amber-300/60 text-xs sm:text-sm font-black flex items-center gap-1 transition">
         <span>👩‍🏫</span> <span id="teacherUnlockAllText" class="hidden sm:inline">一鍵全亮</span>
@@ -465,7 +507,9 @@ button.mc-btn, .chunk-chip {
         <!-- 暴風雪環境白霧覆蓋層 (第 5 幕啟用) -->
         <div id="blizzardFogOverlay" class="hidden absolute inset-0 w-full h-full blizzard-fog-overlay pointer-events-none z-5"></div>
         <!-- 🦌 第 6 幕專用：動態 Minecraft 體素馴鹿 Rudolph 實體層 -->
-        <div id="rudolphOverlayContainer" class="hidden absolute bottom-[14%] left-[28%] sm:left-[32%] z-10 pointer-events-none transition-all duration-700">
+        <div id="rudolphOverlayContainer" class="hidden absolute bottom-[4%] left-[22%] sm:left-[25%] z-10 pointer-events-none transition-all duration-700">
+          <!-- 地面積雪陰影 -->
+          <div class="w-32 h-3.5 bg-black/35 rounded-full blur-[2px] mx-auto -mb-3"></div>
           <div id="rudolphSpriteBox" class="relative flex flex-col items-center reindeer-shivering">
             <!-- 受凍氣泡標籤 -->
             <div id="rudolphSpeechBubble" class="mb-2 px-3 py-1 rounded-xl bg-sky-950/90 border-2 border-sky-300 text-sky-200 font-black text-xs sm:text-sm shadow-xl flex items-center gap-1.5 animate-bounce">
@@ -523,7 +567,7 @@ button.mc-btn, .chunk-chip {
         </div>
 
         <!-- 故事互動觸發後的局部特效彈窗 (#storyActionModal) -->
-        <div id="storyActionModal" class="hidden absolute bottom-4 right-4 max-w-[540px] mc-box-gold rounded-3xl p-4 sm:p-5 z-20 animate-bounce-short">
+        <div id="storyActionModal" class="hidden absolute top-4 left-1/2 -translate-x-1/2 max-w-[620px] w-[94%] mc-box-gold rounded-3xl p-4 sm:p-5 z-25 shadow-2xl animate-bounce-short">
           <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b-2 border-amber-400/40">
             <span id="storyModalTitle" class="text-base sm:text-xl font-black text-amber-300">📜 來自北歐瑞典的求救捲軸</span>
             <button id="closeStoryModalBtn" class="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/30 text-amber-200 font-black">✕</button>
@@ -726,7 +770,7 @@ button.mc-btn, .chunk-chip {
             <p id="cultureBoardForeignText" class="text-xs sm:text-base font-bold text-white leading-relaxed"></p>
           </div>
           <div class="bg-emerald-950/90 rounded-2xl p-3 border-2 border-lime-400/70">
-            <div class="text-xs sm:text-sm font-black text-lime-300 mb-1">🇹🇼 台灣生活與節慶對照：</div>
+            <div class="text-xs sm:text-sm font-black text-lime-300 mb-1">🏮 台灣生活與節慶對照：</div>
             <p id="cultureBoardTaiwanText" class="text-xs sm:text-base font-bold text-white leading-relaxed"></p>
           </div>
         </div>
@@ -744,6 +788,45 @@ button.mc-btn, .chunk-chip {
         <span id="gameToastEmoji" class="text-2xl sm:text-3xl">🎉</span>
         <span id="gameToastText">Great job!</span>
       </div>
+  
+      <!-- 課堂玩法流程與計分規則說明彈窗 (#gameRulesModal) -->
+      <div id="gameRulesModal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 mc-box-gold rounded-3xl p-5 sm:p-6 w-[94%] max-w-[660px] shadow-2xl backdrop-blur-md">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b-2 border-amber-400/40">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">📜</span>
+            <h3 class="text-lg sm:text-2xl font-black text-amber-300">課堂遊戲操作流程 ＆ 計分規則</h3>
+          </div>
+          <button id="closeGameRulesBtn" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/25 text-amber-200 font-black text-base flex items-center justify-center">✕</button>
+        </div>
+        <div class="space-y-3.5 text-xs sm:text-sm font-bold text-amber-100 max-h-[60vh] overflow-y-auto pr-1">
+          <div class="bg-black/50 p-3 rounded-2xl border border-amber-400/30">
+            <h4 class="text-amber-300 font-black text-sm sm:text-base mb-1.5 flex items-center gap-1.5">
+              <span>🗺️</span> <span>40 分鐘 4 大教學流程</span>
+            </h4>
+            <ol class="list-decimal list-inside space-y-1 text-white leading-relaxed">
+              <li><strong class="text-yellow-300">1. Story 麥塊劇情 (8幕)</strong>：從台灣校園跨越蟲洞抵達北歐，分「左半班」與「右半班」角色朗讀跟讀。</li>
+              <li><strong class="text-yellow-300">2. Words 單字拼字與句型</strong>：特寫學習 7 個核心單字、Phonics 自然發音音節合成與空間介系詞 (Where is/are...?)。</li>
+              <li><strong class="text-yellow-300">3. Culture 7國文化探索</strong>：對照各國聖誕由來與台灣在地節慶生活，進行文化搶答。</li>
+              <li><strong class="text-yellow-300">4. Party 世界祝福 ＆ PK</strong>：全班體驗 5 國語言「聖誕快樂」發音，並使用「🎲 隨機抽題」進行雙隊總決賽！</li>
+            </ol>
+          </div>
+          <div class="bg-black/50 p-3 rounded-2xl border border-amber-400/30">
+            <h4 class="text-amber-300 font-black text-sm sm:text-base mb-1.5 flex items-center gap-1.5">
+              <span>⭐</span> <span>星星獲得依據 ＆ 小組給分規則</span>
+            </h4>
+            <ul class="list-disc list-inside space-y-1.5 text-white leading-relaxed">
+              <li><strong class="text-lime-300">解鎖 7 顆學習之星 (⭐ 0/7)</strong>：在劇情任務中拯救馴鹿/點亮壁爐，或在單字拼字/空間問答中成功合成方塊，即可點亮左上方 1 顆黃金星星（7 顆全滿即可點綴整座聖誕木屋）。</li>
+              <li><strong class="text-rose-300">小組競賽即時加分 (+1)</strong>：左半班 (第一組) 與右半班 (第二組) 在跟讀對話大聲、主動發言或隨機抽題搶答正確時，教師隨時點擊上方「+1」按鈕即時獎勵加分。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t-2 border-amber-400/20 text-center">
+          <button id="confirmGameRulesBtn" class="py-2.5 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-red-950 font-black text-sm sm:text-base mc-btn">
+            我知道了，開始上課！
+          </button>
+        </div>
+      </div>
+
   </main>
 
   <!-- =========================================================================
@@ -1439,13 +1522,16 @@ button.mc-btn, .chunk-chip {
       });
 
       const hotspotsGroup = document.getElementById("svgHotspotsGroup");
+      const promptBannerEl = document.getElementById("topPromptBanner");
       if (newStage === "story") {
+        promptBannerEl?.classList.add("story-dialogue-dock-bottom");
         if (hotspotsGroup) {
           hotspotsGroup.style.display = "none";
           hotspotsGroup.classList.add("hidden");
         }
         renderStoryStage(false);
       } else if (newStage === "words") {
+        promptBannerEl?.classList.remove("story-dialogue-dock-bottom");
         if (hotspotsGroup) {
           hotspotsGroup.style.display = "";
           hotspotsGroup.classList.remove("hidden");
@@ -1469,7 +1555,7 @@ button.mc-btn, .chunk-chip {
         document.getElementById("promptStepBadge").textContent = "🎉 Party · 世界聖誕祝福與雙隊 PK 總決賽";
         document.getElementById("promptLineA").textContent = "Merry Christmas Around the World! 🌎🎄";
         document.getElementById("promptLineB").classList.add("hidden");
-        document.getElementById("promptSubZh").textContent = "點選下方 5 國祝福語體驗發音，或點擊「🎲 隨機抽題 PK」進行紅石隊 vs. 綠寶石隊總決賽！";
+        document.getElementById("promptSubZh").textContent = "點選下方 5 國祝福語體驗發音，或點擊「🎲 隨機抽題 PK」進行左半班 vs. 右半班總決賽！";
         triggerBurstParticles();
         updateSceneAndStars();
       }
@@ -1632,6 +1718,20 @@ button.mc-btn, .chunk-chip {
       initSnowCanvas();
       renderPartyGreetings();
       switchStage("story");
+      // 玩法規則說明彈窗開關綁定
+      document.getElementById("gameRulesBtn")?.addEventListener("click", () => {
+        document.getElementById("gameRulesModal")?.classList.remove("hidden");
+        playSfx("click");
+      });
+      document.getElementById("closeGameRulesBtn")?.addEventListener("click", () => {
+        document.getElementById("gameRulesModal")?.classList.add("hidden");
+        playSfx("click");
+      });
+      document.getElementById("confirmGameRulesBtn")?.addEventListener("click", () => {
+        document.getElementById("gameRulesModal")?.classList.add("hidden");
+        playSfx("click");
+      });
+
 
       document.querySelectorAll(".stage-nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1717,13 +1817,27 @@ button.mc-btn, .chunk-chip {
           switchStage("words");
         }
       });
-      document.getElementById("storySpeakABtn")?.addEventListener("click", () => {
+      document.getElementById("storySpeakABtn")?.addEventListener("click", async () => {
         const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
-        speakText(st.speakA, LESSON_CONFIG.speechRateNormal, "en-US", st.roleASpeak || "steve");
+        if (typeof highlightSpeaker === "function") highlightSpeaker("A");
+        try {
+          await speakText(st.speakA, LESSON_CONFIG.speechRateNormal, "en-US", st.roleASpeak || "steve");
+        } finally {
+          setTimeout(() => {
+            if (typeof clearSpeakerHighlight === "function") clearSpeakerHighlight();
+          }, 350);
+        }
       });
-      document.getElementById("storySpeakBBtn")?.addEventListener("click", () => {
+      document.getElementById("storySpeakBBtn")?.addEventListener("click", async () => {
         const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
-        speakText(st.speakB, LESSON_CONFIG.speechRateNormal, "en-US", st.roleBSpeak || "alex");
+        if (typeof highlightSpeaker === "function") highlightSpeaker("B");
+        try {
+          await speakText(st.speakB, LESSON_CONFIG.speechRateNormal, "en-US", st.roleBSpeak || "alex");
+        } finally {
+          setTimeout(() => {
+            if (typeof clearSpeakerHighlight === "function") clearSpeakerHighlight();
+          }, 350);
+        }
       });
       document.getElementById("storyTriggerPropBtn")?.addEventListener("click", triggerStorySceneProp);
       document.getElementById("closeStoryModalBtn")?.addEventListener("click", () => {
@@ -1838,10 +1952,10 @@ button.mc-btn, .chunk-chip {
         try {
           const chunks = item.ttsChunks || item.chunks;
           for (let i = 0; i < chunks.length; i++) {
-            await speakBrowserSpeech(chunks[i], LESSON_CONFIG.speechRateSlow, "en-US", "alex");
-            await new Promise(r => setTimeout(r, 280));
+            await speakText(chunks[i], LESSON_CONFIG.speechRateSlow, "en-US", "alex");
+            await new Promise(r => setTimeout(r, 320));
           }
-          await new Promise(r => setTimeout(r, 220));
+          await new Promise(r => setTimeout(r, 260));
           await speakText(item.word, LESSON_CONFIG.speechRateSlow);
         } finally {
           setBgmDucking(false);
@@ -1932,6 +2046,20 @@ button.mc-btn, .chunk-chip {
           stopChiptuneBgm();
         }
         switchStage("story");
+      // 玩法規則說明彈窗開關綁定
+      document.getElementById("gameRulesBtn")?.addEventListener("click", () => {
+        document.getElementById("gameRulesModal")?.classList.remove("hidden");
+        playSfx("click");
+      });
+      document.getElementById("closeGameRulesBtn")?.addEventListener("click", () => {
+        document.getElementById("gameRulesModal")?.classList.add("hidden");
+        playSfx("click");
+      });
+      document.getElementById("confirmGameRulesBtn")?.addEventListener("click", () => {
+        document.getElementById("gameRulesModal")?.classList.add("hidden");
+        playSfx("click");
+      });
+
       });
     });
   </script>

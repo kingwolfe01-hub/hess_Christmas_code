@@ -35,7 +35,7 @@ function renderPartyGreetings() {
       speakText(g.speakText, 0.9, g.lang, g.role);
       document.getElementById("promptStepBadge").textContent = `🌍 世界聖誕祝福語 · ${g.country}`;
       document.getElementById("promptLineA").textContent = `${g.flag} "${g.phrase}" (${g.phonetic})`;
-      document.getElementById("promptSubZh").textContent = `點擊上方 🔴 Redstone 或 🟢 Emerald 的「+1」按鈕，幫大聲唸出來的小組加分！`;
+      document.getElementById("promptSubZh").textContent = `點擊上方 🔴 左半班 或 🟢 右半班 的「+1」按鈕，幫大聲唸出來的小組加分！`;
     });
     grid.appendChild(btn);
   });

@@ -551,6 +551,26 @@ const EXACT_AUDIO_MAP = {
   "in the usa, presents wait under the tree.": "in_the_usa__presents_wait_under_the_tree.mp3",
   "in australia, santa surfs at the sunny beach.": "in_australia__santa_surfs_at_the_sunny_beach.mp3",
 
+  // 【D 組擴充：標準國名加簡稱對照】
+  "in the united kingdom (uk), children hang stockings by the fire.": "in_the_uk__children_hang_stockings_by_the_fire.mp3",
+  "in the united kingdom uk children hang stockings by the fire": "in_the_uk__children_hang_stockings_by_the_fire.mp3",
+  "in the united kingdom uk children hang a blank by the fire for gifts": "cq_uk_blank.mp3",
+  "in the united kingdom (uk), children hang a blank by the fire for gifts!": "cq_uk_blank.mp3",
+  "in germany (ge), people put trees in the house.": "in_germany__people_put_trees_in_the_house.mp3",
+  "in germany ge people put trees in the house": "in_germany__people_put_trees_in_the_house.mp3",
+  "in germany (ge), people put green blank in the house!": "cq_germany_blank.mp3",
+  "in germany ge people put green blank in the house": "cq_germany_blank.mp3",
+  "in france (fr), ribbons tie holiday joy together.": "in_france__ribbons_tie_holiday_joy_together.mp3",
+  "in france fr ribbons tie holiday joy together": "in_france__ribbons_tie_holiday_joy_together.mp3",
+  "in france (fr), people tie colorful blank on gifts!": "cq_france_blank.mp3",
+  "in mexico (mx), bright ornaments bring joy.": "in_mexico__bright_ornaments_bring_joy.mp3",
+  "in mexico (mx), colorful blank are hung for christmas!": "cq_mexico_blank.mp3",
+  "in the philippines (ph), star lanterns light the street.": "in_the_philippines__star_lanterns_light_the_street.mp3",
+  "in the philippines (ph), the bright blank lantern is called a parol!": "cq_philippines_blank.mp3",
+  "in the united states (usa), presents wait under the tree.": "in_the_usa__presents_wait_under_the_tree.mp3",
+  "in the united states (usa), families put colorful blank under the tree!": "cq_usa_blank.mp3",
+  "in australia (au), santa surfs at the sunny beach.": "in_australia__santa_surfs_at_the_sunny_beach.mp3",
+  "in australia (au), santa wears shorts and surfs at the blank!": "cq_australia_blank.mp3",
   // 【E 組】自然發音音節拆解方塊 (Phonics Chunks)
   "pine": "chunk_pine.mp3",
   "tree": "chunk_tree.mp3",
@@ -901,12 +921,27 @@ async function speakText(text, rate = null, lang = "en-US", role = "default") {
   }
 }
 
+const PHONICS_FALLBACK_PRONUNCIATION = {
+  "st": "ste", // forces phonics blend sound instead of spelling individual letters "S - T"
+  "ar": "are", // /ɑːr/ phonics sound
+  "or": "or",
+  "ing": "ing",
+  "rib": "rib",
+  "bon": "bon",
+  "na": "nah",
+  "ment": "ment",
+  "pre": "preh",
+  "sent": "sent"
+};
+
 function speakBrowserSpeech(text, rate = 0.96, lang = "en-US", role = "default") {
   return new Promise((resolve) => {
     if (!("speechSynthesis" in window)) return resolve();
     window.speechSynthesis.cancel();
 
-    const utter = new SpeechSynthesisUtterance(text);
+    const cleanLower = String(text || "").trim().toLowerCase();
+    const spokenText = PHONICS_FALLBACK_PRONUNCIATION[cleanLower] || text;
+    const utter = new SpeechSynthesisUtterance(spokenText);
     utter.rate = rate;
     utter.lang = lang;
 

@@ -31,18 +31,18 @@ LESSON_CONFIG.words = [
     culture: {
       flag: "🇩🇪",
       country: "德國 Germany",
-      title: "🇩🇪 德國：聖誕樹的故鄉",
+      title: "德國 Germany：現代聖誕樹發源地",
       enSentence: "In Germany, people put trees in the house.",
       foreignFact: "德國是現代聖誕樹發源地，冬天將常綠松樹搬進屋內象徵長青與希望。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣過年時，家裡會擺放開運竹或金桔樹象徵大吉大利！",
+      taiwanCompare: "就像台灣過年時，家裡會擺放開運竹或金桔樹象徵大吉大利！",
       quizQEn: "In Germany 🇩🇪, people put green _____ in the house!",
-      quizQZh: "🇩🇪 國際文化挑戰：德國是聖誕樹的發源地，人們會把哪種樹搬進屋內裝飾？"
+      quizQZh: "🇩🇪 國際文化挑戰：德國是現代聖誕樹發源地，人們會把哪種樹搬進屋內裝飾？"
     },
     layerKey: "layer_tree",
     thumbKey: "thumb_tree",
     coordHint: "點擊壁爐旁邊的松樹",
     layerRect: { x: 110, y: 135, w: 565, h: 560 },
-    hotspotRect: { x: 150, y: 430, w: 460, h: 120 },
+    hotspotRect: { x: 120, y: 140, w: 545, h: 545 },
     labelPos: { x: 155, y: 475 },
     arrowPos: { x: 380, y: 415 }
   },
@@ -67,10 +67,10 @@ LESSON_CONFIG.words = [
     culture: {
       flag: "🇫🇷",
       country: "法國 France",
-      title: "🇫🇷 法國：優雅節慶緞帶",
+      title: "法國 France：優雅節慶緞帶",
       enSentence: "In France, ribbons tie holiday joy together.",
       foreignFact: "法國擁有悠久緞帶工藝，聖誕節用精緻絲帶包裝禮物，象徵把家人心意繫在一起。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣過年時，我們會在盆栽與賀禮繫上吉祥紅色金蔥緞帶！",
+      taiwanCompare: "就像台灣過年時，我們會在盆栽與賀禮繫上吉祥紅色金蔥緞帶！",
       quizQEn: "In France 🇫🇷, people tie colorful _____ on gifts!",
       quizQZh: "🇫🇷 國際文化挑戰：法國人喜歡用什麼漂亮的裝飾把禮物與松樹繫在一起？"
     },
@@ -103,10 +103,10 @@ LESSON_CONFIG.words = [
     culture: {
       flag: "🇲🇽",
       country: "墨西哥 Mexico",
-      title: "🇲🇽 墨西哥：手工彩色吊飾",
+      title: "墨西哥 Mexico：手工彩色吊飾",
       enSentence: "In Mexico, bright ornaments bring joy.",
       foreignFact: "墨西哥聖誕節會懸掛五彩手工吹製玻璃飾品與裝滿糖果的星形皮納塔。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣元宵節時孩子們提著色彩繽紛的花燈與生肖提燈！",
+      taiwanCompare: "就像台灣元宵節時孩子們提著色彩繽紛的花燈與生肖提燈！",
       quizQEn: "In Mexico 🇲🇽, colorful _____ are hung for Christmas!",
       quizQZh: "🇲🇽 國際文化挑戰：墨西哥慶典會懸掛色彩繽紛的什麼物品來帶來歡樂？"
     },
@@ -139,10 +139,10 @@ LESSON_CONFIG.words = [
     culture: {
       flag: "🇵🇭",
       country: "菲律賓 Philippines",
-      title: "🇵🇭 菲律賓：星芒燈籠 Parol",
+      title: "菲律賓 Philippines：星芒燈籠 Parol",
       enSentence: "In the Philippines, star lanterns light the street.",
       foreignFact: "菲律賓家家戶戶會在窗前掛上五角發光星芒燈籠 Parol，象徵引領希望之星。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣元宵節大街小巷掛起美麗燈籠一樣熱鬧！",
+      taiwanCompare: "就像台灣元宵節大街小巷掛起美麗燈籠一樣熱鬧！",
       quizQEn: "In the Philippines 🇵🇭, the bright _____ lantern is called a Parol!",
       quizQZh: "🇵🇭 國際文化挑戰：菲律賓傳統的 Parol 是什麼形狀的希望燈籠？"
     },
@@ -174,13 +174,13 @@ LESSON_CONFIG.words = [
     qaASpeak: "Where is the stocking? It's above the fireplace.",
     culture: {
       flag: "🇬🇧",
-      country: "英國 United Kingdom",
-      title: "🇬🇧 英國：壁爐長襪傳說",
+      country: "英國 United Kingdom (UK)",
+      title: "英國 United Kingdom (UK)：壁爐長襪傳說",
       enSentence: "In the UK, children hang stockings by the fire.",
       foreignFact: "英國孩子傳統上把長襪掛在壁爐烘乾等待禮物，底部常放一顆象徵黃金的橘子。",
-      taiwanCompare: "🇹🇼 台灣在地比較：台灣多數家庭沒有壁爐，小朋友通常把聖誕襪掛在床頭或書桌旁等待驚喜！",
-      quizQEn: "In the UK 🇬🇧, children hang a _____ by the fire for gifts!",
-      quizQZh: "🇬🇧 國際文化挑戰：英國小朋友傳統上會把什麼掛在壁爐旁裝禮物？"
+      taiwanCompare: "台灣多數家庭沒有壁爐，小朋友通常把聖誕襪掛在床頭或書桌旁等待驚喜！",
+      quizQEn: "In the United Kingdom (UK) 🇬🇧, children hang a _____ by the fire for gifts!",
+      quizQZh: "🇬🇧 國際文化挑戰：英國 United Kingdom (UK) 小朋友傳統上會把什麼掛在壁爐旁裝禮物？"
     },
     layerKey: "layer_stocking",
     thumbKey: "thumb_stocking",
@@ -210,13 +210,13 @@ LESSON_CONFIG.words = [
     qaASpeak: "Where are the presents? They're under the tree.",
     culture: {
       flag: "🇺🇸",
-      country: "美國 USA",
-      title: "🇺🇸 美國：聖誕樹下的驚喜禮物",
+      country: "美國 United States (USA)",
+      title: "美國 United States (USA)：聖誕樹下的驚喜禮物",
       enSentence: "In the USA, presents wait under the tree.",
       foreignFact: "美國家庭習慣將包裝好的禮物堆在聖誕樹下，等到 25 日早晨全家一起開心拆開。",
-      taiwanCompare: "🇹🇼 台灣在地比較：台灣學校在聖誕節最受歡迎的活動是全班一起玩『聖誕交換禮物』！",
-      quizQEn: "In the USA 🇺🇸, families put colorful _____ under the tree!",
-      quizQZh: "🇺🇸 國際文化挑戰：美國家庭習慣將什麼禮品堆在聖誕樹下？"
+      taiwanCompare: "台灣學校在聖誕節最受歡迎的活動是全班一起玩『聖誕交換禮物』！",
+      quizQEn: "In the United States (USA) 🇺🇸, families put colorful _____ under the tree!",
+      quizQZh: "🇺🇸 國際文化挑戰：美國 United States (USA) 家庭習慣將什麼禮品堆在聖誕樹下？"
     },
     layerKey: "layer_gift",
     thumbKey: "thumb_gift",
@@ -247,10 +247,10 @@ LESSON_CONFIG.words = [
     culture: {
       flag: "🇦🇺",
       country: "澳洲 Australia",
-      title: "🇦🇺 澳洲：衝浪聖誕老人",
+      title: "澳洲 Australia：衝浪聖誕老人",
       enSentence: "In Australia, Santa surfs at the sunny beach.",
       foreignFact: "南半球 12 月是炎熱夏天，澳洲聖誕老人會換上短褲到海灘衝浪送禮物！",
-      taiwanCompare: "🇹🇼 台灣在地比較：台灣 12 月是涼爽冬天需要穿薄外套；澳洲卻是在海邊衝浪吃冰淇淋！",
+      taiwanCompare: "台灣 12 月是涼爽冬天需要穿薄外套；澳洲卻是在海邊衝浪吃冰淇淋！",
       quizQEn: "In Australia 🇦🇺, Santa wears shorts and surfs at the _____!",
       quizQZh: "🇦🇺 國際文化挑戰：南半球 12 月是夏天，澳洲聖誕老人常在什麼地方衝浪？"
     },

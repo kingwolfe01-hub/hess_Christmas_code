@@ -24,7 +24,7 @@ LESSON_CONFIG.storySteps = [
     actionBtnLabel: "📜 打開求救捲軸",
     actionToast: "📜 收到北歐求救信：暴風雪吹走了 7 個聖誕方塊！請前往聖誕傳送門！",
     actionOverlayTitle: "📜 來自北歐的緊急求救捲軸",
-    actionOverlayBody: "「Help! A huge blizzard hit our cabin and blew away all 7 Christmas blocks! Please help me! — Santa Claus 🎅」"
+    actionOverlayBody: "「Help! A big snowstorm blew away our 7 Christmas blocks! Please help me find them! — Santa Claus 🎅」"
   },
   {
     step: 2,
@@ -331,7 +331,7 @@ function renderStoryStage(autoSpeak = false) {
   document.getElementById("storyPrevStepBtn").classList.toggle("opacity-40", state.storyStepIdx === 0);
 
   const nextText = document.getElementById("storyNextStepText");
-  nextText.textContent = state.storyStepIdx === LESSON_CONFIG.storySteps.length - 1 ? "進入單字合成" : "下一幕";
+  nextText.textContent = state.storyStepIdx === LESSON_CONFIG.storySteps.length - 1 ? "2. Words 單字拼字與句型" : "下一幕";
 
   // 觸發第 1 階段劇情聯動背景音樂 (自動淡入淡出)
   if (typeof playStorySceneBgm === "function") {
@@ -405,13 +405,18 @@ function renderStoryQuiz(stepObj) {
           triggerBurstParticles(undefined, undefined, "#facc15");
         }
 
-        state.stars++;
+        if (stepObj.step === 6) {
+          state.unlockedIds.add("tree");
+        } else if (stepObj.step === 7) {
+          state.unlockedIds.add("stocking");
+        }
         updateSceneAndStars();
         speakText(q.correctSpeech, LESSON_CONFIG.speechRateNormal);
         btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-lime-600 border-lime-300 text-white font-black text-xs sm:text-sm shadow";
         fb.className = "mt-2.5 p-2 rounded-xl text-xs sm:text-sm font-black bg-lime-900/90 border border-lime-400 text-lime-200 block";
-        fb.innerHTML = `🎉 ${opt.feedback} <span class="text-amber-300">(+1 🌟 獲得星數！)</span>`;
-        showToast("答對了！+1 🌟 獲得學習星星！", "⭐", true);
+        const starRewardLabel = stepObj.step === 6 ? "【🌲 松樹方塊】" : (stepObj.step === 7 ? "【🧦 長襪方塊】" : "");
+        fb.innerHTML = `🎉 ${opt.feedback} <span class="text-amber-300">(尋回${starRewardLabel} +1 🌟 獲得學習星星！)</span>`;
+        showToast(`答對了！尋回${starRewardLabel} +1 🌟 獲得學習星星！`, "⭐", true);
       } else {
         playSfx("error");
         btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-red-950/80 border-red-500 text-red-200 font-black text-xs sm:text-sm";
@@ -448,8 +453,8 @@ function triggerStorySceneProp() {
 
     modalBody.innerHTML = `
       <div class="mb-2 text-sm sm:text-base flex items-center justify-between">
-        <span>${stepObj.actionOverlayBody}</span>
-        <span id="backpackProgressBadge" class="px-2 py-0.5 rounded-full bg-amber-400 text-red-950 font-black text-xs">點擊收集物資</span>
+        <span class="font-black text-amber-300">🎒 冒險裝備清單 (Adventure Items)：</span>
+        <span class="text-xs text-lime-300 font-bold">點擊裝備聽單字發音 🔊</span>
       </div>
       <div id="backpackGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
         <button class="backpack-slot-btn backpack-glow-slot rounded-2xl p-2.5 text-center flex flex-col items-center justify-center mc-btn" data-item="flint">
@@ -479,10 +484,20 @@ function triggerStorySceneProp() {
       </div>
     `;
 
+    const itemVoiceMap = {
+      flint: "flint and steel",
+      compass: "compass",
+      coat: "winter coat",
+      apple: "golden apple"
+    };
     modalBody.querySelectorAll(".backpack-slot-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         playSfx("ding");
         playSfx("drop");
+        const itemKey = btn.getAttribute("data-item");
+        if (itemVoiceMap[itemKey]) {
+          speakText(itemVoiceMap[itemKey], LESSON_CONFIG.speechRateNormal);
+        }
         triggerBurstParticles(undefined, undefined, "#facc15");
         btn.classList.add("ring-4", "ring-yellow-300", "scale-105");
         setTimeout(() => btn.classList.remove("scale-105"), 200);
@@ -553,7 +568,7 @@ function triggerStorySceneProp() {
     modalBody.innerHTML = `
       <div class="text-sm sm:text-lg font-bold text-white leading-relaxed mb-2">${stepObj.actionOverlayBody}</div>
       <button id="warpToCraftingStageBtn" class="w-full mt-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:brightness-110 text-red-950 font-black text-base sm:text-xl shadow-2xl mc-btn flex items-center justify-center gap-2 animate-bounce">
-        <span>⚒️ 前往麥塊合成台拼讀方塊</span> <span>▶️</span>
+        <span>⚒️ 進入「2. Words 單字拼字與句型」</span> <span>▶️</span>
       </button>
     `;
 
@@ -576,4 +591,25 @@ function triggerStorySceneProp() {
   document.getElementById("storyModalTitle").textContent = stepObj.actionOverlayTitle;
   modal.classList.remove("hidden");
   showToast(stepObj.actionToast, "✨", true);
+}
+function highlightSpeaker(role) {
+  const lineA = document.getElementById("promptLineA");
+  const lineB = document.getElementById("promptLineB");
+  if (!lineA || !lineB) return;
+  lineA.classList.remove("spotlight-speaker-a", "spotlight-speaker-b", "scale-[1.02]", "opacity-40");
+  lineB.classList.remove("spotlight-speaker-a", "spotlight-speaker-b", "scale-[1.02]", "opacity-40");
+  if (role === "A" || role === "steve") {
+    lineA.classList.add("spotlight-speaker-a", "scale-[1.02]");
+    lineB.classList.add("opacity-40");
+  } else if (role === "B" || role === "alex" || role === "santa") {
+    lineB.classList.add("spotlight-speaker-b", "scale-[1.02]");
+    lineA.classList.add("opacity-40");
+  }
+}
+
+function clearSpeakerHighlight() {
+  const lineA = document.getElementById("promptLineA");
+  const lineB = document.getElementById("promptLineB");
+  lineA?.classList.remove("spotlight-speaker-a", "spotlight-speaker-b", "scale-[1.02]", "opacity-40");
+  lineB?.classList.remove("spotlight-speaker-a", "spotlight-speaker-b", "scale-[1.02]", "opacity-40");
 }
