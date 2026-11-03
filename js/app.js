@@ -556,6 +556,17 @@ function switchStage(newStage) {
   document.getElementById("bottomDeckCulture")?.classList.toggle("hidden", newStage !== "culture");
   document.getElementById("bottomDeckParty")?.classList.toggle("hidden", newStage !== "party");
 
+  const unitBadge = document.getElementById("currentUnitBadge");
+  if (unitBadge) {
+    const badges = {
+      story: "📖 麥塊極地繪本",
+      words: "🔤 單字拼字與句型",
+      culture: "🌍 國際聖誕文化",
+      party: "🎉 五國祝福與大PK"
+    };
+    unitBadge.textContent = badges[newStage] || "課堂單元";
+  }
+
   document.querySelectorAll(".stage-nav-btn").forEach(btn => {
     const isCurrent = btn.getAttribute("data-stage") === newStage;
     btn.className = isCurrent
@@ -770,6 +781,51 @@ window.addEventListener("DOMContentLoaded", () => {
   renderPartyGreetings();
   switchStage("story");
 
+  // 首頁四大模組點選與回首頁導航
+  window.enterLessonFromHome = function(stageName) {
+    if (typeof playSfx === "function") playSfx("portal");
+    const home = document.getElementById("homeScreenView");
+    if (home) home.classList.add("hidden");
+    switchStage(stageName);
+    if (stageName === "story") {
+      state.storyStepIdx = 0;
+      renderStoryStage(false);
+    }
+  };
+
+  window.returnToHomeScreen = function() {
+    if (typeof playSfx === "function") playSfx("click");
+    if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    const home = document.getElementById("homeScreenView");
+    if (home) home.classList.remove("hidden");
+    closeAllOverlays();
+    if (fireworkShowInterval) {
+      clearInterval(fireworkShowInterval);
+      fireworkShowInterval = null;
+    }
+  };
+
+  document.getElementById("btnHomeStory")?.addEventListener("click", () => enterLessonFromHome("story"));
+  document.getElementById("btnHomeWords")?.addEventListener("click", () => enterLessonFromHome("words"));
+  document.getElementById("btnHomeCulture")?.addEventListener("click", () => enterLessonFromHome("culture"));
+  document.getElementById("btnHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
+  document.getElementById("cardHomeStory")?.addEventListener("click", () => enterLessonFromHome("story"));
+  document.getElementById("cardHomeWords")?.addEventListener("click", () => enterLessonFromHome("words"));
+  document.getElementById("cardHomeCulture")?.addEventListener("click", () => enterLessonFromHome("culture"));
+  document.getElementById("cardHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
+
+  document.getElementById("backToHomeBtn")?.addEventListener("click", returnToHomeScreen);
+
+  document.getElementById("homeSoundToggleBtn")?.addEventListener("click", () => {
+    if (typeof isBgmMuted === "function" && typeof toggleBgmAudio === "function") {
+      toggleBgmAudio();
+      const icon = document.getElementById("homeSoundIcon");
+      if (icon) icon.textContent = isBgmMuted() ? "🔇" : "🔊";
+    }
+  });
+
+  document.getElementById("homeFullscreenBtn")?.addEventListener("click", toggleFullScreen);
+
   document.querySelectorAll(".stage-nav-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       switchStage(btn.getAttribute("data-stage"));
@@ -851,7 +907,8 @@ window.addEventListener("DOMContentLoaded", () => {
       state.storyStepIdx++;
       renderStoryStage(false);
     } else {
-      switchStage("words");
+      // 依據教學建議：麥塊劇情結尾按鈕改為「回首頁」，讓教師可再次選擇教學模式
+      returnToHomeScreen();
     }
   });
   document.getElementById("storySpeakABtn")?.addEventListener("click", () => {
@@ -968,13 +1025,21 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.getElementById("zoomSlowWordBtn")?.addEventListener("click", () => {
+    const item = getWordObj(state.focusedWordId);
+    if (item) speakText(item.word, LESSON_CONFIG.speechRateSlow);
+  });
   document.getElementById("zoomNormalWordBtn")?.addEventListener("click", () => {
     const item = getWordObj(state.focusedWordId);
-    speakText(item.word, LESSON_CONFIG.speechRateNormal);
+    if (item) speakText(item.word, LESSON_CONFIG.speechRateNormal);
+  });
+  document.getElementById("zoomSlowQaBtn")?.addEventListener("click", () => {
+    const item = getWordObj(state.focusedWordId);
+    if (item) speakText(item.qaASpeak, LESSON_CONFIG.speechRateSlow);
   });
   document.getElementById("zoomSpeakQaBtn")?.addEventListener("click", () => {
     const item = getWordObj(state.focusedWordId);
-    speakText(item.qaASpeak, LESSON_CONFIG.speechRateNormal);
+    if (item) speakText(item.qaASpeak, LESSON_CONFIG.speechRateNormal);
   });
 
   document.getElementById("cultureSubModeExploreBtn")?.addEventListener("click", () => {

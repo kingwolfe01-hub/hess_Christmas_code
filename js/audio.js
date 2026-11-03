@@ -685,7 +685,17 @@ function playAudioFilePromise(filename, actualRate, fallbackText = null, fallbac
 
       const audio = new Audio(paths[pathIdx]);
       currentAudioInstance = audio;
-      audio.playbackRate = actualRate || 1.0;
+      const targetRate = actualRate || 1.0;
+      audio.defaultPlaybackRate = targetRate;
+      audio.playbackRate = targetRate;
+
+      // 雙重監聽：防止 Safari / Chrome 在 play 或 loadedmetadata 時重設語速
+      audio.addEventListener('loadedmetadata', () => {
+        try { audio.playbackRate = targetRate; } catch (_) {}
+      });
+      audio.addEventListener('play', () => {
+        try { audio.playbackRate = targetRate; } catch (_) {}
+      });
 
       let hasHandledFailure = false;
       const handleFailure = () => {

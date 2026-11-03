@@ -598,3 +598,39 @@ button, .mc-btn, .chunk-chip, .backpack-slot-btn, .scene-hotspot {
     max-width: calc((100vh - 48px - 185px) * 16 / 9) !important;
   }
 }
+/* =========================================================================
+   【新增】CHRISTMAS ADVENTURE 專屬首頁與模組卡片視覺樣式
+   ========================================================================= */
+.title-3d-gold {
+  font-family: 'Cinzel', 'Noto Serif TC', serif;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  background: linear-gradient(180deg, #ffffff 0%, #fef08a 25%, #f59e0b 55%, #b45309 85%, #78350f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #92400e)
+          drop-shadow(0 4px 0 #78350f)
+          drop-shadow(0 6px 0 #451a03)
+          drop-shadow(0 8px 1px #1a0800)
+          drop-shadow(0 12px 20px rgba(0, 0, 0, 0.95))
+          drop-shadow(0 0 40px rgba(245, 158, 11, 0.65));
+  animation: logoFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes logoFloat {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-3px) scale(1.01); }
+}
+
+.home-stage-card {
+  background: linear-gradient(180deg, rgba(28, 18, 12, 0.94) 0%, rgba(12, 8, 5, 0.97) 100%);
+  border: 3px solid #5a3e2b;
+  box-shadow: inset 1px 1px 0 rgba(255, 237, 213, 0.25),
+              0 8px 24px rgba(0, 0, 0, 0.88);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.home-stage-card:hover {
+  transform: translateY(-4px) scale(1.025);
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.4),
+              0 14px 32px rgba(245, 158, 11, 0.4);
+}

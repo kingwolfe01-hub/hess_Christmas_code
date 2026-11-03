@@ -7,11 +7,114 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>🎄 Merry Christmas! 國小中高年級 3D 麥塊情境・音節合成・7國文化大屏教學版 (單檔免安裝版)</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@800;900&family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 </head>
 <body class="flex flex-col justify-between select-none">
+
+  <!-- =========================================================================
+       【首頁主畫面 (Home Screen / Launcher)】
+       - 依據教學建議：從首頁直接提供四大模組入口，讓教師依目標選擇進入方式
+       - 背景採用最新原創史詩「CHRISTMAS ADVENTURE」黑曜石傳送門主視覺
+       ========================================================================= -->
+  <div id="homeScreenView" class="fixed inset-0 z-40 bg-[#0c0805] flex flex-col justify-between p-3 sm:p-6 overflow-y-auto select-none">
+    <!-- 滿版背景圖 -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      <img src="assets/scenes/home_cover.jpg" alt="Christmas Adventure Cover" class="w-full h-full object-cover object-center filter brightness-90 contrast-105" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/70"></div>
+    </div>
+
+    <!-- 首頁頂部快捷列 -->
+    <header class="relative z-10 flex justify-between items-center px-2 py-1">
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-stone-900/90 border border-amber-500/50 text-amber-200 text-xs font-bold">
+          📍 起點：台灣冬日校園 ➔ 🌀 穿過蟲洞 ➔ 極地雪原 (-15°C)
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="homeSoundToggleBtn" class="px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-500/50 text-xs font-bold text-amber-300 transition mc-btn">
+          <span id="homeSoundIcon">🔊</span> <span>音樂配樂</span>
+        </button>
+        <button id="homeFullscreenBtn" class="p-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-stone-600 text-stone-200 text-xs transition mc-btn" title="切換全螢幕">
+          ⛶ 全螢幕
+        </button>
+      </div>
+    </header>
+
+    <!-- 首頁中央核心：3D 鍍金立體大標題 + 垂直置中 4 顆純淨主選單按鈕 (完全避開兩側 Steve 與 Alex) -->
+    <main class="relative z-10 flex-1 flex flex-col items-center justify-center py-2 sm:py-3 text-center my-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-0.5 rounded-full bg-black/75 border border-amber-400/50 mb-1 shadow-xl">
+        <span class="text-xs text-amber-300 font-bold tracking-widest">★ 聖誕節教學冒險程式首頁 ★</span>
+      </div>
+
+      <!-- 核心 3D 鍍金字體 -->
+      <h1 class="title-3d-gold text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider mb-1">
+        CHRISTMAS ADVENTURE
+      </h1>
+      <div class="text-amber-200 font-bold text-xs sm:text-sm tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] mb-1">
+        🎄 聖誕節大冒險 · 跨國文化與方塊救援行動 🎄
+      </div>
+      <p class="text-stone-300 text-xs drop-shadow bg-black/60 px-4 py-0.5 rounded-full border border-white/10 mb-3 sm:mb-4">
+        攜手聖誕老人穿越紫色蟲洞，拯救 Rudolph 並重燃極地木屋！
+      </p>
+
+      <!-- 垂直置中 4 顆純淨主按鈕 (嚴格依照使用者要求命名，移除多餘解說段落，完全不擋角色) -->
+      <div class="w-full max-w-md mx-auto flex flex-col space-y-2.5 px-3 select-none">
+        
+        <!-- 按鈕 1: 麥塊極地繪本 -->
+        <button id="btnHomeStory" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-amber-950/90 via-amber-800/90 to-amber-950/90 hover:from-amber-700 hover:to-amber-600 border-2 border-amber-400 text-amber-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl group-hover:scale-110 transition-transform">📖</span>
+            <span class="tracking-wide text-amber-200">麥塊極地繪本</span>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-amber-400/50 text-amber-300 text-xs font-bold font-mono tracking-wider">STORY ▶</span>
+        </button>
+
+        <!-- 按鈕 2: 單字拼字與句型 -->
+        <button id="btnHomeWords" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-emerald-800/90 to-emerald-950/90 hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400 text-emerald-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl group-hover:scale-110 transition-transform">🔤</span>
+            <span class="tracking-wide text-emerald-200">單字拼字與句型</span>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-emerald-400/50 text-emerald-300 text-xs font-bold font-mono tracking-wider">WORDS ▶</span>
+        </button>
+
+        <!-- 按鈕 3: 國際聖誕文化 -->
+        <button id="btnHomeCulture" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-sky-950/90 via-sky-800/90 to-sky-950/90 hover:from-sky-700 hover:to-sky-600 border-2 border-sky-400 text-sky-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl group-hover:scale-110 transition-transform">🌍</span>
+            <span class="tracking-wide text-sky-200">國際聖誕文化</span>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-sky-400/50 text-sky-300 text-xs font-bold font-mono tracking-wider">CULTURE ▶</span>
+        </button>
+
+        <!-- 按鈕 4: 五國祝福與大PK -->
+        <button id="btnHomeParty" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-purple-950/90 via-purple-800/90 to-purple-950/90 hover:from-purple-700 hover:to-purple-600 border-2 border-purple-400 text-purple-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl group-hover:scale-110 transition-transform">🎉</span>
+            <span class="tracking-wide text-purple-200">五國祝福與大PK</span>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-purple-400/50 text-purple-300 text-xs font-bold font-mono tracking-wider">PARTY PK ▶</span>
+        </button>
+
+      </div>
+    </main>
+
+    <!-- 首頁底部裝備與狀態提示 -->
+    <footer class="relative z-10 flex flex-wrap justify-between items-center px-4 py-2 text-stone-400 text-xs border-t border-white/10">
+      <div class="flex items-center gap-2">
+        <span>探險裝備：</span>
+        <span class="px-2 py-0.5 rounded bg-black/60 border border-amber-600/40 text-amber-300 text-[11px]">🔥 打火石</span>
+        <span class="px-2 py-0.5 rounded bg-black/60 border border-cyan-600/40 text-cyan-300 text-[11px]">🧭 磁石指南針</span>
+        <span class="px-2 py-0.5 rounded bg-black/60 border border-purple-600/40 text-purple-300 text-[11px]">🧥 防寒大衣</span>
+      </div>
+      <div>
+        ✨ 專為國小英語大屏教學與 iPad 互動設計 · 支援單檔隨開即用
+      </div>
+    </footer>
+  </div>
+
 
   <!-- =========================================================================
        【行動裝置直向防呆旋轉遮罩 (Portrait Orientation Guard)】
@@ -37,11 +140,14 @@
        【第一層：教師狀態列、微軟 AI 語音設定與雙隊 PK 計分板】
        ========================================================================= -->
   <header class="h-[56px] shrink-0 bg-[#160e09] border-b-4 border-[#4c3322] px-3 sm:px-5 flex items-center justify-between gap-2 z-30">
-    <!-- 左：標題與 7 星進度 -->
-    <div class="flex items-center gap-2.5">
-      <span class="text-xl sm:text-2xl font-black text-amber-300 tracking-wide">🌍 World Christmas</span>
-      <span class="hidden lg:inline-block px-2 py-0.5 rounded bg-amber-400/20 border border-amber-300/50 text-amber-200 text-xs font-black">中年級升級架構版</span>
-      <div id="starProgressRow" class="flex items-center gap-0.5 bg-black/60 px-2.5 py-1 rounded-full border-2 border-amber-400/50"></div>
+    <!-- 左：回首頁按鈕、標題與 7 星進度 -->
+    <div class="flex items-center gap-2 sm:gap-2.5">
+      <button id="backToHomeBtn" class="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-sm mc-btn flex items-center gap-1.5 shadow-lg border border-yellow-300 transition-transform active:scale-95 shrink-0" title="返回主畫面選擇其他單元">
+        <span>🏠</span> <span>回首頁</span>
+      </button>
+      <span class="text-base sm:text-2xl font-black text-amber-300 tracking-wide truncate max-w-[130px] sm:max-w-none">World Christmas</span>
+      <span id="currentUnitBadge" class="hidden md:inline-block px-2 py-0.5 rounded bg-amber-400/20 border border-amber-300/50 text-amber-200 text-xs font-black">📖 劇情單元</span>
+      <div id="starProgressRow" class="flex items-center gap-0.5 bg-black/60 px-2 py-1 rounded-full border-2 border-amber-400/50"></div>
       <span id="progressCounterText" class="text-xs sm:text-sm font-black text-lime-300">0/7</span>
     </div>
 
@@ -268,10 +374,7 @@
             <div id="promptSubZh" class="font-bold text-amber-200 mt-1 bg-black/25 px-2.5 py-0.5 rounded-lg border border-blue-400/20 text-xs sm:text-base leading-snug inline-block max-w-full"></div>
           </div>
 
-          <!-- 右側 RPG 閃爍游標 -->
-          <div class="shrink-0 self-center pr-1">
-            <span class="rpg-cursor-blink text-amber-300 text-lg sm:text-xl font-black">▼</span>
-          </div>
+          <!-- 右側游標已依建議移除，避免誤導為可點擊按鈕 -->
         </div>
 
       </div>
@@ -329,7 +432,19 @@
               <span id="zoomPhonicsNote" class="text-xs sm:text-sm font-black text-sky-300">p-ine + tr-ee ➔ pine tree</span>
               <span id="zoomPrepBadge" class="px-2.5 py-0.5 rounded bg-amber-400 text-red-950 font-black text-xs sm:text-sm">介系詞：by</span>
             </div>
-            <div id="zoomQaQuestion" class="text-lg sm:text-2xl font-black text-amber-200 mt-1.5">
+            <!-- 依據建議：在目標句子正上方明確放置朗讀與慢速控制按鈕 -->
+            <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-white/10">
+              <span class="text-xs font-bold text-amber-300">📖 朗讀問答句型：</span>
+              <div class="flex items-center gap-1.5">
+                <button id="zoomSlowQaBtn" class="px-2.5 py-1 rounded-lg bg-sky-400/90 hover:bg-sky-300 text-slate-950 font-black text-xs mc-btn" title="以慢速朗讀完整問答句">
+                  🐢 慢速問答
+                </button>
+                <button id="zoomSpeakQaBtn" class="px-2.5 py-1 rounded-lg bg-lime-400/90 hover:bg-lime-300 text-slate-950 font-black text-xs mc-btn" title="以正常語速朗讀完整問答句">
+                  🔊 正常問答
+                </button>
+              </div>
+            </div>
+            <div id="zoomQaQuestion" class="text-lg sm:text-2xl font-black text-amber-200 mt-1">
               Q: Where is the pine tree?
             </div>
             <div id="zoomQaAnswer" class="text-xl sm:text-3xl font-black text-white mt-0.5">
@@ -337,12 +452,13 @@
             </div>
           </div>
 
+          <!-- 單字發音按鈕：同樣提供慢速與正常語速雙模式 -->
           <div class="grid grid-cols-2 gap-3">
-            <button id="zoomNormalWordBtn" class="py-3 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-red-950 font-black text-sm sm:text-lg mc-btn flex items-center justify-center gap-2 shadow-lg">
-              <span>🔊</span> <span>單字標準發音</span>
+            <button id="zoomSlowWordBtn" class="py-2.5 px-3 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 shadow-lg" title="以慢速發音單字">
+              <span>🐢</span> <span>單字慢速發音</span>
             </button>
-            <button id="zoomSpeakQaBtn" class="py-3 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-sm sm:text-lg mc-btn flex items-center justify-center gap-2 shadow-lg">
-              <span>💬</span> <span>朗讀完整問答句</span>
+            <button id="zoomNormalWordBtn" class="py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-red-950 font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 shadow-lg" title="以標準正常語速發音單字">
+              <span>🔊</span> <span>單字標準發音</span>
             </button>
           </div>
         </div>
@@ -410,7 +526,7 @@
   <!-- =========================================================================
        【第三層：底部中年級互動控制台與麥塊合成台】
        ========================================================================= -->
-  <footer class="h-[215px] sm:h-[230px] shrink-0 mc-panel px-3 sm:px-5 py-2 flex flex-col justify-between z-30">
+  <footer class="h-[150px] sm:h-[165px] shrink-0 mc-panel px-3 sm:px-5 py-2 flex flex-col justify-center z-30 transition-all">
 
     <!-- 上排：4 階段專屬互動區 -->
     <div class="flex-1 flex items-center justify-center w-full overflow-hidden">
@@ -515,21 +631,7 @@
 
     </div>
 
-    <!-- 下排：40 分鐘一節課（優化後四階段）切換導航列 -->
-    <nav class="h-[48px] pt-1.5 border-t-2 border-[#4a3222] grid grid-cols-4 gap-2 sm:gap-4 max-w-6xl w-full mx-auto">
-      <button id="stageBtnStory" data-stage="story" class="stage-nav-btn rounded-xl font-black text-xs sm:text-base flex items-center justify-center gap-1.5 transition bg-amber-400 text-red-950 shadow-md">
-        <span>📖</span> <span>1. Story 麥塊8幕劇情 (6分)</span>
-      </button>
-      <button id="stageBtnWords" data-stage="words" class="stage-nav-btn rounded-xl font-black text-xs sm:text-base flex items-center justify-center gap-1.5 transition bg-[#38261a] text-amber-200 hover:bg-[#4d3423]">
-        <span>🔤</span> <span>2. Words 單字拼字與句型 (14分)</span>
-      </button>
-      <button id="stageBtnCulture" data-stage="culture" class="stage-nav-btn rounded-xl font-black text-xs sm:text-base flex items-center justify-center gap-1.5 transition bg-[#38261a] text-amber-200 hover:bg-[#4d3423]">
-        <span>🌍</span> <span>3. Culture 7國文化與台灣 (12分)</span>
-      </button>
-      <button id="stageBtnParty" data-stage="party" class="stage-nav-btn rounded-xl font-black text-xs sm:text-base flex items-center justify-center gap-1.5 transition bg-[#38261a] text-amber-200 hover:bg-[#4d3423]">
-        <span>🎉</span> <span>4. Party 5國祝福＆PK (8分)</span>
-      </button>
-    </nav>
+<!-- 底部各單元切換分頁已依建議移除，減緩操作視覺疲勞，透過頂部「回首頁」切換 -->
 
   </footer>
 

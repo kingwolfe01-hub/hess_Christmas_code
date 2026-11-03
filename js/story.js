@@ -331,7 +331,7 @@ function renderStoryStage(autoSpeak = false) {
   document.getElementById("storyPrevStepBtn").classList.toggle("opacity-40", state.storyStepIdx === 0);
 
   const nextText = document.getElementById("storyNextStepText");
-  nextText.textContent = state.storyStepIdx === LESSON_CONFIG.storySteps.length - 1 ? "進入單字合成" : "下一幕";
+  nextText.textContent = state.storyStepIdx === LESSON_CONFIG.storySteps.length - 1 ? "🏠 完成劇情 · 回首頁" : "下一幕";
 
   // 觸發第 1 階段劇情聯動背景音樂 (自動淡入淡出)
   if (typeof playStorySceneBgm === "function") {
