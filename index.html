@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@800;900&family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-</head>
 <body class="flex flex-col justify-between select-none">
 
   <!-- =========================================================================
@@ -28,9 +27,7 @@
     <!-- 首頁頂部快捷列 -->
     <header class="relative z-10 flex justify-between items-center px-2 py-1">
       <div class="flex items-center gap-2">
-        <span class="px-3 py-1 rounded-full bg-stone-900/90 border border-amber-500/50 text-amber-200 text-xs font-bold">
-          📍 起點：台灣冬日校園 ➔ 🌀 穿過蟲洞 ➔ 極地雪原 (-15°C)
-        </span>
+        <!-- 劇情路徑提示已依建議自首頁移除 -->
       </div>
       <div class="flex items-center gap-2">
         <button id="homeSoundToggleBtn" class="px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-500/50 text-xs font-bold text-amber-300 transition mc-btn">
@@ -43,7 +40,7 @@
     </header>
 
     <!-- 首頁中央核心：3D 鍍金立體大標題 + 垂直置中 4 顆純淨主選單按鈕 (完全避開兩側 Steve 與 Alex) -->
-    <main class="relative z-10 flex-1 flex flex-col items-center justify-center py-2 sm:py-3 text-center my-auto">
+    <div id="homeMainContent" class="relative z-10 flex-1 flex flex-col items-center justify-center py-2 sm:py-3 text-center my-auto">
       <div class="inline-flex items-center gap-2 px-3.5 py-0.5 rounded-full bg-black/75 border border-amber-400/50 mb-1 shadow-xl">
         <span class="text-xs text-amber-300 font-bold tracking-widest">★ 聖誕節教學冒險程式首頁 ★</span>
       </div>
@@ -99,15 +96,12 @@
         </button>
 
       </div>
-    </main>
+    </div>
 
     <!-- 首頁底部裝備與狀態提示 -->
     <footer class="relative z-10 flex flex-wrap justify-between items-center px-4 py-2 text-stone-400 text-xs border-t border-white/10">
       <div class="flex items-center gap-2">
-        <span>探險裝備：</span>
-        <span class="px-2 py-0.5 rounded bg-black/60 border border-amber-600/40 text-amber-300 text-[11px]">🔥 打火石</span>
-        <span class="px-2 py-0.5 rounded bg-black/60 border border-cyan-600/40 text-cyan-300 text-[11px]">🧭 磁石指南針</span>
-        <span class="px-2 py-0.5 rounded bg-black/60 border border-purple-600/40 text-purple-300 text-[11px]">🧥 防寒大衣</span>
+        <!-- 劇情探險裝備已依建議自首頁移除 -->
       </div>
       <div>
         ✨ 專為國小英語大屏教學與 iPad 互動設計 · 支援單檔隨開即用
@@ -154,27 +148,22 @@
     <!-- 中：⚔️ 紅石隊 (Redstone) vs. 綠寶石隊 (Emerald) 課堂即時加分板 -->
     <div class="flex items-center gap-2 bg-black/55 px-2.5 py-1 rounded-xl border-2 border-[#5c4028]">
       <div class="flex items-center gap-1.5">
-        <span class="text-xs sm:text-sm font-black text-rose-400">🔴 Redstone</span>
+        <span class="text-xs sm:text-sm font-black text-rose-400">🔴 Team A</span>
         <span id="scoreRedText" class="px-2 py-0.5 rounded bg-rose-950 border border-rose-400 text-white font-black text-sm sm:text-base">0</span>
-        <button id="addRedScoreBtn" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-black text-xs sm:text-sm mc-btn" title="紅隊 +1 分">+1</button>
+        <button id="addRedScoreBtn" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-black text-xs sm:text-sm mc-btn" title="A隊 +1 分">+1</button>
       </div>
       <span class="text-amber-400 font-black text-xs">VS</span>
       <div class="flex items-center gap-1.5">
-        <span class="text-xs sm:text-sm font-black text-emerald-400">🟢 Emerald</span>
+        <span class="text-xs sm:text-sm font-black text-emerald-400">🟢 Team B</span>
         <span id="scoreGreenText" class="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-400 text-white font-black text-sm sm:text-base">0</span>
-        <button id="addGreenScoreBtn" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs sm:text-sm mc-btn" title="綠隊 +1 分">+1</button>
+        <button id="addGreenScoreBtn" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs sm:text-sm mc-btn" title="B隊 +1 分">+1</button>
       </div>
     </div>
 
     <!-- 右：教師控場工具與微軟 AI 語音設定 -->
     <div class="flex items-center gap-1.5">
 
-      <button id="toggleLabelsBtn" class="px-2.5 py-1 rounded-lg bg-[#38261a] hover:bg-[#4d3423] text-lime-200 border-2 border-lime-400/60 text-xs sm:text-sm font-black flex items-center gap-1 transition">
-        <span>🏷️</span> <span id="toggleLabelsText" class="hidden sm:inline">位置名牌</span>
-      </button>
-      <button id="teacherUnlockAllBtn" class="px-2.5 py-1 rounded-lg bg-amber-400/20 hover:bg-amber-400/35 text-amber-200 border-2 border-amber-300/60 text-xs sm:text-sm font-black flex items-center gap-1 transition">
-        <span>👩‍🏫</span> <span id="teacherUnlockAllText" class="hidden sm:inline">一鍵全亮</span>
-      </button>
+<!-- 位置名牌與一鍵全亮按鈕已依建議移除 -->
       <button id="soundMuteBtn" class="px-2.5 py-1 rounded-lg bg-[#38261a] hover:bg-[#4d3423] text-amber-200 border-2 border-[#6e4c34] text-xs sm:text-sm font-black">
         <span id="soundMuteIcon">🔊</span>
       </button>
@@ -190,7 +179,7 @@
   <!-- =========================================================================
        【第二層：巨幅 3D 麥塊場景、動態看板與懸浮設定視窗】
        ========================================================================= -->
-  <main class="flex-1 relative bg-[#0e0805] overflow-hidden flex items-center justify-center">
+  <main id="stageMainContainer" class="flex-1 relative bg-[#0e0805] overflow-hidden flex items-center justify-center">
     <div id="sceneViewport" class="relative w-full h-full max-w-[175vh] max-h-full aspect-[16/9] overflow-hidden shadow-2xl border-x-4 border-[#3b281a]">
 
       <!-- (A) 故事前 3 幕專用：全幅 16:9 3D 麥塊情境畫布 (#storySceneImgLayer) -->
@@ -329,7 +318,7 @@
       <div id="topPromptBanner" class="absolute z-20 rpg-dialogue-panel rounded-2xl px-3.5 py-2 shadow-2xl cursor-default draggable-panel rpg-bottom-docked">
 
         <!-- 頂部精簡工具列 (左側內嵌姓名牌 + 階段標籤；右側控制按鈕) -->
-        <div id="promptBannerHeader" class="flex items-center justify-between gap-2 mb-1 drag-handle select-none border-b border-blue-400/25 pb-1">
+        <div id="promptBannerHeader" class="flex items-center justify-between gap-2 mb-1 select-none border-b border-blue-400/25 pb-1">
           <div class="flex items-center gap-2">
             <!-- 內嵌姓名牌 (不外凸避免切邊) -->
             <div id="promptNametagBox" class="rpg-nametag-box select-none">
