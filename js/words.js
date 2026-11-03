@@ -303,6 +303,13 @@ function openVoxelZoomBox(wordId, autoSpeakRate = null) {
 
   document.getElementById("cultureCompareBoard")?.classList.add("hidden");
   const zoomBox = document.getElementById("voxelZoomBox");
+  if (zoomBox) {
+    zoomBox.style.removeProperty("left");
+    zoomBox.style.removeProperty("top");
+    zoomBox.style.removeProperty("right");
+    zoomBox.style.removeProperty("bottom");
+    zoomBox.style.removeProperty("transform");
+  }
   document.getElementById("zoomGrammarBadge").textContent = `📍 ${item.grammarTag}`;
   document.getElementById("zoomBoxImg").src = assets[item.thumbKey] || "";
   document.getElementById("zoomWordZh").textContent = `${item.emoji} ${item.zh}`;
@@ -461,7 +468,7 @@ function renderWordsStage(autoSpeak = false) {
     wrapper.appendChild(btnCol);
     zone.appendChild(wrapper);
 
-    document.getElementById("spellListenTargetBtn").addEventListener("click", () => {
+    document.getElementById("spellListenTargetBtn")?.addEventListener("click", () => {
       speakText(target.word, LESSON_CONFIG.speechRateSlow);
     });
 

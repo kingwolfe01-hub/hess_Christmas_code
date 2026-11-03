@@ -634,3 +634,17 @@ button, .mc-btn, .chunk-chip, .backpack-slot-btn, .scene-hotspot {
   box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.4),
               0 14px 32px rgba(245, 158, 11, 0.4);
 }
+
+/* 鎖定對話框底端停靠，消除拖曳光標與不穩定跑版 */
+#topPromptBanner.rpg-bottom-docked {
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  cursor: default !important;
+}
+#topPromptBanner .drag-handle {
+  cursor: default !important;
+}

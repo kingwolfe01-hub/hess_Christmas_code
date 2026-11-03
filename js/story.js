@@ -18,7 +18,7 @@ LESSON_CONFIG.storySteps = [
     roleB: "🅱️ Alex: Look! An SOS map from Santa!",
     roleASpeak: "steve",
     roleBSpeak: "alex",
-    zhHint: "🇹🇼 序曲・從台灣出發：點擊下方「📜 打開求救捲軸」展開冒險！",
+    zhHint: "",
     speakA: "It's cold today in Taiwan!",
     speakB: "Look! An S O S map from Santa!",
     actionBtnLabel: "📜 打開求救捲軸",
@@ -333,8 +333,10 @@ function renderStoryStage(autoSpeak = false) {
   const nextText = document.getElementById("storyNextStepText");
   nextText.textContent = state.storyStepIdx === LESSON_CONFIG.storySteps.length - 1 ? "🏠 完成劇情 · 回首頁" : "下一幕";
 
-  // 觸發第 1 階段劇情聯動背景音樂 (自動淡入淡出)
-  if (typeof playStorySceneBgm === "function") {
+  // 觸發第 1 階段劇情聯動背景音樂 (僅在進入教學單元後播放，首頁保持靜音避免 Autoplay 警告)
+  const homeEl = document.getElementById("homeScreenView");
+  const isHomeActive = homeEl && !homeEl.classList.contains("hidden");
+  if (!isHomeActive && typeof playStorySceneBgm === "function") {
     playStorySceneBgm(stepObj.step);
   }
 
@@ -369,7 +371,7 @@ function renderStoryQuiz(stepObj) {
     </div>
   `;
 
-  document.getElementById("speakQuizBtn").addEventListener("click", () => {
+  document.getElementById("speakQuizBtn")?.addEventListener("click", () => {
     speakText(q.questionEn, LESSON_CONFIG.speechRateNormal);
   });
 
@@ -405,7 +407,19 @@ function renderStoryQuiz(stepObj) {
           triggerBurstParticles(undefined, undefined, "#facc15");
         }
 
-        state.stars++;
+        // 答對挑戰：解鎖對應方塊，讓左上角星星面板即時增加並點亮！
+        if (stepObj.step === 6) {
+          state.unlockedIds.add("tree");
+        } else if (stepObj.step === 7) {
+          state.unlockedIds.add("stocking");
+        } else if (q.unlockWordId) {
+          state.unlockedIds.add(q.unlockWordId);
+        } else {
+          // 預設解鎖第一顆未解鎖之聖誕方塊
+          const nextWord = LESSON_CONFIG.words.find(w => !state.unlockedIds.has(w.id));
+          if (nextWord) state.unlockedIds.add(nextWord.id);
+        }
+        state.stars = Math.max(state.stars, state.unlockedIds.size);
         updateSceneAndStars();
         speakText(q.correctSpeech, LESSON_CONFIG.speechRateNormal);
         btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-lime-600 border-lime-300 text-white font-black text-xs sm:text-sm shadow";

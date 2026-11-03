@@ -146,7 +146,8 @@ function updateSceneAndStars() {
 
   const count = state.unlockedIds.size;
   document.getElementById("progressCounterText").textContent = `${count}/7`;
-  document.getElementById("teacherUnlockAllText").textContent = count === 7 ? "全部重置" : "一鍵全亮";
+  const unlockTextEl = document.getElementById("teacherUnlockAllText");
+  if (unlockTextEl) unlockTextEl.textContent = count === 7 ? "全部重置" : "一鍵全亮";
 
   const isQuizActive =
     (state.stage === "words" && (state.wordsSubMode === "spell" || state.wordsSubMode === "prep")) ||
@@ -615,7 +616,6 @@ function switchStage(newStage) {
 function makeDraggable(panel, handle = null, container = null) {
   if (!panel) return;
   const dragHandle = handle || panel;
-  const parentContainer = container || panel.parentElement || document.querySelector("main") || document.body;
 
   let isDragging = false;
   let startPointerX = 0;
@@ -626,19 +626,24 @@ function makeDraggable(panel, handle = null, container = null) {
   dragHandle.classList.add("drag-handle");
   panel.classList.add("draggable-panel");
 
+  const getParentContainer = () => {
+    return container || panel.offsetParent || document.getElementById("stageMainContainer") || document.querySelector("main") || document.body;
+  };
+
   const onPointerDown = (e) => {
     if (e.target.closest("button") || e.target.closest("input") || e.target.closest("select") || e.target.closest("a")) {
       return;
     }
+
+    const parentContainer = getParentContainer();
+    const panelRect = panel.getBoundingClientRect();
+    const containerRect = parentContainer.getBoundingClientRect();
 
     isDragging = true;
     panel.classList.add("is-dragging");
     try {
       dragHandle.setPointerCapture(e.pointerId);
     } catch (_) {}
-
-    const panelRect = panel.getBoundingClientRect();
-    const containerRect = parentContainer.getBoundingClientRect();
 
     startPointerX = e.clientX;
     startPointerY = e.clientY;
@@ -660,17 +665,19 @@ function makeDraggable(panel, handle = null, container = null) {
   const onPointerMove = (e) => {
     if (!isDragging) return;
 
+    const parentContainer = getParentContainer();
+    const containerRect = parentContainer.getBoundingClientRect();
+    const panelWidth = panel.offsetWidth;
+    const panelHeight = panel.offsetHeight;
+
     const dx = e.clientX - startPointerX;
     const dy = e.clientY - startPointerY;
 
     let newLeft = startLeft + dx;
     let newTop = startTop + dy;
 
-    const containerRect = parentContainer.getBoundingClientRect();
-    const panelWidth = panel.offsetWidth;
-    const panelHeight = panel.offsetHeight;
-
-    const minLeft = 4;
+    // 真正教學舞台邊界安全範圍
+    const minLeft = 8;
     const maxLeft = Math.max(minLeft, containerRect.width - panelWidth - 8);
     const minTop = 8;
     const maxTop = Math.max(minTop, containerRect.height - panelHeight - 8);
@@ -709,7 +716,7 @@ function makeDraggable(panel, handle = null, container = null) {
     panel.style.removeProperty("right");
     panel.style.removeProperty("bottom");
     panel.style.removeProperty("margin");
-    playSfx("click");
+    if (typeof playSfx === "function") playSfx("click");
   });
 }
 
@@ -783,6 +790,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // 首頁四大模組點選與回首頁導航
   window.enterLessonFromHome = function(stageName) {
+    if (typeof ensureAudioCtx === "function") ensureAudioCtx();
     if (typeof playSfx === "function") playSfx("portal");
     const home = document.getElementById("homeScreenView");
     if (home) home.classList.add("hidden");
@@ -817,10 +825,10 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("backToHomeBtn")?.addEventListener("click", returnToHomeScreen);
 
   document.getElementById("homeSoundToggleBtn")?.addEventListener("click", () => {
-    if (typeof isBgmMuted === "function" && typeof toggleBgmAudio === "function") {
-      toggleBgmAudio();
+    if (typeof toggleBgmAudio === "function") {
+      const isPlaying = toggleBgmAudio();
       const icon = document.getElementById("homeSoundIcon");
-      if (icon) icon.textContent = isBgmMuted() ? "🔇" : "🔊";
+      if (icon) icon.textContent = isPlaying ? "🔊" : "🔇";
     }
   });
 
@@ -939,10 +947,10 @@ window.addEventListener("DOMContentLoaded", () => {
     renderWordsStage(false);
   });
 
-  const mainContainerEl = document.querySelector("main") || document.body;
+  const mainContainerEl = document.getElementById("stageMainContainer") || document.body;
   const topPromptEl = document.getElementById("topPromptBanner");
   const topPromptHeaderEl = document.getElementById("promptBannerHeader");
-  if (topPromptEl) makeDraggable(topPromptEl, topPromptHeaderEl || topPromptEl, mainContainerEl);
+  // 對話視窗依建議統一固定位置，不綁定拖曳以防跑版
 
   const zoomBoxEl = document.getElementById("voxelZoomBox");
   const zoomBoxHeaderEl = document.getElementById("zoomBoxHeader");
@@ -1085,8 +1093,17 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("soundMuteBtn")?.addEventListener("click", () => {
     state.soundOn = !state.soundOn;
     document.getElementById("soundMuteIcon").textContent = state.soundOn ? "🔊" : "🔇";
-    if (!state.soundOn && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
+    if (!state.soundOn) {
+      // 靜音時立即停止所有背景風雪、配樂與發音
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      if (typeof stopStorySceneBgm === "function") stopStorySceneBgm();
+      if (typeof stopChiptuneBgm === "function") stopChiptuneBgm();
+      if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    } else {
+      // 取消靜音時若在劇情第 5、6 幕，可恢復環境音
+      if (state.stage === "story" && typeof playStorySceneBgm === "function") {
+        playStorySceneBgm(state.storyStepIdx + 1);
+      }
     }
   });
 

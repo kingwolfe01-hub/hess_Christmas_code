@@ -15,17 +15,18 @@ let audioCtx = null;
 // ==========================================
 function ensureAudioCtx() {
   if (!audioCtx) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (Ctx) {
-      audioCtx = new Ctx();
-    }
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) {
+        audioCtx = new Ctx();
+      }
+    } catch (_) {}
   }
   if (audioCtx && audioCtx.state === "suspended") {
     audioCtx.resume().catch(() => {});
   }
-  // 行動裝置專屬喚醒靜音 Buffer
   try {
-    if (audioCtx && !window._mobileAudioUnlocked) {
+    if (audioCtx && !window._mobileAudioUnlocked && audioCtx.state === "running") {
       const buffer = audioCtx.createBuffer(1, 1, 22050);
       const source = audioCtx.createBufferSource();
       source.buffer = buffer;
@@ -830,80 +831,103 @@ async function speakPhonicsChunk(chunkText, phoneticSound) {
 // - 隨幕次自動淡入淡出環境底音 (蟲洞共振、暴風雪風吼、壁爐柴火底音)
 // ==========================================
 let storyAmbientNodes = null;
+let activeAmbientSources = [];
 
 function stopStorySceneBgm() {
+  // 立即中斷並斷開所有環境音振盪器，防止風雪音效殘留到下一幕
+  if (activeAmbientSources && activeAmbientSources.length > 0) {
+    activeAmbientSources.forEach(s => {
+      try {
+        s.stop();
+        s.disconnect();
+      } catch (_) {}
+    });
+    activeAmbientSources = [];
+  }
+
   if (storyAmbientNodes) {
     try {
-      const now = storyAmbientNodes.ctx.currentTime;
-      storyAmbientNodes.gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
-      setTimeout(() => {
-        try {
-          if (storyAmbientNodes && storyAmbientNodes.sources) {
-            storyAmbientNodes.sources.forEach(s => { s.stop(); s.disconnect(); });
-          }
-        } catch (_) {}
-        storyAmbientNodes = null;
-      }, 400);
-    } catch (_) {
-      storyAmbientNodes = null;
-    }
+      if (storyAmbientNodes.gain && storyAmbientNodes.ctx) {
+        const now = storyAmbientNodes.ctx.currentTime;
+        storyAmbientNodes.gain.gain.cancelScheduledValues(now);
+        storyAmbientNodes.gain.gain.setValueAtTime(0, now);
+        storyAmbientNodes.gain.disconnect();
+      }
+    } catch (_) {}
+    storyAmbientNodes = null;
   }
 }
 
 function playStorySceneBgm(step) {
+  // 切換任何幕次前先強制停止所有先前的環境音效
+  stopStorySceneBgm();
+
   if (window.state && window.state.soundOn === false) return;
   const ctx = ensureAudioCtx();
   if (!ctx) return;
 
-  stopStorySceneBgm();
   const now = ctx.currentTime;
 
   if (step === 4) {
     // 第 4 幕：時空蟲洞深層立體共振底音
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(65, now);
-    osc.frequency.linearRampToValueAtTime(110, now + 1.5);
-    osc.frequency.linearRampToValueAtTime(75, now + 3.0);
-    gain.gain.setValueAtTime(0.01, now);
-    gain.gain.linearRampToValueAtTime(0.12, now + 0.4);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    storyAmbientNodes = { ctx, gain, sources: [osc] };
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(65, now);
+      osc.frequency.linearRampToValueAtTime(110, now + 1.5);
+      osc.frequency.linearRampToValueAtTime(75, now + 3.0);
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      activeAmbientSources = [osc];
+      storyAmbientNodes = { ctx, gain, sources: [osc] };
+    } catch (_) {}
   } else if (step === 5 || step === 6) {
-    // 第 5、6 幕：暴風雪呼嘯寒風環境底音
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc1.type = "sine";
-    osc2.type = "triangle";
-    osc1.frequency.setValueAtTime(130, now);
-    osc1.frequency.linearRampToValueAtTime(240, now + 1.8);
-    osc1.frequency.linearRampToValueAtTime(115, now + 3.5);
-    osc2.frequency.setValueAtTime(140, now);
-    gain.gain.setValueAtTime(0.01, now);
-    gain.gain.linearRampToValueAtTime(0.15, now + 0.5);
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(ctx.destination);
-    osc1.start(now);
-    osc2.start(now);
-    storyAmbientNodes = { ctx, gain, sources: [osc1, osc2] };
+    // 第 5、6 幕：暴風雪呼嘯寒風環境底音 (僅限 5、6 幕，進入第 7 幕木屋立即停止)
+    try {
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc1.type = "sine";
+      osc2.type = "triangle";
+      osc1.frequency.setValueAtTime(130, now);
+      osc1.frequency.linearRampToValueAtTime(240, now + 1.8);
+      osc1.frequency.linearRampToValueAtTime(115, now + 3.5);
+      osc2.frequency.setValueAtTime(140, now);
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.14, now + 0.5);
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+      osc1.start(now);
+      osc2.start(now);
+      activeAmbientSources = [osc1, osc2];
+      storyAmbientNodes = { ctx, gain, sources: [osc1, osc2] };
+    } catch (_) {}
   } else if (step === 7) {
-    // 第 7 幕：溫暖壁爐柴火燃燒底音
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(80, now);
-    gain.gain.setValueAtTime(0.01, now);
-    gain.gain.linearRampToValueAtTime(0.08, now + 0.4);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    storyAmbientNodes = { ctx, gain, sources: [osc] };
+    // 第 7 幕：溫暖壁爐木屋 (已停止風雪呼嘯，改為溫暖微火)
+    stopStorySceneBgm();
+  } else {
+    // 其他幕次無環境暴風雪音
+    stopStorySceneBgm();
   }
 }
+
 window.playStorySceneBgm = playStorySceneBgm;
 window.stopStorySceneBgm = stopStorySceneBgm;
+// 首頁與全域 BGM 開關支援
+window.toggleBgmAudio = function() {
+  if (window.state && window.state.playingMusic) {
+    stopChiptuneBgm();
+    return false;
+  } else {
+    startChiptuneBgm();
+    return true;
+  }
+};
+window.isBgmMuted = function() {
+  return !(window.state && window.state.playingMusic);
+};
