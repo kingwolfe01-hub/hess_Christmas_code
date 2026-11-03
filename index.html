@@ -2,7 +2,9 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>🎄 Merry Christmas! 國小中高年級 3D 麥塊情境・音節合成・7國文化大屏教學版 (單檔免安裝版)</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
@@ -10,6 +12,26 @@
 </head>
 </head>
 <body class="flex flex-col justify-between select-none">
+
+  <!-- =========================================================================
+       【行動裝置直向防呆旋轉遮罩 (Portrait Orientation Guard)】
+       ========================================================================= -->
+  <div id="orientationOverlay" class="fixed inset-0 z-50 bg-[#120c08] flex flex-col items-center justify-center p-6 text-center select-none hidden">
+    <div class="relative mb-6">
+      <div class="w-20 h-32 border-4 border-amber-400 rounded-2xl flex items-center justify-center animate-pulse rotate-phone-icon">
+        <span class="text-3xl">🎮</span>
+      </div>
+      <div class="absolute -right-4 -bottom-2 text-3xl animate-bounce">🔄</div>
+    </div>
+    <h2 class="text-2xl sm:text-3xl font-black text-amber-300 mb-3 tracking-wide">請旋轉為橫向螢幕</h2>
+    <p class="text-sm sm:text-base font-bold text-amber-100/80 max-w-sm leading-relaxed mb-4">
+      為了呈現最佳的 3D 麥塊木屋與大屏教學互動視角，Pad 與手機請解鎖「方向鎖定」並橫向旋轉螢幕。
+    </p>
+    <div class="px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-bold">
+      ✨ 旋轉為橫向後將自動進入冒險
+    </div>
+  </div>
+
 
   <!-- =========================================================================
        【第一層：教師狀態列、微軟 AI 語音設定與雙隊 PK 計分板】

@@ -16,11 +16,24 @@ let audioCtx = null;
 function ensureAudioCtx() {
   if (!audioCtx) {
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (Ctx) audioCtx = new Ctx();
+    if (Ctx) {
+      audioCtx = new Ctx();
+    }
   }
   if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume();
+    audioCtx.resume().catch(() => {});
   }
+  // 行動裝置專屬喚醒靜音 Buffer
+  try {
+    if (audioCtx && !window._mobileAudioUnlocked) {
+      const buffer = audioCtx.createBuffer(1, 1, 22050);
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioCtx.destination);
+      source.start(0);
+      window._mobileAudioUnlocked = true;
+    }
+  } catch (_) {}
   return audioCtx;
 }
 

@@ -659,7 +659,7 @@ function makeDraggable(panel, handle = null, container = null) {
     const panelWidth = panel.offsetWidth;
     const panelHeight = panel.offsetHeight;
 
-    const minLeft = 8;
+    const minLeft = 4;
     const maxLeft = Math.max(minLeft, containerRect.width - panelWidth - 8);
     const minTop = 8;
     const maxTop = Math.max(minTop, containerRect.height - panelHeight - 8);
@@ -750,6 +750,13 @@ function updateFullscreenUI() {
 
 // DOM 初始化與事件綁定
 window.addEventListener("DOMContentLoaded", () => {
+  // 監聽 Pad / 手機旋轉與視窗變化
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 200);
+  });
+
   const unlockAudio = () => {
     if (typeof ensureAudioCtx === "function") ensureAudioCtx();
     document.removeEventListener("pointerdown", unlockAudio);
