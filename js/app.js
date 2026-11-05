@@ -220,9 +220,9 @@ function initSnowCanvas() {
   if (!snowCanvasEl) return;
 
   const resize = () => {
-    const rect = snowCanvasEl.parentElement ? snowCanvasEl.parentElement.getBoundingClientRect() : null;
-    snowCanvasEl.width = rect && rect.width ? rect.width : 1280;
-    snowCanvasEl.height = rect && rect.height ? rect.height : 720;
+    const parent = snowCanvasEl.parentElement;
+    snowCanvasEl.width = parent && parent.clientWidth ? parent.clientWidth : 1412;
+    snowCanvasEl.height = parent && parent.clientHeight ? parent.clientHeight : 794;
   };
   resize();
   window.addEventListener("resize", resize);
@@ -645,10 +645,11 @@ function makeDraggable(panel, handle = null, container = null) {
       dragHandle.setPointerCapture(e.pointerId);
     } catch (_) {}
 
+    const scale = window.currentStageScale || 1;
     startPointerX = e.clientX;
     startPointerY = e.clientY;
-    startLeft = panelRect.left - containerRect.left;
-    startTop = panelRect.top - containerRect.top;
+    startLeft = (panelRect.left - containerRect.left) / scale;
+    startTop = (panelRect.top - containerRect.top) / scale;
 
     panel.style.setProperty("transform", "none", "important");
     panel.style.removeProperty("margin-left");
@@ -666,21 +667,24 @@ function makeDraggable(panel, handle = null, container = null) {
     if (!isDragging) return;
 
     const parentContainer = getParentContainer();
-    const containerRect = parentContainer.getBoundingClientRect();
+    const scale = window.currentStageScale || 1;
     const panelWidth = panel.offsetWidth;
     const panelHeight = panel.offsetHeight;
 
-    const dx = e.clientX - startPointerX;
-    const dy = e.clientY - startPointerY;
+    const dx = (e.clientX - startPointerX) / scale;
+    const dy = (e.clientY - startPointerY) / scale;
 
     let newLeft = startLeft + dx;
     let newTop = startTop + dy;
 
+    const containerWidth = parentContainer.clientWidth;
+    const containerHeight = parentContainer.clientHeight;
+
     // 真正教學舞台邊界安全範圍
     const minLeft = 8;
-    const maxLeft = Math.max(minLeft, containerRect.width - panelWidth - 8);
+    const maxLeft = Math.max(minLeft, containerWidth - panelWidth - 8);
     const minTop = 8;
-    const maxTop = Math.max(minTop, containerRect.height - panelHeight - 8);
+    const maxTop = Math.max(minTop, containerHeight - panelHeight - 8);
 
     newLeft = Math.min(Math.max(minLeft, newLeft), maxLeft);
     newTop = Math.min(Math.max(minTop, newTop), maxTop);
@@ -961,18 +965,19 @@ window.addEventListener("DOMContentLoaded", () => {
   if (cultureBoardEl) makeDraggable(cultureBoardEl, cultureBoardHeaderEl || cultureBoardEl, mainContainerEl);
 
   window.addEventListener("resize", () => {
-    const mRect = mainContainerEl.getBoundingClientRect();
+    const mWidth = mainContainerEl.clientWidth;
+    const mHeight = mainContainerEl.clientHeight;
     [topPromptEl, zoomBoxEl, cultureBoardEl].forEach(panel => {
       if (!panel || panel.classList.contains("hidden")) return;
       const curLeft = parseFloat(panel.style.left);
       const curTop = parseFloat(panel.style.top);
       if (!isNaN(curLeft)) {
-        const maxL = Math.max(8, mRect.width - panel.offsetWidth - 8);
+        const maxL = Math.max(8, mWidth - panel.offsetWidth - 8);
         if (curLeft > maxL) panel.style.left = `${maxL}px`;
         if (curLeft < 8) panel.style.left = "8px";
       }
       if (!isNaN(curTop)) {
-        const maxT = Math.max(8, mRect.height - panel.offsetHeight - 8);
+        const maxT = Math.max(8, mHeight - panel.offsetHeight - 8);
         if (curTop > maxT) panel.style.top = `${maxT}px`;
         if (curTop < 8) panel.style.top = "8px";
       }

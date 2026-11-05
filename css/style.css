@@ -471,7 +471,7 @@ button.mc-btn, .chunk-chip {
   #orientationOverlay {
     display: flex !important;
   }
-  body > header, body > main, body > footer {
+  body > header, body > main, body > footer, #appContainer {
     filter: blur(8px);
     pointer-events: none;
   }
@@ -647,4 +647,36 @@ button, .mc-btn, .chunk-chip, .backpack-slot-btn, .scene-hotspot {
 }
 #topPromptBanner .drag-handle {
   cursor: default !important;
+}
+
+
+/* =========================================================================
+   螢幕自適應與 1920x1080 虛擬舞台樣式 (Screen Adaptor & Virtual Stage)
+   ========================================================================= */
+
+#appContainer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #080503;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#virtualStage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  min-width: 1920px;
+  min-height: 1080px;
+  max-width: 1920px;
+  max-height: 1080px;
+  transform-origin: center center;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

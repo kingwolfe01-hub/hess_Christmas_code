@@ -10,7 +10,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@800;900&family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="flex flex-col justify-between select-none">
+<body class="select-none bg-[#080503] m-0 p-0 overflow-hidden">
+
+  <!-- =========================================================================
+       【行動裝置直向防呆旋轉遮罩 (Portrait Orientation Guard)】
+       ========================================================================= -->
+  <div id="orientationOverlay" class="fixed inset-0 z-50 bg-[#120c08] flex flex-col items-center justify-center p-6 text-center select-none hidden">
+    <div class="relative mb-6">
+      <div class="w-20 h-32 border-4 border-amber-400 rounded-2xl flex items-center justify-center animate-pulse rotate-phone-icon">
+        <span class="text-3xl">🎮</span>
+      </div>
+      <div class="absolute -right-4 -bottom-2 text-3xl animate-bounce">🔄</div>
+    </div>
+    <h2 class="text-2xl sm:text-3xl font-black text-amber-300 mb-3 tracking-wide">請旋轉為橫向螢幕</h2>
+    <p class="text-sm sm:text-base font-bold text-amber-100/80 max-w-sm leading-relaxed mb-4">
+      為了呈現最佳的 3D 麥塊木屋與大屏教學互動視角，Pad 與手機請解鎖「方向鎖定」並橫向旋轉螢幕。
+    </p>
+    <div class="px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-bold">
+      ✨ 旋轉為橫向後將自動進入冒險
+    </div>
+  </div>
+
+
+  <!-- 全螢幕自適應視窗外層 -->
+  <div id="appContainer">
+    <!-- 1920x1080 恆等比虛擬舞台 -->
+    <div id="virtualStage" class="flex flex-col justify-between bg-[#0e0805] shadow-2xl overflow-hidden">
 
   <!-- =========================================================================
        【首頁主畫面 (Home Screen / Launcher)】
@@ -110,25 +135,6 @@
   </div>
 
 
-  <!-- =========================================================================
-       【行動裝置直向防呆旋轉遮罩 (Portrait Orientation Guard)】
-       ========================================================================= -->
-  <div id="orientationOverlay" class="fixed inset-0 z-50 bg-[#120c08] flex flex-col items-center justify-center p-6 text-center select-none hidden">
-    <div class="relative mb-6">
-      <div class="w-20 h-32 border-4 border-amber-400 rounded-2xl flex items-center justify-center animate-pulse rotate-phone-icon">
-        <span class="text-3xl">🎮</span>
-      </div>
-      <div class="absolute -right-4 -bottom-2 text-3xl animate-bounce">🔄</div>
-    </div>
-    <h2 class="text-2xl sm:text-3xl font-black text-amber-300 mb-3 tracking-wide">請旋轉為橫向螢幕</h2>
-    <p class="text-sm sm:text-base font-bold text-amber-100/80 max-w-sm leading-relaxed mb-4">
-      為了呈現最佳的 3D 麥塊木屋與大屏教學互動視角，Pad 與手機請解鎖「方向鎖定」並橫向旋轉螢幕。
-    </p>
-    <div class="px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-bold">
-      ✨ 旋轉為橫向後將自動進入冒險
-    </div>
-  </div>
-
 
   <!-- =========================================================================
        【第一層：教師狀態列、微軟 AI 語音設定與雙隊 PK 計分板】
@@ -180,7 +186,7 @@
        【第二層：巨幅 3D 麥塊場景、動態看板與懸浮設定視窗】
        ========================================================================= -->
   <main id="stageMainContainer" class="flex-1 relative bg-[#0e0805] overflow-hidden flex items-center justify-center">
-    <div id="sceneViewport" class="relative w-full h-full max-w-[175vh] max-h-full aspect-[16/9] overflow-hidden shadow-2xl border-x-4 border-[#3b281a]">
+    <div id="sceneViewport" class="relative h-full aspect-[16/9] max-w-full overflow-hidden shadow-2xl border-x-4 border-[#3b281a]">
 
       <!-- (A) 故事前 3 幕專用：全幅 16:9 3D 麥塊情境畫布 (#storySceneImgLayer) -->
       <div id="storySceneImgWrapper" class="hidden absolute inset-0 w-full h-full bg-black z-0">
@@ -624,6 +630,9 @@
 
   </footer>
 
+    </div><!-- /#virtualStage -->
+  </div><!-- /#appContainer -->
+
   <!-- 模組化外部核心教學腳本 -->
   <script src="js/config.js"></script>
   <script src="js/audio.js"></script>
@@ -631,6 +640,7 @@
   <script src="js/words.js"></script>
   <script src="js/culture.js"></script>
   <script src="js/party.js"></script>
+  <script src="js/screen-adaptor.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
