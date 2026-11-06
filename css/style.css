@@ -256,10 +256,10 @@ body {
    🎄 方案 A：全螢幕自由停靠與多顯示器自適應樣式 (大屏中央零遮擋架構)
    ========================================================================= */
 #sceneViewport {
-  height: 100% !important;
-  max-height: 100% !important;
-  max-width: 100% !important;
+  width: 100% !important;
   aspect-ratio: 16 / 9 !important;
+  max-height: calc(100vh - 56px - 215px) !important;
+  max-width: calc((100vh - 56px - 215px) * 16 / 9) !important;
   margin: auto !important;
   position: relative !important;
   z-index: 1;
@@ -494,6 +494,110 @@ button, .mc-btn, .chunk-chip, .backpack-slot-btn, .scene-hotspot {
   -webkit-touch-callout: none !important;
 }
 
+/* 手機橫向超緊湊適配 (螢幕高度 <= 520px) */
+@media screen and (orientation: landscape) and (max-height: 520px) {
+  header {
+    height: 40px !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    border-bottom-width: 2px !important;
+  }
+  header .text-xl, header .text-2xl {
+    font-size: 1rem !important;
+  }
+  header button {
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+  }
+
+  footer {
+    height: 140px !important;
+    padding: 4px 8px !important;
+    border-top-width: 2px !important;
+  }
+  footer nav {
+    height: 34px !important;
+    padding-top: 2px !important;
+  }
+  footer nav button {
+    font-size: 11px !important;
+    padding: 2px 4px !important;
+  }
+
+  /* 視窗區域自適應重算 */
+  #sceneViewport {
+    max-height: calc(100vh - 40px - 140px) !important;
+    max-width: calc((100vh - 40px - 140px) * 16 / 9) !important;
+  }
+
+  /* RPG 懸浮對話框緊湊化 */
+  .rpg-bottom-docked {
+    bottom: 4px !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+  }
+  .rpg-avatar-slot {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+  }
+  .rpg-avatar-slot span {
+    font-size: 1.5rem !important;
+  }
+  #promptLineA, #promptLineB {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+  #promptSubZh {
+    font-size: 11px !important;
+    margin-top: 2px !important;
+  }
+
+  /* 底部 Story 控制鍵壓扁 */
+  #storyPrevStepBtn, #storyNextStepBtn {
+    height: 68px !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    font-size: 0.95rem !important;
+  }
+  #storySpeakABtn, #storySpeakBBtn, #storyTriggerPropBtn {
+    height: 42px !important;
+    font-size: 11px !important;
+  }
+
+  /* 拼字合成台與介系詞按鈕小螢幕適配 */
+  #wordsInteractiveZone button, #cultureInteractiveZone button {
+    height: 80px !important;
+  }
+  #wordsSubModeLearnBtn, #wordsSubModeSpellBtn, #wordsSubModePrepBtn,
+  #cultureSubModeExploreBtn, #cultureSubModeQuizBtn {
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+  }
+
+  /* 3 倍特寫視窗與文化大看板行動端限高 */
+  #voxelZoomBox, #cultureCompareBoard {
+    top: 6px !important;
+    right: 8px !important;
+    width: min(92vw, 360px) !important;
+    max-height: 94vh !important;
+    padding: 10px !important;
+  }
+}
+
+/* Pad 橫向自適應 (螢幕高度 521px ~ 820px 且橫向) */
+@media screen and (orientation: landscape) and (min-height: 521px) and (max-height: 820px) {
+  header {
+    height: 48px !important;
+  }
+  footer {
+    height: 185px !important;
+  }
+  #sceneViewport {
+    max-height: calc(100vh - 48px - 185px) !important;
+    max-width: calc((100vh - 48px - 185px) * 16 / 9) !important;
+  }
+}
 /* =========================================================================
    【新增】CHRISTMAS ADVENTURE 專屬首頁與模組卡片視覺樣式
    ========================================================================= */

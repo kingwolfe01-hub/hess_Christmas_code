@@ -1,3 +1,13 @@
+function syncSoundIcons() {
+  const isMuted = !state.soundOn || !state.playingMusic;
+  const iconStr = isMuted ? "🔇" : "🔊";
+  const homeIcon = document.getElementById("homeSoundIcon");
+  if (homeIcon) homeIcon.textContent = iconStr;
+  const navIcon = document.getElementById("soundMuteIcon");
+  if (navIcon) navIcon.textContent = iconStr;
+}
+window.syncSoundIcons = syncSoundIcons;
+
 /* =========================================================================
    🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - 主控調度模組 (app.js)
    - 全域狀態管理 (State)
@@ -15,6 +25,8 @@ const state = window.state = {
   cultureSubMode: "explore",
   unlockedIds: new Set(),
   gameQueueIdx: 0,
+  spellQueueIdx: 0,
+  prepQueueIdx: 0,
   craftedChunks: [],
   scoreRed: 0,
   scoreGreen: 0,
@@ -198,7 +210,7 @@ function updateSceneAndStars() {
   });
 
   const arrowEl = document.getElementById("svgPointerArrow");
-  if (state.stage === "story" || isQuizActive) {
+  if (state.stage === "story" || (isQuizActive && state.wordsSubMode !== "prep")) {
     arrowEl?.classList.add("hidden");
   } else {
     const target = getWordObj(state.focusedWordId);
@@ -447,22 +459,54 @@ function handleQuizSuccess(target, sourceStage) {
     })();
   }
 
-  showToast(`合成成功！${target.culture.flag} ${target.word} (${target.zh}) 已放進木屋！`, "🌟", true);
+  // 依建議：移除聖誕單字前方國旗代碼小字 (如 MX, FR)
+  showToast(`★ 合成成功！${target.word} (${target.zh}) 已放進木屋！`, "🌟", true);
 
   setTimeout(() => {
-    if (state.unlockedIds.size === LESSON_CONFIG.words.length) {
-      playSfx("fanfare");
-      if (sourceStage === "words") {
-        switchStage("culture");
-      } else {
-        switchStage("party");
-      }
-    } else {
-      if (sourceStage === "culture") {
-        renderCultureStage(false);
+    if (sourceStage === "words") {
+      if (state.wordsSubMode === "spell") {
+        if (state.spellQueueIdx >= LESSON_CONFIG.words.length - 1) {
+          playSfx("fanfare");
+          // 依建議：完成 2.麥塊音節拼字台全部 7 題後，跳轉至 3.空間介係詞問答
+          state.spellQueueIdx = 0;
+          state.wordsSubMode = "prep";
+          state.prepQueueIdx = 0;
+          state.gameQueueIdx = 0;
+          state.focusedWordId = LESSON_CONFIG.words[0].id;
+          renderWordsStage(false);
+        } else {
+          state.spellQueueIdx = (state.spellQueueIdx || 0) + 1;
+          renderWordsStage(false);
+        }
+      } else if (state.wordsSubMode === "prep") {
+        if (state.prepQueueIdx >= LESSON_CONFIG.words.length - 1) {
+          playSfx("fanfare");
+          // 依建議：完成 3.空間介係詞問答後，不自動跳轉，顯示「完成學習·下一關」按鈕
+          if (typeof renderWordsStageCompleteButton === "function") {
+            renderWordsStageCompleteButton();
+          } else {
+            switchStage("culture");
+          }
+        } else {
+          state.prepQueueIdx++;
+          state.gameQueueIdx = state.prepQueueIdx;
+          if (LESSON_CONFIG.words[state.prepQueueIdx]) {
+            state.focusedWordId = LESSON_CONFIG.words[state.prepQueueIdx].id;
+          }
+          renderWordsStage(false);
+        }
       } else {
         renderWordsStage(false);
       }
+    } else if (sourceStage === "culture") {
+      if (state.unlockedIds.size === LESSON_CONFIG.words.length) {
+        playSfx("fanfare");
+        switchStage("party");
+      } else {
+        renderCultureStage(false);
+      }
+    } else {
+      renderWordsStage(false);
     }
   }, 1600);
 }
@@ -501,6 +545,8 @@ window.setRpgSpeaker = function(speakerName, icon = "💬", imgUrl = null, isSpe
 
 function switchStage(newStage) {
   state.stage = newStage;
+  // 切換任何單元時，確保非第 6 幕的馴鹿實體層隱藏
+  document.getElementById("rudolphOverlayContainer")?.classList.add("hidden");
   const revealBtn = document.getElementById("bannerRevealAnswerBtn");
   if (revealBtn) revealBtn.classList.add("hidden");
   currentPkAnswerRevealer = null;
@@ -602,7 +648,7 @@ function switchStage(newStage) {
       hotspotsGroup.classList.add("hidden");
     }
     document.getElementById("storySceneImgWrapper")?.classList.add("hidden");
-    LESSON_CONFIG.words.forEach(w => state.unlockedIds.add(w.id));
+    // 依建議：不再於進入五國祝福時無條件全滿星星，星星依實際關卡完成進度累計
     document.getElementById("promptStepBadge").textContent = "🎉 Party · 世界聖誕祝福與雙隊 PK 總決賽";
     document.getElementById("promptLineA").textContent = "Merry Christmas Around the World! 🌎🎄";
     document.getElementById("promptLineB").classList.add("hidden");
@@ -808,6 +854,10 @@ window.addEventListener("DOMContentLoaded", () => {
   window.returnToHomeScreen = function() {
     if (typeof playSfx === "function") playSfx("click");
     if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    // 依建議：回到首頁時立即停止「傳送」「風雪」「馴鹿」之背景環境音
+    if (typeof stopStorySceneBgm === "function") stopStorySceneBgm();
+    // 依建議：確保馴鹿不再停留殘留於畫面上
+    document.getElementById("rudolphOverlayContainer")?.classList.add("hidden");
     const home = document.getElementById("homeScreenView");
     if (home) home.classList.remove("hidden");
     closeAllOverlays();
@@ -815,6 +865,12 @@ window.addEventListener("DOMContentLoaded", () => {
       clearInterval(fireworkShowInterval);
       fireworkShowInterval = null;
     }
+    // 回到首頁時若配樂原本開啟，恢復首頁聖誕歌曲
+    if (state.soundOn && state.playingMusic && typeof startChiptuneBgm === "function") {
+      startChiptuneBgm();
+    }
+    // 同步首頁與右上角音效按鈕狀態
+    if (typeof syncSoundIcons === "function") syncSoundIcons();
   };
 
   document.getElementById("btnHomeStory")?.addEventListener("click", () => enterLessonFromHome("story"));
@@ -827,12 +883,15 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("cardHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
 
   document.getElementById("backToHomeBtn")?.addEventListener("click", returnToHomeScreen);
+  document.getElementById("wordsBackHomeBtn")?.addEventListener("click", returnToHomeScreen);
+  document.getElementById("cultureBackHomeBtn")?.addEventListener("click", returnToHomeScreen);
 
   document.getElementById("homeSoundToggleBtn")?.addEventListener("click", () => {
     if (typeof toggleBgmAudio === "function") {
       const isPlaying = toggleBgmAudio();
-      const icon = document.getElementById("homeSoundIcon");
-      if (icon) icon.textContent = isPlaying ? "🔊" : "🔇";
+      state.soundOn = isPlaying;
+      state.playingMusic = isPlaying;
+      if (typeof syncSoundIcons === "function") syncSoundIcons();
     }
   });
 
@@ -923,13 +982,48 @@ window.addEventListener("DOMContentLoaded", () => {
       returnToHomeScreen();
     }
   });
-  document.getElementById("storySpeakABtn")?.addEventListener("click", () => {
+  document.getElementById("storySpeakABtn")?.addEventListener("click", async () => {
     const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
-    speakText(st.speakA, LESSON_CONFIG.speechRateNormal, "en-US", st.roleASpeak || "steve");
+    const lineA = document.getElementById("promptLineA");
+    const lineB = document.getElementById("promptLineB");
+    lineA?.classList.add("spotlight-speaker-a", "scale-[1.02]");
+    lineB?.classList.add("opacity-40");
+    if (typeof window.setRpgSpeaker === "function") {
+      window.setRpgSpeaker("Steve", "👦", null, true);
+    }
+    try {
+      await speakText(st.speakA, LESSON_CONFIG.speechRateNormal, "en-US", st.roleASpeak || "steve");
+    } finally {
+      lineA?.classList.remove("spotlight-speaker-a", "scale-[1.02]");
+      lineB?.classList.remove("opacity-40");
+      if (typeof window.setRpgSpeaker === "function") {
+        const defaultName = st.step >= 5 ? "Steve & Santa" : "Steve & Alex";
+        window.setRpgSpeaker(defaultName, "👦", null, false);
+      }
+    }
   });
-  document.getElementById("storySpeakBBtn")?.addEventListener("click", () => {
+  document.getElementById("storySpeakBBtn")?.addEventListener("click", async () => {
     const st = LESSON_CONFIG.storySteps[state.storyStepIdx];
-    speakText(st.speakB, LESSON_CONFIG.speechRateNormal, "en-US", st.roleBSpeak || "alex");
+    const lineA = document.getElementById("promptLineA");
+    const lineB = document.getElementById("promptLineB");
+    lineB?.classList.add("spotlight-speaker-b", "scale-[1.02]");
+    lineA?.classList.add("opacity-40");
+    const isSanta = st.step >= 5;
+    const roleBName = isSanta ? "Santa" : "Alex";
+    const roleBIcon = isSanta ? "🎅" : "👧";
+    if (typeof window.setRpgSpeaker === "function") {
+      window.setRpgSpeaker(roleBName, roleBIcon, null, true);
+    }
+    try {
+      await speakText(st.speakB, LESSON_CONFIG.speechRateNormal, "en-US", st.roleBSpeak || "alex");
+    } finally {
+      lineB?.classList.remove("spotlight-speaker-b", "scale-[1.02]");
+      lineA?.classList.remove("opacity-40");
+      if (typeof window.setRpgSpeaker === "function") {
+        const defaultName = st.step >= 5 ? "Steve & Santa" : "Steve & Alex";
+        window.setRpgSpeaker(defaultName, "👦", null, false);
+      }
+    }
   });
   document.getElementById("storyTriggerPropBtn")?.addEventListener("click", triggerStorySceneProp);
   document.getElementById("closeStoryModalBtn")?.addEventListener("click", () => {
@@ -1097,19 +1191,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("soundMuteBtn")?.addEventListener("click", () => {
     state.soundOn = !state.soundOn;
-    document.getElementById("soundMuteIcon").textContent = state.soundOn ? "🔊" : "🔇";
     if (!state.soundOn) {
+      state.playingMusic = false;
       // 靜音時立即停止所有背景風雪、配樂與發音
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       if (typeof stopStorySceneBgm === "function") stopStorySceneBgm();
       if (typeof stopChiptuneBgm === "function") stopChiptuneBgm();
       if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
     } else {
-      // 取消靜音時若在劇情第 5、6 幕，可恢復環境音
+      state.playingMusic = true;
       if (state.stage === "story" && typeof playStorySceneBgm === "function") {
         playStorySceneBgm(state.storyStepIdx + 1);
+      } else {
+        if (typeof startChiptuneBgm === "function") startChiptuneBgm();
       }
     }
+    if (typeof syncSoundIcons === "function") syncSoundIcons();
   });
 
   document.getElementById("fullscreenToggleBtn")?.addEventListener("click", () => {
@@ -1131,6 +1228,8 @@ window.addEventListener("DOMContentLoaded", () => {
     state.storyStepIdx = 0;
     state.cabinFireplaceLit = false;
     state.gameQueueIdx = 0;
+    state.spellQueueIdx = 0;
+    state.prepQueueIdx = 0;
     state.scoreRed = 0;
     state.scoreGreen = 0;
     document.getElementById("scoreRedText").textContent = "0";

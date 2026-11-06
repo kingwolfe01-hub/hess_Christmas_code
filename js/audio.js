@@ -483,7 +483,10 @@ function startChiptuneBgm() {
   tickChiptuneSequence();
 }
 
+let chiptuneBgmSuspendedForAmbient = false;
+
 function stopChiptuneBgm() {
+  chiptuneBgmSuspendedForAmbient = false;
   if (window.state) window.state.playingMusic = false;
   clearTimeout(chiptuneBgmTimer);
   chiptuneBgmTimer = null;
@@ -532,6 +535,7 @@ const EXACT_AUDIO_MAP = {
   "where is the ribbon? it's around the pine tree.": "where_is_the_ribbon__it_s_around_the_pine_tree.mp3",
   "where are the ornaments? they're on the tree.": "where_are_the_ornaments__they_re_on_the_tree.mp3",
   "where is the star? it's on top of the tree.": "where_is_the_star__it_s_on_top_of_the_tree.mp3",
+  "where is the star? it's on the top of the tree.": "where_is_the_star__it_s_on_the_top_of_the_tree.mp3",
   "where is the stocking? it's above the fireplace.": "where_is_the_stocking__it_s_above_the_fireplace.mp3",
   "where are the presents? they're under the tree.": "where_are_the_presents__they_re_under_the_tree.mp3",
   "where is santa claus? he is in the room.": "where_is_santa_claus__he_is_in_the_room.mp3",
@@ -642,7 +646,12 @@ function normalizeSpeechText(text) {
 function playAudioFilePromise(filename, actualRate, fallbackText = null, fallbackLang = "en-US") {
   return new Promise((resolve, reject) => {
     const singleUnderscore = filename.replace(/__+/g, "_");
-    const candFilenames = Array.from(new Set([filename, singleUnderscore]));
+    const candList = [filename, singleUnderscore];
+    if (filename === "where_is_the_star__it_s_on_the_top_of_the_tree.mp3") {
+      candList.push("where_is_the_star__it_s_on_top_of_the_tree.mp3");
+      candList.push("where_is_the_star_it_s_on_top_of_the_tree.mp3");
+    }
+    const candFilenames = Array.from(new Set(candList));
     const paths = [];
     candFilenames.forEach(fn => {
       paths.push(`audio/${fn}`);
@@ -686,6 +695,9 @@ function playAudioFilePromise(filename, actualRate, fallbackText = null, fallbac
 
       const audio = new Audio(paths[pathIdx]);
       currentAudioInstance = audio;
+      audio.preservesPitch = true;
+      audio.mozPreservesPitch = true;
+      audio.webkitPreservesPitch = true;
       const targetRate = actualRate || 1.0;
       audio.defaultPlaybackRate = targetRate;
       audio.playbackRate = targetRate;
@@ -778,7 +790,11 @@ function speakBrowserSpeech(text, rate = 0.96, lang = "en-US", role = "default")
     if (!("speechSynthesis" in window)) return resolve();
     window.speechSynthesis.cancel();
 
-    const utter = new SpeechSynthesisUtterance(text);
+    let utterText = text;
+    if (String(text).trim().toLowerCase() === "present") {
+      utterText = "Present.";
+    }
+    const utter = new SpeechSynthesisUtterance(utterText);
     utter.rate = rate;
     utter.lang = lang;
 
@@ -834,6 +850,11 @@ let storyAmbientNodes = null;
 let activeAmbientSources = [];
 
 function stopStorySceneBgm() {
+  // 若有因環境音暫停的音樂，且離開了環境幕次，可恢復播放
+  if (chiptuneBgmSuspendedForAmbient && window.state && window.state.playingMusic && window.state.soundOn !== false) {
+    chiptuneBgmSuspendedForAmbient = false;
+    startChiptuneBgm();
+  }
   // 立即中斷並斷開所有環境音振盪器，防止風雪音效殘留到下一幕
   if (activeAmbientSources && activeAmbientSources.length > 0) {
     activeAmbientSources.forEach(s => {
@@ -863,6 +884,22 @@ function playStorySceneBgm(step) {
   stopStorySceneBgm();
 
   if (window.state && window.state.soundOn === false) return;
+
+  // 進入時空蟲洞 (4) 或風雪、馴鹿 (5, 6) 時，暫停 8-bit 背景音樂，避免與環境音效重疊
+  if (step === 4 || step === 5 || step === 6) {
+    if (window.state && window.state.playingMusic) {
+      chiptuneBgmSuspendedForAmbient = true;
+      clearTimeout(chiptuneBgmTimer);
+      chiptuneBgmTimer = null;
+    }
+  } else {
+    // 離開環境音幕次時，若之前暫停了背景音樂，恢復播放
+    if (chiptuneBgmSuspendedForAmbient && window.state && window.state.playingMusic && window.state.soundOn !== false) {
+      chiptuneBgmSuspendedForAmbient = false;
+      startChiptuneBgm();
+    }
+  }
+
   const ctx = ensureAudioCtx();
   if (!ctx) return;
 

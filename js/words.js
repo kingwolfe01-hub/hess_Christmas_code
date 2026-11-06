@@ -130,12 +130,12 @@ LESSON_CONFIG.words = [
     zh: "樹頂星星",
     emoji: "⭐",
     color: "#eab308",
-    prep: "on top of",
-    prepZh: "在…頂端 (on top of)",
+    prep: "on the top of",
+    prepZh: "在…頂端 (on the top of)",
     grammarTag: "單數問答 (Where is...? / It's...)",
     qaQ: "Where is the star?",
-    qaAHtml: "It's <span class='text-yellow-300 underline font-black'>on top of</span> the tree.",
-    qaASpeak: "Where is the star? It's on top of the tree.",
+    qaAHtml: "It's <span class='text-yellow-300 underline font-black'>on the top of</span> the tree.",
+    qaASpeak: "Where is the star? It's on the top of the tree.",
     culture: {
       flag: "🇵🇭",
       country: "菲律賓 Philippines",
@@ -239,7 +239,7 @@ LESSON_CONFIG.words = [
     emoji: "🎅",
     color: "#dc2626",
     prep: "in",
-    prepZh: "在…裡面 (in the room)",
+    prepZh: "在…裡面 (in)",
     grammarTag: "單數問答 (Where is...? / He's...)",
     qaQ: "Where is Santa Claus?",
     qaAHtml: "He is <span class='text-yellow-300 underline font-black'>in</span> the room.",
@@ -358,8 +358,8 @@ function renderWordsStage(autoSpeak = false) {
     if (!el) return;
     const active = state.wordsSubMode === b.mode;
     el.className = active
-      ? "py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950 ring-2 ring-yellow-200"
-      : "py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]";
+      ? "h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950 ring-2 ring-yellow-200"
+      : "h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]";
   });
 
   const zone = document.getElementById("wordsInteractiveZone");
@@ -403,67 +403,73 @@ function renderWordsStage(autoSpeak = false) {
   }
 
   document.getElementById("voxelZoomBox")?.classList.add("hidden");
-  const remainingIdx = LESSON_CONFIG.words.findIndex(w => !state.unlockedIds.has(w.id));
-  if (remainingIdx === -1) {
-    state.unlockedIds.clear();
-    state.gameQueueIdx = 0;
+  let target;
+  if (state.wordsSubMode === "prep") {
+    if (state.prepQueueIdx === undefined || state.prepQueueIdx >= LESSON_CONFIG.words.length) {
+      state.prepQueueIdx = 0;
+    }
+    state.gameQueueIdx = state.prepQueueIdx;
+    target = LESSON_CONFIG.words[state.prepQueueIdx];
+    state.focusedWordId = target.id;
+  } else if (state.wordsSubMode === "spell") {
+    if (state.spellQueueIdx === undefined || state.spellQueueIdx >= LESSON_CONFIG.words.length) {
+      state.spellQueueIdx = 0;
+    }
+    state.gameQueueIdx = state.spellQueueIdx;
+    target = LESSON_CONFIG.words[state.spellQueueIdx];
   } else {
-    state.gameQueueIdx = remainingIdx;
+    target = getWordObj(state.focusedWordId) || LESSON_CONFIG.words[0];
   }
-  const target = LESSON_CONFIG.words[state.gameQueueIdx];
 
   if (state.wordsSubMode === "spell") {
-    state.craftedChunks = [];
-    document.getElementById("promptStepBadge").textContent = `🔤 麥塊合成台拼字挑戰 (${state.unlockedIds.size + 1} / 7)`;
+    state.craftedChunks = new Array(target.chunks.length).fill(null);
+    document.getElementById("promptStepBadge").textContent = `🔤 麥塊合成台拼字挑戰 (${(state.spellQueueIdx || 0) + 1} / 7)`;
     const slotCount = target.chunks.length;
     const slotGuide = target.chunks.map((_, i) => `【方塊 ${i + 1}】`).join(" + ");
     document.getElementById("promptLineA").textContent = `👂 Listen & Craft: ${target.emoji} "${target.zh}"  [ ${slotGuide} ]`;
     document.getElementById("promptLineB").classList.add("hidden");
-    document.getElementById("promptSubZh").textContent = `請聽發音，將下方「${slotCount} 個音節磚」依序合成單字！（若拼錯，系統會保留正確方塊，僅退回放錯的方塊）`;
+    document.getElementById("promptSubZh").textContent = `請聽發音，將下方「${slotCount} 個音節磚」依序放入合成槽！`;
     if (typeof window.setRpgSpeaker === "function") window.setRpgSpeaker(`Crafting: ${target.word}`, "⚒️", assets[target.thumbKey], false);
 
     const wrapper = document.createElement("div");
-    wrapper.className = "w-full flex items-center justify-between gap-3 sm:gap-4 bg-black/55 p-3 rounded-2xl border-3 border-amber-400/60";
+    wrapper.className = "w-full flex items-center justify-between gap-2.5 sm:gap-3.5 bg-black/60 px-3 py-1.5 rounded-2xl border-2 border-amber-400/60";
 
     const slotsArea = document.createElement("div");
-    slotsArea.className = "flex items-center gap-3 shrink-0";
+    slotsArea.className = "flex items-center gap-2.5 shrink-0";
     slotsArea.innerHTML = `
-      <button id="spellListenTargetBtn" class="relative w-18 h-18 sm:w-22 sm:h-22 rounded-2xl border-4 border-amber-300 overflow-hidden shadow-xl shrink-0 group transition hover:scale-105" title="點擊重聽單字發音">
+      <button id="spellListenTargetBtn" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-3 border-amber-300 overflow-hidden shadow-xl shrink-0 group transition hover:scale-105" title="點擊重聽單字發音">
         <img src="${assets[target.thumbKey] || ""}" alt="${target.zh}" class="w-full h-full object-cover" />
-        <span class="absolute inset-0 bg-black/35 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition">🔊</span>
+        <span class="absolute inset-0 bg-black/35 flex items-center justify-center text-xl sm:text-2xl group-hover:scale-110 transition">🔊</span>
       </button>
       <div>
-        <div class="text-xs sm:text-sm font-black text-amber-300 mb-1 flex items-center gap-1.5">
-          <span>⚒️ 麥塊合成槽</span>
-          <span class="text-[11px] text-amber-200/80 font-bold">（點擊已填入格子可退回）</span>
-        </div>
-        <div id="craftingSlotsRow" class="flex items-center gap-2"></div>
+        <div class="text-xs font-black text-amber-300 mb-0.5">⚒️ 麥塊合成槽 (依序點選填入)：</div>
+        <div id="craftingSlotsRow" class="flex items-center gap-1.5 sm:gap-2"></div>
       </div>
     `;
+    wrapper.appendChild(slotsArea);
 
     const poolArea = document.createElement("div");
     poolArea.id = "craftingPoolRow";
-    poolArea.className = "flex-1 flex items-center justify-center gap-2.5 sm:gap-3 flex-wrap";
+    poolArea.className = "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 flex-nowrap";
 
     const btnCol = document.createElement("div");
-    btnCol.className = "flex flex-col gap-2 shrink-0";
+    btnCol.className = "flex flex-col gap-1.5 shrink-0";
 
     const hintBtn = document.createElement("button");
     hintBtn.id = "spellHintBtn";
-    hintBtn.className = "h-[42px] sm:h-[46px] px-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5 shadow-lg";
+    hintBtn.className = "h-[32px] sm:h-[36px] px-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs mc-btn flex items-center justify-center gap-1 shadow-md";
     hintBtn.innerHTML = "💡 視覺提示";
     hintBtn.title = "在 3D 木屋閃示目標物件 1 秒鐘 (不洩漏英文拼字)";
     hintBtn.addEventListener("click", () => triggerFlashHint(target));
 
     const clearBtn = document.createElement("button");
-    clearBtn.className = "h-[42px] sm:h-[46px] px-3.5 rounded-xl bg-rose-900/85 hover:bg-rose-800 text-rose-100 font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5";
+    clearBtn.className = "h-[32px] sm:h-[36px] px-2.5 rounded-lg bg-rose-900/85 hover:bg-rose-800 text-rose-100 font-black text-xs mc-btn flex items-center justify-center gap-1";
     clearBtn.innerHTML = "🔄 清空";
     clearBtn.addEventListener("click", () => renderWordsStage(false));
 
     btnCol.appendChild(hintBtn);
     btnCol.appendChild(clearBtn);
 
-    wrapper.appendChild(slotsArea);
     wrapper.appendChild(poolArea);
     wrapper.appendChild(btnCol);
     zone.appendChild(wrapper);
@@ -494,8 +500,8 @@ function renderWordsStage(autoSpeak = false) {
         
         let colorClasses = "mc-slot-dark text-amber-200/40 cursor-default border-3 border-[#6e4c34]";
         if (entry) {
-          if (validationStates && validationStates[slotIdx] === true) {
-            colorClasses = "bg-emerald-600 text-white border-4 border-lime-300 shadow-[0_0_15px_rgba(74,222,128,0.8)]";
+          if (entry.locked || (validationStates && validationStates[slotIdx] === true)) {
+            colorClasses = "bg-emerald-600 text-white border-4 border-lime-300 shadow-[0_0_15px_rgba(74,222,128,0.8)] cursor-default";
           } else if (validationStates && validationStates[slotIdx] === false) {
             colorClasses = "bg-rose-600 text-white border-4 border-red-300 shadow-[0_0_15px_rgba(244,63,94,0.8)]";
           } else {
@@ -503,23 +509,31 @@ function renderWordsStage(autoSpeak = false) {
           }
         }
 
-        slotBtn.className = `px-3 h-16 sm:h-20 min-w-[76px] sm:min-w-[92px] rounded-2xl flex flex-col items-center justify-center font-black text-xl sm:text-3xl transition-all ${colorClasses}`;
+        slotBtn.className = `px-2 h-[56px] sm:h-[64px] min-w-[58px] sm:min-w-[70px] rounded-xl flex flex-col items-center justify-center font-black text-base sm:text-xl transition-all ${colorClasses}`;
         
         if (entry) {
-          slotBtn.innerHTML = `
-            <span>${entry.text}</span>
-            <span class="text-[10px] text-red-950/70 font-bold">✕ 退回</span>
-          `;
-          slotBtn.title = "點擊退回這個音節方塊";
-          slotBtn.addEventListener("click", () => {
-            playSfx("click");
-            const removed = state.craftedChunks.splice(slotIdx, 1)[0];
-            if (removed && poolButtons[removed.poolIndex]) {
-              poolButtons[removed.poolIndex].disabled = false;
-              poolButtons[removed.poolIndex].classList.remove("opacity-30", "pointer-events-none");
-            }
-            refreshCraftingSlotsUI();
-          });
+          if (entry.locked) {
+            slotBtn.innerHTML = `
+              <span>${entry.text}</span>
+              <span class="text-[10px] text-lime-200 font-bold">✓ 正確</span>
+            `;
+            slotBtn.title = "位置正確，已為您保留在格子中";
+          } else {
+            slotBtn.innerHTML = `
+              <span>${entry.text}</span>
+              <span class="text-[10px] text-red-950/70 font-bold">✕ 退回</span>
+            `;
+            slotBtn.title = "點擊退回這個音節方塊";
+            slotBtn.addEventListener("click", () => {
+              playSfx("click");
+              state.craftedChunks[slotIdx] = null;
+              if (poolButtons[entry.poolIndex]) {
+                poolButtons[entry.poolIndex].disabled = false;
+                poolButtons[entry.poolIndex].classList.remove("opacity-30", "pointer-events-none");
+              }
+              refreshCraftingSlotsUI();
+            });
+          }
         } else {
           slotBtn.innerHTML = `<span class="opacity-30 text-2xl">?</span>`;
         }
@@ -529,34 +543,45 @@ function renderWordsStage(autoSpeak = false) {
 
     shuffledPool.forEach((chunkObj, poolIdx) => {
       const cBtn = document.createElement("button");
-      cBtn.className = "h-16 sm:h-20 px-5 sm:px-6 rounded-2xl bg-[#38261a] hover:bg-[#4e3626] border-4 border-amber-300 text-white font-black text-2xl sm:text-3xl mc-btn shadow-lg transition active:scale-95";
+      cBtn.className = "h-[56px] sm:h-[64px] px-3.5 sm:px-4.5 rounded-xl bg-[#38261a] hover:bg-[#4e3626] border-3 border-amber-300 text-white font-black text-lg sm:text-2xl mc-btn shadow-md transition active:scale-95 shrink-0 whitespace-nowrap";
       cBtn.textContent = chunkObj.text;
       poolButtons.push(cBtn);
 
       cBtn.addEventListener("click", () => {
-        if (state.craftedChunks.length >= target.chunks.length) return;
-        playSfx("drop"); // 純系統方塊放置音，不發出任何語音音檔
-        state.craftedChunks.push({ text: chunkObj.text, poolIndex: poolIdx });
+        // 依序填入第一個未填滿的槽位
+        const firstEmptySlotIdx = state.craftedChunks.findIndex(x => x === null);
+        if (firstEmptySlotIdx === -1) return;
+
+        playSfx("drop"); // 純系統方塊放置音
+        state.craftedChunks[firstEmptySlotIdx] = { text: chunkObj.text, poolIndex: poolIdx, locked: false };
         cBtn.disabled = true;
         cBtn.classList.add("opacity-30", "pointer-events-none");
         refreshCraftingSlotsUI();
 
-        if (state.craftedChunks.length === target.chunks.length) {
-          const validationStates = state.craftedChunks.map((item, i) => item.text === target.chunks[i]);
+        // 檢查是否所有格子都已填滿
+        const isAllFilled = state.craftedChunks.every(x => x !== null);
+        if (isAllFilled) {
+          const validationStates = state.craftedChunks.map((item, i) => item && item.text === target.chunks[i]);
           const isAllCorrect = validationStates.every(v => v === true);
 
           refreshCraftingSlotsUI(validationStates);
 
           if (isAllCorrect) {
+            state.craftedChunks.forEach(item => { if (item) item.locked = true; });
             handleQuizSuccess(target, "words");
           } else {
             playSfx("oops"); // 系統輕微錯誤警示音
-            showToast(`部分方塊放錯囉！已為您保留正確的綠燈方塊，請補齊放錯的方塊！`, "💡", false);
+            // 依建議：更改提示文字為「答錯囉！請再作答一次！」
+            showToast("答錯囉！請再作答一次！", "💡", false);
 
             setTimeout(() => {
-              for (let i = state.craftedChunks.length - 1; i >= 0; i--) {
-                if (validationStates[i] === false) {
-                  const wrongItem = state.craftedChunks.splice(i, 1)[0];
+              // 依建議機制：將正確的音節固定於作答格子中；僅退回放錯的方塊
+              for (let i = 0; i < target.chunks.length; i++) {
+                if (validationStates[i] === true) {
+                  if (state.craftedChunks[i]) state.craftedChunks[i].locked = true;
+                } else {
+                  const wrongItem = state.craftedChunks[i];
+                  state.craftedChunks[i] = null;
                   if (wrongItem && poolButtons[wrongItem.poolIndex]) {
                     poolButtons[wrongItem.poolIndex].disabled = false;
                     poolButtons[wrongItem.poolIndex].classList.remove("opacity-30", "pointer-events-none");
@@ -575,7 +600,7 @@ function renderWordsStage(autoSpeak = false) {
     updateSceneAndStars();
     if (autoSpeak) speakText(target.word, LESSON_CONFIG.speechRateNormal);
   } else if (state.wordsSubMode === "prep") {
-    document.getElementById("promptStepBadge").textContent = `📍 空間位置問答挑戰 (${state.unlockedIds.size + 1} / 7)`;
+    document.getElementById("promptStepBadge").textContent = `📍 空間位置問答挑戰 (${(state.prepQueueIdx || 0) + 1} / 7)`;
     document.getElementById("promptLineA").textContent = `${target.qaQ}`;
     document.getElementById("promptLineB").classList.remove("hidden");
     document.getElementById("promptLineB").innerHTML = target.qaAHtml.replace(/<span[^>]*>[^<]+<\/span>/, "<span class='text-yellow-300 underline font-black px-2 bg-black/40 rounded'>[ ? ]</span>");
@@ -586,9 +611,10 @@ function renderWordsStage(autoSpeak = false) {
       { prep: "by", icon: "◀️", zh: "在…旁邊 (by)" },
       { prep: "around", icon: "🔄", zh: "圍繞在…周圍 (around)" },
       { prep: "on", icon: "🔼", zh: "在…上面 (on)" },
-      { prep: "at the top of", icon: "⭐", zh: "在…頂端 (at the top of)" },
-      { prep: "above", icon: "⬆️", zh: "在…正上方 (above)" },
+      { prep: "on the top of", icon: "⭐", zh: "在…頂端 (on the top of)" },
+      { prep: "above", icon: "⬆️", zh: "在…上方 (above)" },
       { prep: "under", icon: "🔽", zh: "在…下方 (under)" },
+      { prep: "in", icon: "📍", zh: "在…裡面 (in)" },
       { prep: "in front of", icon: "🧍", zh: "在…正前方 (in front of)" }
     ];
 
@@ -631,3 +657,30 @@ function renderWordsStage(autoSpeak = false) {
     if (autoSpeak) speakText(target.qaQ, LESSON_CONFIG.speechRateNormal);
   }
 }
+// 依建議：完成 3.空間介係詞問答後，提供「返回主畫面」與「進入下一關」雙按鈕
+window.renderWordsStageCompleteButton = function() {
+  const zone = document.getElementById("wordsInteractiveZone");
+  if (!zone) return;
+  zone.innerHTML = `
+    <div class="w-full flex flex-col items-center justify-center p-4 sm:p-5 bg-black/80 rounded-2xl border-4 border-lime-400 text-center gap-2.5 animate-fade-in max-w-xl mx-auto shadow-2xl my-1">
+      <div class="text-xl sm:text-2xl font-black text-amber-300">🎉 太棒了！【單字拼字與句型】已全數完成！</div>
+      <div class="text-xs sm:text-sm text-white/90">7 個聖誕方塊已全部成功安放於木屋中！</div>
+      <div class="flex items-center gap-3 mt-1 flex-wrap justify-center">
+        <button id="btnCompleteLearningBackHome" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 border-2 border-yellow-200 text-slate-950 font-black text-sm sm:text-base mc-btn shadow-xl flex items-center justify-center gap-1.5 transition hover:scale-105 active:scale-95" title="返回主畫面選擇其他單元">
+          <span>🏠</span> <span>返回主畫面</span>
+        </button>
+        <button id="btnCompleteLearningNextStage" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 border-2 border-lime-300 text-white font-black text-sm sm:text-base mc-btn shadow-xl flex items-center justify-center gap-1.5 animate-bounce" title="前往下一單元：國際聖誕文化">
+          <span>🌲</span> <span>完成學習·下一關</span> <span>▶</span>
+        </button>
+      </div>
+    </div>
+  `;
+  document.getElementById("btnCompleteLearningBackHome")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (typeof returnToHomeScreen === "function") returnToHomeScreen();
+  });
+  document.getElementById("btnCompleteLearningNextStage")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("portal");
+    if (typeof switchStage === "function") switchStage("culture");
+  });
+};

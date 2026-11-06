@@ -13,12 +13,12 @@ LESSON_CONFIG.storySteps = [
     step: 1,
     sceneType: "image",
     assetKey: "story_taiwan_school",
-    badge: "Scene 1 / 8 · 🇹🇼 序曲：台灣冬日校園",
+    badge: "Scene 1 / 8 · 序曲：台灣冬日校園",
     roleA: "🅰️ Steve: It's cold today in Taiwan!",
     roleB: "🅱️ Alex: Look! An SOS map from Santa!",
     roleASpeak: "steve",
     roleBSpeak: "alex",
-    zhHint: "",
+    zhHint: "「序曲·從台灣出發：點擊下方『打開求救捲軸』展開冒險！」",
     speakA: "It's cold today in Taiwan!",
     speakB: "Look! An S O S map from Santa!",
     actionBtnLabel: "📜 打開求救捲軸",
@@ -109,7 +109,7 @@ LESSON_CONFIG.storySteps = [
     actionBtnLabel: "🦌 拯救馴鹿・尋找避風松林",
     actionToast: "🦌 請回答常青樹單字以庇護 Rudolph！",
     actionOverlayTitle: "🦌 拯救馴鹿任務",
-    actionOverlayBody: "暴風雪很大，需要高大的常青松樹（pine tree）為馴鹿遮蔽寒風！",
+    actionOverlayBody: "",
     quiz: {
       questionEn: "Which green tree can shelter Rudolph the reindeer?",
       questionZh: "🦌 提問：哪種雪地常青樹可以為馴鹿遮風避雪？",
@@ -178,11 +178,16 @@ async function speakStoryDialogue(stepObj, rate = null) {
     lineB?.classList.remove("spotlight-speaker-b", "scale-[1.02]", "opacity-40");
   };
 
+  const defaultSpeakerName = stepObj.step >= 5 ? "Steve & Santa" : "Steve & Alex";
+
   try {
     if (stepObj.speakA) {
       if (lineA && lineB) {
         lineA.classList.add("spotlight-speaker-a", "scale-[1.02]");
         lineB.classList.add("opacity-40");
+      }
+      if (typeof window.setRpgSpeaker === "function") {
+        window.setRpgSpeaker("Steve", "👦", null, true);
       }
       await speakText(stepObj.speakA, actualRate, "en-US", stepObj.roleASpeak || "steve");
     }
@@ -194,10 +199,19 @@ async function speakStoryDialogue(stepObj, rate = null) {
         lineB.classList.add("spotlight-speaker-b", "scale-[1.02]");
         lineA.classList.add("opacity-40");
       }
+      const isSanta = stepObj.step >= 5;
+      const roleBName = isSanta ? "Santa" : "Alex";
+      const roleBIcon = isSanta ? "🎅" : "👧";
+      if (typeof window.setRpgSpeaker === "function") {
+        window.setRpgSpeaker(roleBName, roleBIcon, null, true);
+      }
       await speakText(stepObj.speakB, actualRate, "en-US", stepObj.roleBSpeak || "alex");
     }
   } finally {
     clearSpotlight();
+    if (typeof window.setRpgSpeaker === "function") {
+      window.setRpgSpeaker(defaultSpeakerName, "👦", null, false);
+    }
   }
 }
 
@@ -299,6 +313,15 @@ function renderStoryStage(autoSpeak = false) {
     if (fireGlow) fireGlow.style.opacity = "1";
     if (unlitCover) unlitCover.style.opacity = "0";
     svgEl.classList.add("tree-sparkle-active");
+  }
+
+  // 依據教學建議：第 5~8 幕 Santa 出現時，左上角人物名牌同步變更為 Steve & Santa；頭像保持單一角色避免折行堆疊
+  if (typeof window.setRpgSpeaker === "function") {
+    if (stepObj.step >= 5) {
+      window.setRpgSpeaker("Steve & Santa", "👦", null, false);
+    } else {
+      window.setRpgSpeaker("Steve & Alex", "👦", null, false);
+    }
   }
 
   document.getElementById("promptStepBadge").textContent = stepObj.badge;

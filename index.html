@@ -143,7 +143,7 @@
     <!-- 左：回首頁按鈕、標題與 7 星進度 -->
     <div class="flex items-center gap-2 sm:gap-2.5">
       <button id="backToHomeBtn" class="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-sm mc-btn flex items-center gap-1.5 shadow-lg border border-yellow-300 transition-transform active:scale-95 shrink-0" title="返回主畫面選擇其他單元">
-        <span>🏠</span> <span>回首頁</span>
+        <span>🏠</span> <span>返回主畫面</span>
       </button>
       <span class="text-base sm:text-2xl font-black text-amber-300 tracking-wide truncate max-w-[130px] sm:max-w-none">World Christmas</span>
       <span id="currentUnitBadge" class="hidden md:inline-block px-2 py-0.5 rounded bg-amber-400/20 border border-amber-300/50 text-amber-200 text-xs font-black">📖 劇情單元</span>
@@ -332,7 +332,7 @@
               <span id="promptNametagText" class="rpg-nametag-text text-sm sm:text-base">Steve & Alex</span>
             </div>
             <span id="promptStepBadge" class="px-2 py-0.5 rounded-md bg-blue-600/80 text-white font-black text-xs sm:text-sm border border-blue-300/40 truncate max-w-[320px]">
-              Scene 1 / 8 · 🇹🇼 序曲：台灣冬日校園
+              Scene 1 / 8 · 序曲：台灣冬日校園
             </span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
@@ -521,7 +521,7 @@
   <!-- =========================================================================
        【第三層：底部中年級互動控制台與麥塊合成台】
        ========================================================================= -->
-  <footer class="h-[150px] sm:h-[165px] shrink-0 mc-panel px-3 sm:px-5 py-2 flex flex-col justify-center z-30 transition-all">
+  <footer class="h-[165px] sm:h-[180px] shrink-0 mc-panel px-3 sm:px-5 py-2 flex flex-col justify-center z-30 transition-all">
 
     <!-- 上排：4 階段專屬互動區 -->
     <div class="flex-1 flex items-center justify-center w-full overflow-hidden">
@@ -559,23 +559,26 @@
       <!-- [階段 2: 🔤 Words & Craft 單字句型特寫 ⇄ 麥塊合成台闖關] -->
       <div id="bottomDeckWords" class="hidden w-full max-w-7xl mx-auto flex items-center justify-between gap-2.5 sm:gap-3">
         <!-- 左側：子模式切換器（🔍 單字句型特寫 ／ 🔤 音節拼字台 ／ 📍 空間介系詞挑戰） -->
-        <div class="flex flex-col gap-1.5 shrink-0 w-[185px] sm:w-[225px]">
-          <button id="wordsSubModeLearnBtn" class="py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950">
+        <div class="flex flex-col gap-1 shrink-0 w-[185px] sm:w-[220px]">
+          <button id="wordsSubModeLearnBtn" class="h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950">
             <span>🔍 1. 單字＆句型特寫</span>
-            <span class="text-[11px] bg-black/20 px-1.5 rounded">教學</span>
+            <span class="text-[10px] bg-black/20 px-1.5 rounded">教學</span>
           </button>
-          <button id="wordsSubModeSpellBtn" class="py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
+          <button id="wordsSubModeSpellBtn" class="h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
             <span>🔤 2. 麥塊音節拼字台</span>
-            <span class="text-[11px] bg-black/30 px-1.5 rounded">闖關</span>
+            <span class="text-[10px] bg-black/30 px-1.5 rounded">闖關</span>
           </button>
-          <button id="wordsSubModePrepBtn" class="py-2 px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
+          <button id="wordsSubModePrepBtn" class="h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
             <span>📍 3. 空間介系詞問答</span>
-            <span class="text-[11px] bg-black/30 px-1.5 rounded">闖關</span>
+            <span class="text-[10px] bg-black/30 px-1.5 rounded">闖關</span>
+          </button>
+          <button id="wordsBackHomeBtn" class="h-[30px] sm:h-[33px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-100 border border-amber-400/60 shadow transition-all hover:scale-[1.02] active:scale-95" title="返回主畫面選擇其他單元">
+            <span>🏠</span> <span>返回主畫面</span>
           </button>
         </div>
 
         <!-- 右側動態區：顯示 7 張升級單字圖卡列 或 音節拼字合成台 或 空間介系詞三選一 -->
-        <div id="wordsInteractiveZone" class="flex-1 flex items-center justify-center h-[122px] sm:h-[132px]"></div>
+        <div id="wordsInteractiveZone" class="flex-1 flex items-center justify-center h-[135px] sm:h-[150px]"></div>
       </div>
 
       <!-- [階段 3: 🌍 World Culture 7 國聖誕文化探索 ⇄ 國際文化搶答] -->
@@ -587,6 +590,9 @@
           </button>
           <button id="cultureSubModeQuizBtn" class="py-3 px-3 rounded-xl font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
             <span>🎯</span> <span>國際文化搶答挑戰</span>
+          </button>
+          <button id="cultureBackHomeBtn" class="mt-1 py-2 px-3 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-100 border border-amber-400/60 shadow transition-all hover:scale-[1.02] active:scale-95" title="返回主畫面選擇其他單元">
+            <span>🏠</span> <span>返回主畫面</span>
           </button>
         </div>
 
