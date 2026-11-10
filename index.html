@@ -521,37 +521,37 @@
   <!-- =========================================================================
        【第三層：底部中年級互動控制台與麥塊合成台】
        ========================================================================= -->
-  <footer class="h-[165px] sm:h-[180px] shrink-0 mc-panel px-3 sm:px-5 py-2 flex flex-col justify-center z-30 transition-all">
+  <footer class="h-[180px] shrink-0 mc-panel px-5 py-2 flex flex-col justify-center z-30 transition-all">
 
     <!-- 上排：4 階段專屬互動區 -->
     <div class="flex-1 flex items-center justify-center w-full overflow-hidden">
 
       <!-- [階段 1: 📖 Story 麥塊 5 幕情境與每幕專屬互動道具] -->
       <div id="bottomDeckStory" class="w-full flex items-center justify-between gap-2.5 sm:gap-3.5 max-w-7xl mx-auto">
-        <button id="storyPrevStepBtn" class="h-[96px] sm:h-[108px] px-4 sm:px-6 rounded-2xl bg-[#3b2a1e] hover:bg-[#4e3828] text-amber-100 font-black text-base sm:text-xl mc-btn flex items-center gap-1.5 shrink-0">
+        <button id="storyPrevStepBtn" class="h-[108px] px-6 rounded-2xl bg-[#3b2a1e] hover:bg-[#4e3828] text-amber-100 font-black text-xl mc-btn flex items-center gap-1.5 shrink-0">
           <span>⬅️</span> <span>上一幕</span>
         </button>
 
         <!-- 中間：5 幕快速跳轉數字列 ＋ 雙人角色跟讀 ＋ 局部互動觸發大按鈕 -->
         <div class="flex-1 flex flex-col gap-2">
           <!-- 5 幕進度指示列 -->
-          <div id="storySceneDotsRow" class="grid grid-cols-4 sm:grid-cols-8 gap-1.5"></div>
+          <div id="storySceneDotsRow" class="grid grid-cols-8 gap-1.5"></div>
 
           <!-- 角色跟讀與本幕專屬麥塊道具按鈕 -->
           <div class="grid grid-cols-3 gap-2">
-            <button id="storySpeakABtn" class="h-[62px] sm:h-[68px] px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-red-950 font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5">
+            <button id="storySpeakABtn" class="h-[68px] px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-red-950 font-black text-base mc-btn flex items-center justify-center gap-1.5">
               <span>🗣️</span> <span>唸角色 A (左半班)</span>
             </button>
-            <button id="storySpeakBBtn" class="h-[62px] sm:h-[68px] px-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5">
+            <button id="storySpeakBBtn" class="h-[68px] px-2 rounded-xl bg-lime-400 hover:bg-lime-300 text-slate-950 font-black text-base mc-btn flex items-center justify-center gap-1.5">
               <span>🎅</span> <span>唸角色 B (右半班)</span>
             </button>
-            <button id="storyTriggerPropBtn" class="h-[62px] sm:h-[68px] px-3 rounded-xl bg-gradient-to-b from-purple-400 to-fuchsia-500 hover:from-purple-300 hover:to-fuchsia-400 text-slate-950 font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 ring-2 ring-yellow-300">
+            <button id="storyTriggerPropBtn" class="h-[68px] px-3 rounded-xl bg-gradient-to-b from-purple-400 to-fuchsia-500 hover:from-purple-300 hover:to-fuchsia-400 text-slate-950 font-black text-base mc-btn flex items-center justify-center gap-1.5 ring-2 ring-yellow-300">
               <span id="storyTriggerPropLabel">📜 打開求救捲軸</span>
             </button>
           </div>
         </div>
 
-        <button id="storyNextStepBtn" class="h-[96px] sm:h-[108px] px-5 sm:px-7 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base sm:text-2xl mc-btn flex items-center gap-1.5 shrink-0">
+        <button id="storyNextStepBtn" class="h-[108px] px-7 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-2xl mc-btn flex items-center gap-1.5 shrink-0">
           <span id="storyNextStepText">下一幕</span> <span>▶️</span>
         </button>
       </div>
@@ -559,32 +559,32 @@
       <!-- [階段 2: 🔤 Words & Craft 單字句型特寫 ⇄ 麥塊合成台闖關] -->
       <div id="bottomDeckWords" class="hidden w-full max-w-7xl mx-auto flex items-center justify-between gap-2.5 sm:gap-3">
         <!-- 左側：子模式切換器（🔍 單字句型特寫 ／ 🔤 音節拼字台 ／ 📍 空間介系詞挑戰） -->
-        <div class="flex flex-col gap-1 shrink-0 w-[185px] sm:w-[220px]">
-          <button id="wordsSubModeLearnBtn" class="h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950">
+        <div class="flex flex-col gap-1 shrink-0 w-[220px]">
+          <button id="wordsSubModeLearnBtn" class="h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-amber-400 text-red-950">
             <span>🔍 1. 單字＆句型特寫</span>
             <span class="text-[10px] bg-black/20 px-1.5 rounded">教學</span>
           </button>
-          <button id="wordsSubModeSpellBtn" class="h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
+          <button id="wordsSubModeSpellBtn" class="h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
             <span>🔤 2. 麥塊音節拼字台</span>
             <span class="text-[10px] bg-black/30 px-1.5 rounded">闖關</span>
           </button>
-          <button id="wordsSubModePrepBtn" class="h-[32px] sm:h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
+          <button id="wordsSubModePrepBtn" class="h-[35px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-between bg-[#38261a] text-amber-200 hover:bg-[#4e3626]">
             <span>📍 3. 空間介系詞問答</span>
             <span class="text-[10px] bg-black/30 px-1.5 rounded">闖關</span>
           </button>
-          <button id="wordsBackHomeBtn" class="h-[30px] sm:h-[33px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-100 border border-amber-400/60 shadow transition-all hover:scale-[1.02] active:scale-95" title="返回主畫面選擇其他單元">
+          <button id="wordsBackHomeBtn" class="h-[33px] px-2.5 rounded-xl font-black text-xs sm:text-sm mc-btn flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-amber-100 border border-amber-400/60 shadow transition-all hover:scale-[1.02] active:scale-95" title="返回主畫面選擇其他單元">
             <span>🏠</span> <span>返回主畫面</span>
           </button>
         </div>
 
         <!-- 右側動態區：顯示 7 張升級單字圖卡列 或 音節拼字合成台 或 空間介系詞三選一 -->
-        <div id="wordsInteractiveZone" class="flex-1 flex items-center justify-center h-[135px] sm:h-[150px]"></div>
+        <div id="wordsInteractiveZone" class="flex-1 flex items-center justify-center h-[150px]"></div>
       </div>
 
       <!-- [階段 3: 🌍 World Culture 7 國聖誕文化探索 ⇄ 國際文化搶答] -->
       <div id="bottomDeckCulture" class="hidden w-full max-w-7xl mx-auto flex items-center justify-between gap-2.5 sm:gap-3">
         <!-- 左側：切換「🌍 7國文化探索看板」與「🎯 國際文化搶答闖關」 -->
-        <div class="flex flex-col gap-2 shrink-0 w-[180px] sm:w-[215px]">
+        <div class="flex flex-col gap-2 shrink-0 w-[215px]">
           <button id="cultureSubModeExploreBtn" class="py-3 px-3 rounded-xl font-black text-xs sm:text-base mc-btn flex items-center justify-center gap-1.5 bg-amber-400 text-red-950">
             <span>🌍</span> <span>7國文化探索看板</span>
           </button>
@@ -597,7 +597,7 @@
         </div>
 
         <!-- 右側動態區：7 國國旗文化卡列 或 國際文化三選一搶答卡 -->
-        <div id="cultureInteractiveZone" class="flex-1 flex items-center justify-center h-[122px] sm:h-[132px]"></div>
+        <div id="cultureInteractiveZone" class="flex-1 flex items-center justify-center h-[132px]"></div>
       </div>
 
       <!-- [階段 4: 🎉 Party 環遊世界 5 國祝福語 ＆ 雙隊隨機抽題 PK] -->
@@ -613,17 +613,17 @@
 
         <!-- 右側：隨機抽考 PK 輪盤 ＋ 音樂與暴風雪 -->
         <div class="flex items-center gap-2 shrink-0">
-          <button id="partyRandomQuizBtn" class="h-[106px] sm:h-[116px] px-4 sm:px-5 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-red-950 font-black text-base sm:text-xl mc-btn flex flex-col items-center justify-center gap-1">
+          <button id="partyRandomQuizBtn" class="h-[116px] px-4 sm:px-5 rounded-2xl bg-gradient-to-b from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-red-950 font-black text-base sm:text-xl mc-btn flex flex-col items-center justify-center gap-1">
             <span>🎲 隨機抽題 PK</span>
             <span class="text-[11px] sm:text-xs font-bold text-red-900">拼字/句型/文化搶答</span>
           </button>
 
-          <button id="partyMusicBtn" class="h-[106px] sm:h-[116px] px-3.5 sm:px-4 rounded-2xl bg-gradient-to-b from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 font-black text-base sm:text-lg mc-btn flex flex-col items-center justify-center gap-1">
+          <button id="partyMusicBtn" class="h-[116px] px-3.5 sm:px-4 rounded-2xl bg-gradient-to-b from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 font-black text-base sm:text-lg mc-btn flex flex-col items-center justify-center gap-1">
             <span id="partyMusicBtnLabel">🎵 聖誕音樂</span>
             <span class="text-[11px] font-bold text-slate-900">Jingle Bells</span>
           </button>
 
-          <button id="partySnowBurstBtn" class="h-[106px] sm:h-[116px] px-3.5 sm:px-4 rounded-2xl bg-gradient-to-b from-purple-400 to-fuchsia-500 hover:from-purple-300 hover:to-fuchsia-400 text-slate-950 font-black text-base sm:text-lg mc-btn flex flex-col items-center justify-center gap-1">
+          <button id="partySnowBurstBtn" class="h-[116px] px-3.5 sm:px-4 rounded-2xl bg-gradient-to-b from-purple-400 to-fuchsia-500 hover:from-purple-300 hover:to-fuchsia-400 text-slate-950 font-black text-base sm:text-lg mc-btn flex flex-col items-center justify-center gap-1">
             <span>❄️ 暴風雪</span>
             <span class="text-[11px] font-bold text-purple-950">慶祝煙火</span>
           </button>
