@@ -28,5 +28,5 @@ window.ASSET_MANIFEST = {
 
 window.LESSON_CONFIG = window.LESSON_CONFIG || {};
 window.LESSON_CONFIG.title = "🌍 World Christmas Craft (中高年級 3D 麥塊跨國冒險)";
-window.LESSON_CONFIG.speechRateSlow = 0.70; // 慢速朗讀：調降至 0.70，確保語速有明顯差異
+window.LESSON_CONFIG.speechRateSlow = 0.75; // 慢速朗讀：調降至 0.70，確保語速有明顯差異
 window.LESSON_CONFIG.speechRateNormal = 1.00; // 正常標準語速 1.00

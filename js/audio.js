@@ -1,12 +1,11 @@
 /* =========================================================================
    🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - 音訊核心引擎 (audio.js)
-   - Web Audio API 擬真 Foley 音效合成 (打火石火花、傳送門、壁爐柴火、鐵砧合成等)
+   - Web Audio API 擬真 Foley 音效合成
    - 8-bit 麥塊像素風格《Jingle Bells》BGM 合成引擎 (支援 Ducking 降音)
-   - Google AI 語音精確對照播放器 (89 個音檔精準映射表、雙重相容性、雲端串流自動遞補)
-   - Web Speech API 智慧容錯回退機制
+   - 實體 MP3 音檔優先播放器（含 18 個 Aria 年輕女聲新音檔映射）
+   - 瀏覽器內建 Aria 女聲智慧備援機制
    ========================================================================= */
 
-// 全域音訊實例宣告
 let currentAudioInstance = null;
 let audioCtx = null;
 
@@ -498,10 +497,10 @@ function stopChiptuneBgm() {
 }
 
 // ==========================================
-// 3. 實體音檔精準映射表 (89 個音檔清單)
+// 3. 實體音檔精準映射表（優先播放實體 MP3）
 // ==========================================
 const EXACT_AUDIO_MAP = {
-  // 【A 組】8 幕故事角色對話 (16 句)
+  // 【A 組】8 幕故事角色對話
   "it's cold today in taiwan!": "it_s_cold_today_in_taiwan.mp3",
   "look! an sos map from santa!": "look__an_s_o_s_map_from_santa.mp3",
   "look! an s o s map from santa!": "look__an_s_o_s_map_from_santa.mp3",
@@ -514,14 +513,15 @@ const EXACT_AUDIO_MAP = {
   "brrr! it's freezing outside!": "brrr__it_s_freezing_outside.mp3",
   "the blizzard blew my seven blocks away!": "the_blizzard_blew_my_seven_blocks_away.mp3",
   "rudolph is cold in the blizzard!": "rudolph_is_cold_in_the_blizzard.mp3",
-  "look! the pine tree can shelter him!": "look_the_pine_tree_can_shelter_him.mp3",
-  "look the pine tree can shelter him": "look_the_pine_tree_can_shelter_him.mp3",
+  "look! the pine tree can shelter him!": "look__the_pine_tree_can_shelter_him.mp3",
+  "look the pine tree can shelter him": "look__the_pine_tree_can_shelter_him.mp3",
   "it is dark and cold in the cabin!": "it_is_dark_and_cold_in_the_cabin.mp3",
   "let's light the fireplace with flint!": "let_s_light_the_fireplace_with_flint.mp3",
   "look at the tree! it's party time!": "look_at_the_tree__it_s_party_time.mp3",
   "merry christmas! let's celebrate!": "merry_christmas__let_s_celebrate.mp3",
 
-  // 【B 組】7 個核心單字 (Core Vocabulary)
+  // 【B 組】7 個核心單字
+  "christmas tree": "christmas_tree.mp3",
   "pine tree": "pine_tree.mp3",
   "ribbon": "ribbon.mp3",
   "ornament": "ornament.mp3",
@@ -530,17 +530,20 @@ const EXACT_AUDIO_MAP = {
   "present": "present.mp3",
   "santa claus": "santa_claus.mp3",
 
-  // 【C 組】7 個完整問答句 (Complete Q&A)
+  // 【C 組】7 個完整問答句
+  "where is the christmas tree? it's by the fireplace.": "where_is_the_christmas_tree__it_s_by_the_fireplace.mp3",
   "where is the pine tree? it's by the fireplace.": "where_is_the_pine_tree__it_s_by_the_fireplace.mp3",
+  "where is the ribbon? it's around the christmas tree.": "where_is_the_ribbon__it_s_around_the_christmas_tree.mp3",
   "where is the ribbon? it's around the pine tree.": "where_is_the_ribbon__it_s_around_the_pine_tree.mp3",
   "where are the ornaments? they're on the tree.": "where_are_the_ornaments__they_re_on_the_tree.mp3",
   "where is the star? it's on top of the tree.": "where_is_the_star__it_s_on_top_of_the_tree.mp3",
   "where is the star? it's on the top of the tree.": "where_is_the_star__it_s_on_the_top_of_the_tree.mp3",
+  "where are the stockings? they're above the fireplace.": "where_are_the_stockings__they_re_above_the_fireplace.mp3",
   "where is the stocking? it's above the fireplace.": "where_is_the_stocking__it_s_above_the_fireplace.mp3",
   "where are the presents? they're under the tree.": "where_are_the_presents__they_re_under_the_tree.mp3",
   "where is santa claus? he is in the room.": "where_is_santa_claus__he_is_in_the_room.mp3",
 
-  // 【D 組】7 國文化介紹短句 (Culture Sentences)
+  // 【D 組】7 國文化介紹短句
   "in germany, people put trees in the house.": "in_germany__people_put_trees_in_the_house.mp3",
   "in france, ribbons tie holiday joy together.": "in_france__ribbons_tie_holiday_joy_together.mp3",
   "in mexico, bright ornaments bring joy.": "in_mexico__bright_ornaments_bring_joy.mp3",
@@ -549,7 +552,9 @@ const EXACT_AUDIO_MAP = {
   "in the usa, presents wait under the tree.": "in_the_usa__presents_wait_under_the_tree.mp3",
   "in australia, santa surfs at the sunny beach.": "in_australia__santa_surfs_at_the_sunny_beach.mp3",
 
-  // 【E 組】自然發音音節拆解方塊 (Phonics Chunks)
+  // 【E 組】自然發音音節拆解方塊
+  "christ": "chunk_christ.mp3",
+  "mas": "chunk_mas.mp3",
   "pine": "chunk_pine.mp3",
   "tree": "chunk_tree.mp3",
   "rib": "chunk_rib.mp3",
@@ -566,25 +571,27 @@ const EXACT_AUDIO_MAP = {
   "santa": "chunk_santa.mp3",
   "claus": "chunk_claus.mp3",
 
-  // 【F 組】空間介系詞挑戰純問句 (Questions Only)
+  // 【F 組】空間介系詞挑戰純問句
+  "where is the christmas tree?": "q_where_is_the_christmas_tree.mp3",
   "where is the pine tree?": "q_where_is_the_pine_tree.mp3",
   "where is the ribbon?": "q_where_is_the_ribbon.mp3",
   "where are the ornaments?": "q_where_are_the_ornaments.mp3",
   "where is the star?": "q_where_is_the_star.mp3",
+  "where are the stockings?": "q_where_are_the_stockings.mp3",
   "where is the stocking?": "q_where_is_the_stocking.mp3",
   "where are the presents?": "q_where_are_the_presents.mp3",
   "where is santa claus?": "q_where_is_santa_claus.mp3",
 
-  // 【G 組】國際文化搶答填空問句 (Culture Quiz Questions)
-  "in germany, people put green blank in the house!": "cq_germany_blank.mp3",
-  "in france, people tie colorful blank on gifts!": "cq_france_blank.mp3",
-  "in mexico, colorful blank are hung for christmas!": "cq_mexico_blank.mp3",
-  "in the philippines, the bright blank lantern is called a parol!": "cq_philippines_blank.mp3",
-  "in the uk, children hang a blank by the fire for gifts!": "cq_uk_blank.mp3",
-  "in the usa, families put colorful blank under the tree!": "cq_usa_blank.mp3",
-  "in australia, santa wears shorts and surfs at the blank!": "cq_australia_blank.mp3",
+  // 【G 組】國際文化搶答正常英語問句 (Culture Quiz Questions)
+  "what do people in germany put in the house?": "cq_germany_blank.mp3",
+  "what do people in france tie on gifts?": "cq_france_blank.mp3",
+  "what do people in mexico hang for christmas?": "cq_mexico_blank.mp3",
+  "what shape is the lantern in the philippines?": "cq_philippines_blank.mp3",
+  "what do children in the uk hang by the fire?": "cq_uk_blank.mp3",
+  "what do families in the usa put under the tree?": "cq_usa_blank.mp3",
+  "who wears shorts and surfs at the beach in australia?": "cq_australia_blank.mp3",
 
-  // 【H 組】環遊世界 5 國語言聖誕祝福語 (Holiday Greetings)
+  // 【H 組】環遊世界 5 國語言聖誕祝福語
   "merry christmas!": "greeting_en_merry_christmas.mp3",
   "merry christmas": "greeting_en_merry_christmas.mp3",
   "¡feliz navidad!": "greeting_es_feliz_navidad.mp3",
@@ -598,14 +605,14 @@ const EXACT_AUDIO_MAP = {
   "メリークリスマス!": "greeting_ja_merry_christmas.mp3",
   "メリークリスマス": "greeting_ja_merry_christmas.mp3",
 
-  // 【I 組】遊戲激勵與回饋語 (Feedback & Encouragement)
+  // 【I 組】遊戲激勵與回饋語
   "try again!": "feedback_try_again.mp3",
   "try again": "feedback_try_again.mp3",
   "great job!": "feedback_great_job.mp3",
   "awesome!": "feedback_awesome.mp3",
   "correct!": "feedback_correct.mp3",
 
-  // 【J 組】故事模式情境 Mini-Quiz (Story Mini-Quiz)
+  // 【J 組】故事模式情境 Mini-Quiz
   "which green tree can shelter rudolph the reindeer?": "story_quiz_rudolph.mp3",
   "correct! the pine tree shelters rudolph!": "story_quiz_correct_rudolph.mp3",
   "where do children hang their christmas stockings?": "story_quiz_stocking.mp3",
@@ -659,7 +666,6 @@ function playAudioFilePromise(filename, actualRate, fallbackText = null, fallbac
     });
 
     const isFileOrigin = (typeof window !== "undefined" && window.location && window.location.protocol === "file:");
-    // 在 file:/// 協議下避免外部跨域 TTS 觸發 Chromium 安全性警告，改由 Web Speech API 回退
     if (fallbackText && !isFileOrigin) {
       const cleanLang = (fallbackLang || "en").split("-")[0];
       const cleanTtsText = normalizeSpeechText(fallbackText);
@@ -702,7 +708,6 @@ function playAudioFilePromise(filename, actualRate, fallbackText = null, fallbac
       audio.defaultPlaybackRate = targetRate;
       audio.playbackRate = targetRate;
 
-      // 雙重監聽：防止 Safari / Chrome 在 play 或 loadedmetadata 時重設語速
       audio.addEventListener('loadedmetadata', () => {
         try { audio.playbackRate = targetRate; } catch (_) {}
       });
@@ -752,6 +757,7 @@ async function speakText(text, rate = null, lang = "en-US", role = "default") {
     const normText = normalizeSpeechText(text);
     const cleanText = normText.toLowerCase();
 
+    // 1. 優先比對實體 MP3 音檔映射表（包含全新 18 個 Aria 女聲 MP3）
     let matchedFilename = EXACT_AUDIO_MAP[cleanText];
 
     if (!matchedFilename) {
@@ -769,17 +775,34 @@ async function speakText(text, rate = null, lang = "en-US", role = "default") {
       }
     }
 
+    // 優先嘗試播放本地 audio/ 資料夾內的實體 MP3 檔
     if (matchedFilename) {
       try {
-        await playAudioFilePromise(matchedFilename, actualRate, cleanText, lang);
+        await playAudioFilePromise(matchedFilename, actualRate, null, lang);
         return;
       } catch (err) {
-        console.warn(`[MP3 播放失敗，啟用備用發音] 檔名: ${matchedFilename}`, err);
+        console.warn(`[尚未放入實體 MP3，自動切換為 Aria 語音備援] 檔名: ${matchedFilename}`);
         stopCurrentSpeech();
       }
     }
 
-    await speakBrowserSpeech(text, actualRate, lang, role);
+    // 2. 備援機制：若尚未放入該 MP3，使用瀏覽器內建 Aria 女聲朗讀（避免連讀成縮寫）
+    const nonContractedPrompts = {
+      "where are the ornaments?": "Where, are the ornaments?",
+      "where are the presents?": "Where, are the presents?",
+      "where is santa claus?": "Where, is Santa Claus?",
+      "where are the stockings?": "Where, are the stockings?",
+      "where is the christmas tree?": "Where, is the Christmas tree?",
+      "where are the ornaments? they're on the tree.": "Where, are the ornaments? They're on the tree.",
+      "where are the presents? they're under the tree.": "Where, are the presents? They're under the tree.",
+      "where is santa claus? he is in the room.": "Where, is Santa Claus? He is in the room.",
+      "where are the stockings? they're above the fireplace.": "Where, are the stockings? They're above the fireplace.",
+      "where is the christmas tree? it's by the fireplace.": "Where, is the Christmas tree? It's by the fireplace.",
+      "where is the ribbon? it's around the christmas tree.": "Where, is the ribbon? It's around the Christmas tree."
+    };
+
+    const finalSpeakText = nonContractedPrompts[cleanText] || text;
+    await speakBrowserSpeech(finalSpeakText, actualRate, lang, role);
   } finally {
     setBgmDucking(false);
   }
@@ -791,9 +814,13 @@ function speakBrowserSpeech(text, rate = 0.96, lang = "en-US", role = "default")
     window.speechSynthesis.cancel();
 
     let utterText = text;
-    if (String(text).trim().toLowerCase() === "present") {
+    const lowerTrim = String(text).trim().toLowerCase();
+    if (lowerTrim === "present") {
       utterText = "Present.";
+    } else if (lowerTrim === "mas") {
+      utterText = "muss.";
     }
+
     const utter = new SpeechSynthesisUtterance(utterText);
     utter.rate = rate;
     utter.lang = lang;
@@ -803,10 +830,8 @@ function speakBrowserSpeech(text, rate = 0.96, lang = "en-US", role = "default")
     } else if (role === "santa") {
       utter.pitch = 0.72;
       utter.rate = Math.max(0.65, rate * 0.88);
-    } else if (role === "alex") {
-      utter.pitch = 1.15;
     } else {
-      utter.pitch = 1.0;
+      utter.pitch = 1.05;
     }
 
     const voices = window.speechSynthesis.getVoices();
@@ -819,12 +844,13 @@ function speakBrowserSpeech(text, rate = 0.96, lang = "en-US", role = "default")
         const maleVoice = pool.find(v => /male|david|mark|george|christopher|guy|ichiro|keita/i.test(v.name));
         if (maleVoice) utter.voice = maleVoice;
         else if (pool[0]) utter.voice = pool[0];
-      } else if (role === "alex") {
-        const femaleVoice = pool.find(v => /female|zira|jenny|samantha|victoria|karen|nanami|ayumi/i.test(v.name));
-        if (femaleVoice) utter.voice = femaleVoice;
-        else if (pool[0]) utter.voice = pool[0];
       } else {
-        if (pool[0]) utter.voice = pool[0];
+        // 優先鎖定 Microsoft Aria (年輕女聲)
+        const ariaVoice = pool.find(v => /aria/i.test(v.name));
+        const youngFemaleVoice = pool.find(v => /jenny|emma|ava|female|zira|samantha|victoria|karen|nanami|ayumi/i.test(v.name));
+        if (ariaVoice) utter.voice = ariaVoice;
+        else if (youngFemaleVoice) utter.voice = youngFemaleVoice;
+        else if (pool[0]) utter.voice = pool[0];
       }
     }
 
@@ -844,18 +870,15 @@ async function speakPhonicsChunk(chunkText, phoneticSound) {
 
 // ==========================================
 // 2.5 劇情環境背景音引擎 (Story Ambient Engine)
-// - 隨幕次自動淡入淡出環境底音 (蟲洞共振、暴風雪風吼、壁爐柴火底音)
 // ==========================================
 let storyAmbientNodes = null;
 let activeAmbientSources = [];
 
 function stopStorySceneBgm() {
-  // 若有因環境音暫停的音樂，且離開了環境幕次，可恢復播放
   if (chiptuneBgmSuspendedForAmbient && window.state && window.state.playingMusic && window.state.soundOn !== false) {
     chiptuneBgmSuspendedForAmbient = false;
     startChiptuneBgm();
   }
-  // 立即中斷並斷開所有環境音振盪器，防止風雪音效殘留到下一幕
   if (activeAmbientSources && activeAmbientSources.length > 0) {
     activeAmbientSources.forEach(s => {
       try {
@@ -880,12 +903,10 @@ function stopStorySceneBgm() {
 }
 
 function playStorySceneBgm(step) {
-  // 切換任何幕次前先強制停止所有先前的環境音效
   stopStorySceneBgm();
 
   if (window.state && window.state.soundOn === false) return;
 
-  // 進入時空蟲洞 (4) 或風雪、馴鹿 (5, 6) 時，暫停 8-bit 背景音樂，避免與環境音效重疊
   if (step === 4 || step === 5 || step === 6) {
     if (window.state && window.state.playingMusic) {
       chiptuneBgmSuspendedForAmbient = true;
@@ -893,7 +914,6 @@ function playStorySceneBgm(step) {
       chiptuneBgmTimer = null;
     }
   } else {
-    // 離開環境音幕次時，若之前暫停了背景音樂，恢復播放
     if (chiptuneBgmSuspendedForAmbient && window.state && window.state.playingMusic && window.state.soundOn !== false) {
       chiptuneBgmSuspendedForAmbient = false;
       startChiptuneBgm();
@@ -906,7 +926,6 @@ function playStorySceneBgm(step) {
   const now = ctx.currentTime;
 
   if (step === 4) {
-    // 第 4 幕：時空蟲洞深層立體共振底音
     try {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -923,7 +942,6 @@ function playStorySceneBgm(step) {
       storyAmbientNodes = { ctx, gain, sources: [osc] };
     } catch (_) {}
   } else if (step === 5 || step === 6) {
-    // 第 5、6 幕：暴風雪呼嘯寒風環境底音 (僅限 5、6 幕，進入第 7 幕木屋立即停止)
     try {
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
@@ -945,17 +963,14 @@ function playStorySceneBgm(step) {
       storyAmbientNodes = { ctx, gain, sources: [osc1, osc2] };
     } catch (_) {}
   } else if (step === 7) {
-    // 第 7 幕：溫暖壁爐木屋 (已停止風雪呼嘯，改為溫暖微火)
     stopStorySceneBgm();
   } else {
-    // 其他幕次無環境暴風雪音
     stopStorySceneBgm();
   }
 }
 
 window.playStorySceneBgm = playStorySceneBgm;
 window.stopStorySceneBgm = stopStorySceneBgm;
-// 首頁與全域 BGM 開關支援
 window.toggleBgmAudio = function() {
   if (window.state && window.state.playingMusic) {
     stopChiptuneBgm();

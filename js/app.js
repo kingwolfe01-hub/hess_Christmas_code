@@ -27,6 +27,8 @@ const state = window.state = {
   gameQueueIdx: 0,
   spellQueueIdx: 0,
   prepQueueIdx: 0,
+  cultureQueueIdx: 0,
+  isAdvancingQuiz: false,
   craftedChunks: [],
   scoreRed: 0,
   scoreGreen: 0,
@@ -71,7 +73,7 @@ function initSvgScene() {
   LESSON_CONFIG.words.forEach(item => {
     const gLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
     gLayer.setAttribute("id", `voxel-layer-${item.id}`);
-    gLayer.setAttribute("class", "voxel-locked");
+    gLayer.setAttribute("class", "voxel-layer-locked");
 
     const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
     img.setAttribute("href", assets[item.layerKey] || "");
@@ -145,22 +147,6 @@ function initSvgScene() {
 }
 
 function updateSceneAndStars() {
-  const starRow = document.getElementById("starProgressRow");
-  if (!starRow) return;
-  starRow.innerHTML = "";
-  LESSON_CONFIG.words.forEach(item => {
-    const unlocked = state.unlockedIds.has(item.id);
-    const span = document.createElement("span");
-    span.className = `text-sm sm:text-lg transition-transform ${unlocked ? "scale-110" : "opacity-25 grayscale"}`;
-    span.textContent = "⭐";
-    starRow.appendChild(span);
-  });
-
-  const count = state.unlockedIds.size;
-  document.getElementById("progressCounterText").textContent = `${count}/7`;
-  const unlockTextEl = document.getElementById("teacherUnlockAllText");
-  if (unlockTextEl) unlockTextEl.textContent = count === 7 ? "全部重置" : "一鍵全亮";
-
   const isQuizActive =
     (state.stage === "words" && (state.wordsSubMode === "spell" || state.wordsSubMode === "prep")) ||
     (state.stage === "culture" && state.cultureSubMode === "quiz");
@@ -188,17 +174,17 @@ function updateSceneAndStars() {
       }
     } else if (isQuizActive) {
       if (isCurrentGameTarget) {
-        layerEl.setAttribute("class", isUnlocked ? "voxel-unlocked" : "voxel-preview-ghost");
+        layerEl.setAttribute("class", isUnlocked ? "voxel-unlocked" : "voxel-layer-locked");
       } else if (isUnlocked) {
         layerEl.setAttribute("class", "voxel-unlocked voxel-dimmed-bg");
       } else {
-        layerEl.setAttribute("class", "voxel-locked");
+        layerEl.setAttribute("class", "voxel-layer-locked");
       }
     } else {
       if (isUnlocked) {
         layerEl.setAttribute("class", "voxel-unlocked");
       } else {
-        layerEl.setAttribute("class", "voxel-locked");
+        layerEl.setAttribute("class", "voxel-layer-locked");
       }
     }
 
@@ -432,7 +418,10 @@ function showToast(text, emoji, isSuccess) {
   }, 1850);
 }
 
-function handleQuizSuccess(target, sourceStage) {
+async function handleQuizSuccess(target, sourceStage) {
+  if (state.isAdvancingQuiz) return;
+  state.isAdvancingQuiz = true;
+
   state.unlockedIds.add(target.id);
   playSfx("anvil_craft");
   setTimeout(() => playSfx("fanfare"), 160);
@@ -441,74 +430,82 @@ function handleQuizSuccess(target, sourceStage) {
 
   const layerEl = document.getElementById(`voxel-layer-${target.id}`);
   if (layerEl) {
-    layerEl.classList.add("voxel-hint-highlight");
-    setTimeout(() => layerEl.classList.remove("voxel-hint-highlight"), 1400);
-  }
-
-  if (sourceStage === "culture") {
-    (async () => {
-      await speakText("Awesome!", LESSON_CONFIG.speechRateNormal);
-      await new Promise(r => setTimeout(r, 380));
-      await speakText(target.culture.enSentence, LESSON_CONFIG.speechRateNormal);
-    })();
-  } else {
-    (async () => {
-      await speakText("Great job!", LESSON_CONFIG.speechRateNormal);
-      await new Promise(r => setTimeout(r, 380));
-      await speakText(target.word, LESSON_CONFIG.speechRateNormal);
-    })();
+    layerEl.classList.add("voxel-glow-gold");
+    setTimeout(() => layerEl.classList.remove("voxel-glow-gold"), 1400);
   }
 
   // 依建議：移除聖誕單字前方國旗代碼小字 (如 MX, FR)
   showToast(`★ 合成成功！${target.word} (${target.zh}) 已放進木屋！`, "🌟", true);
 
-  setTimeout(() => {
-    if (sourceStage === "words") {
-      if (state.wordsSubMode === "spell") {
-        if (state.spellQueueIdx >= LESSON_CONFIG.words.length - 1) {
-          playSfx("fanfare");
-          // 依建議：完成 2.麥塊音節拼字台全部 7 題後，跳轉至 3.空間介係詞問答
-          state.spellQueueIdx = 0;
-          state.wordsSubMode = "prep";
-          state.prepQueueIdx = 0;
-          state.gameQueueIdx = 0;
-          state.focusedWordId = LESSON_CONFIG.words[0].id;
-          renderWordsStage(false);
-        } else {
-          state.spellQueueIdx = (state.spellQueueIdx || 0) + 1;
-          renderWordsStage(false);
-        }
-      } else if (state.wordsSubMode === "prep") {
-        if (state.prepQueueIdx >= LESSON_CONFIG.words.length - 1) {
-          playSfx("fanfare");
-          // 依建議：完成 3.空間介係詞問答後，不自動跳轉，顯示「完成學習·下一關」按鈕
-          if (typeof renderWordsStageCompleteButton === "function") {
-            renderWordsStageCompleteButton();
-          } else {
-            switchStage("culture");
-          }
-        } else {
-          state.prepQueueIdx++;
-          state.gameQueueIdx = state.prepQueueIdx;
-          if (LESSON_CONFIG.words[state.prepQueueIdx]) {
-            state.focusedWordId = LESSON_CONFIG.words[state.prepQueueIdx].id;
-          }
-          renderWordsStage(false);
-        }
+  try {
+    const minDelayPromise = new Promise(r => setTimeout(r, 1200));
+    if (sourceStage === "culture") {
+      await speakText("Awesome!", LESSON_CONFIG.speechRateNormal);
+      await new Promise(r => setTimeout(r, 250));
+      await speakText(target.culture.enSentence, LESSON_CONFIG.speechRateNormal);
+    } else {
+      await speakText("Great job!", LESSON_CONFIG.speechRateNormal);
+      await new Promise(r => setTimeout(r, 250));
+      await speakText(target.word, LESSON_CONFIG.speechRateNormal);
+    }
+    await minDelayPromise;
+  } catch (_) {
+    await new Promise(r => setTimeout(r, 1200));
+  } finally {
+    state.isAdvancingQuiz = false;
+  }
+
+  if (sourceStage === "words") {
+    if (state.wordsSubMode === "spell") {
+      if (state.spellQueueIdx >= LESSON_CONFIG.words.length - 1) {
+        playSfx("fanfare");
+        // 完成 2.麥塊音節拼字台全部 7 題後，跳轉至 3.空間介系詞問答
+        state.spellQueueIdx = 0;
+        state.wordsSubMode = "prep";
+        state.prepQueueIdx = 0;
+        state.gameQueueIdx = 0;
+        state.focusedWordId = LESSON_CONFIG.words[0].id;
+        renderWordsStage(false);
       } else {
+        state.spellQueueIdx = (state.spellQueueIdx || 0) + 1;
         renderWordsStage(false);
       }
-    } else if (sourceStage === "culture") {
-      if (state.unlockedIds.size === LESSON_CONFIG.words.length) {
+    } else if (state.wordsSubMode === "prep") {
+      if (state.prepQueueIdx >= LESSON_CONFIG.words.length - 1) {
         playSfx("fanfare");
-        switchStage("party");
+        if (typeof renderWordsStageCompleteButton === "function") {
+          renderWordsStageCompleteButton();
+        } else {
+          switchStage("culture");
+        }
       } else {
-        renderCultureStage(false);
+        state.prepQueueIdx++;
+        state.gameQueueIdx = state.prepQueueIdx;
+        if (LESSON_CONFIG.words[state.prepQueueIdx]) {
+          state.focusedWordId = LESSON_CONFIG.words[state.prepQueueIdx].id;
+        }
+        renderWordsStage(false);
       }
     } else {
       renderWordsStage(false);
     }
-  }, 1600);
+  } else if (sourceStage === "culture") {
+    if ((state.cultureQueueIdx || 0) >= LESSON_CONFIG.words.length - 1) {
+      playSfx("fanfare");
+      state.cultureQueueIdx = 0;
+      if (typeof renderCultureStageCompleteButton === "function") {
+        renderCultureStageCompleteButton();
+      } else {
+        switchStage("party");
+      }
+    } else {
+      state.cultureQueueIdx = (state.cultureQueueIdx || 0) + 1;
+      state.gameQueueIdx = state.cultureQueueIdx;
+      renderCultureStage(false);
+    }
+  } else {
+    renderWordsStage(false);
+  }
 }
 
 // 全域 RPG 說話者與頭像切換器
@@ -545,11 +542,13 @@ window.setRpgSpeaker = function(speakerName, icon = "💬", imgUrl = null, isSpe
 
 function switchStage(newStage) {
   state.stage = newStage;
+  state.isAdvancingQuiz = false;
   // 切換任何單元時，確保非第 6 幕的馴鹿實體層隱藏
   document.getElementById("rudolphOverlayContainer")?.classList.add("hidden");
   const revealBtn = document.getElementById("bannerRevealAnswerBtn");
   if (revealBtn) revealBtn.classList.add("hidden");
   currentPkAnswerRevealer = null;
+  if (typeof currentPartyGreeting !== "undefined") currentPartyGreeting = null;
 
   const topPrompt = document.getElementById("topPromptBanner");
   if (topPrompt) {
@@ -877,10 +876,6 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnHomeWords")?.addEventListener("click", () => enterLessonFromHome("words"));
   document.getElementById("btnHomeCulture")?.addEventListener("click", () => enterLessonFromHome("culture"));
   document.getElementById("btnHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
-  document.getElementById("cardHomeStory")?.addEventListener("click", () => enterLessonFromHome("story"));
-  document.getElementById("cardHomeWords")?.addEventListener("click", () => enterLessonFromHome("words"));
-  document.getElementById("cardHomeCulture")?.addEventListener("click", () => enterLessonFromHome("culture"));
-  document.getElementById("cardHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
 
   document.getElementById("backToHomeBtn")?.addEventListener("click", returnToHomeScreen);
   document.getElementById("wordsBackHomeBtn")?.addEventListener("click", returnToHomeScreen);
@@ -940,6 +935,10 @@ window.addEventListener("DOMContentLoaded", () => {
         if (item) speakText(item.culture.enSentence, rate);
       }
     } else {
+      if (typeof currentPartyGreeting !== "undefined" && currentPartyGreeting) {
+        speakText(currentPartyGreeting.speakText, rate, currentPartyGreeting.lang, currentPartyGreeting.role);
+        return;
+      }
       const lineAEl = document.getElementById("promptLineA");
       const lineAText = lineAEl ? lineAEl.textContent.trim() : "";
       if (lineAText) {
@@ -959,6 +958,7 @@ window.addEventListener("DOMContentLoaded", () => {
       triggerBurstParticles();
       currentPkAnswerRevealer();
       currentPkAnswerRevealer = null;
+  if (typeof currentPartyGreeting !== "undefined") currentPartyGreeting = null;
       const btn = document.getElementById("bannerRevealAnswerBtn");
       if (btn) {
         btn.textContent = "✅ 已揭曉答案";
@@ -1178,16 +1178,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("partySnowBurstBtn")?.addEventListener("click", togglePartyFireworkShow);
 
-  document.getElementById("teacherUnlockAllBtn")?.addEventListener("click", () => {
-    if (state.unlockedIds.size === LESSON_CONFIG.words.length) {
-      state.unlockedIds.clear();
-      updateSceneAndStars();
-    } else {
-      LESSON_CONFIG.words.forEach(w => state.unlockedIds.add(w.id));
-      triggerBurstParticles();
-      updateSceneAndStars();
-    }
-  });
 
   document.getElementById("soundMuteBtn")?.addEventListener("click", () => {
     state.soundOn = !state.soundOn;
@@ -1214,6 +1204,69 @@ window.addEventListener("DOMContentLoaded", () => {
     toggleFullScreen();
   });
 
+  // 單元操作教學彈窗 (#unitHelpModal)
+  function openUnitHelpModal() {
+    const modal = document.getElementById("unitHelpModal");
+    const titleEl = document.getElementById("helpModalTitle");
+    const contentEl = document.getElementById("helpModalContent");
+    if (!modal || !titleEl || !contentEl) return;
+
+    const helpMap = {
+      story: {
+        title: "📖 麥塊極地繪本 · 操作教學",
+        lines: [
+          "1. 點擊底部「🗣️ 唸角色 A」與「🎅 唸角色 B」可帶左右半班分角色跟讀。",
+          "2. 點擊中央紫色「互動道具按鈕」（如求救捲軸、背包、傳送門、壁爐）觸發 3D 特效與小挑戰。",
+          "3. 下方 8 顆按鈕可隨時跳轉任一幕劇情；按鍵盤 T 可收合/展開對話框，F 可切換全螢幕。"
+        ]
+      },
+      words: {
+        title: "🔤 單字拼字與句型 · 操作教學",
+        lines: [
+          "1. 【單字＆句型特寫】：點選下方 7 張圖卡或直接點擊木屋內的物件，可開啟音節拆解與單複數問答看板。",
+          "2. 【麥塊音節拼字台】：聽發音後依序點選音節磚填入合成槽；答對的音節會自動鎖定，答錯會自動退回。",
+          "3. 【空間介系詞問答】：觀察木屋中物件位置，從 3 個介系詞選項選出正確答案，語音唸完後會自動進入下一題。"
+        ]
+      },
+      culture: {
+        title: "🌍 國際聖誕文化 · 操作教學",
+        lines: [
+          "1. 【7國文化探索看板】：點選下方 7 個國家方塊，對照外國聖誕傳統與台灣在地生活差異，可點擊「慢速 / 朗讀」跟讀英文句。",
+          "2. 【國際文化搶答挑戰】：共 7 題，聽題目或看中文提示選出對應的聖誕物品，全部答對後可選擇回首頁或進入下一關。"
+        ]
+      },
+      party: {
+        title: "🎉 五國祝福與大PK · 操作教學",
+        lines: [
+          "1. 【5 國語言聖誕快樂】：點擊美國、墨西哥、德國、法國、日本按鈕，體驗各國母語發音並帶全班跟唸。",
+          "2. 【🎲 隨機抽題 PK】：系統隨機抽出拼字、句型或文化題，兩隊搶答後由教師點擊「👁️ 揭曉答案」，並用上方 Team A / B「+1」加分。",
+          "3. 【🎵 聖誕音樂】與【❄️ 暴風雪】可隨時開啟 8-bit 配樂與煙火慶祝特效。"
+        ]
+      }
+    };
+
+    const info = helpMap[state.stage] || helpMap.story;
+    titleEl.textContent = info.title;
+    contentEl.innerHTML = info.lines.map(line => `<p class="bg-black/40 p-2.5 rounded-xl border border-amber-400/25">${line}</p>`).join("");
+    modal.classList.remove("hidden");
+    playSfx("click");
+  }
+
+  document.getElementById("openHelpModalBtn")?.addEventListener("click", openUnitHelpModal);
+  document.getElementById("closeHelpModalBtn")?.addEventListener("click", () => {
+    document.getElementById("unitHelpModal")?.classList.add("hidden");
+    playSfx("click");
+  });
+  document.getElementById("confirmHelpModalBtn")?.addEventListener("click", () => {
+    document.getElementById("unitHelpModal")?.classList.add("hidden");
+    playSfx("click");
+  });
+  document.getElementById("unitHelpModal")?.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "unitHelpModal") {
+      e.target.classList.add("hidden");
+    }
+  });
+
   document.getElementById("resetLessonBtn")?.addEventListener("click", () => {
     if (fireworkShowInterval) {
       clearInterval(fireworkShowInterval);
@@ -1230,6 +1283,11 @@ window.addEventListener("DOMContentLoaded", () => {
     state.gameQueueIdx = 0;
     state.spellQueueIdx = 0;
     state.prepQueueIdx = 0;
+    state.cultureQueueIdx = 0;
+    state.isAdvancingQuiz = false;
+    state.wordsSubMode = "learn";
+    state.cultureSubMode = "explore";
+    state.focusedWordId = "tree";
     state.scoreRed = 0;
     state.scoreGreen = 0;
     document.getElementById("scoreRedText").textContent = "0";
@@ -1239,5 +1297,6 @@ window.addEventListener("DOMContentLoaded", () => {
       stopChiptuneBgm();
     }
     switchStage("story");
+    returnToHomeScreen();
   });
 });

@@ -1,10 +1,9 @@
 /* =========================================================================
    🎄 3D 麥塊聖誕冒險教室 (Minecraft Christmas 3D) - 單字與句型模組 (words.js)
-   - 階段 2：Words & Craft 升級單字・擬音自然發音 (ttsChunks)・合成台與介系詞
-   - 3 倍特寫單字・自然發音・單複數空間句型大看板 (#voxelZoomBox)
+   - 階段 2：Words & Craft 升級單字・自然發音・合成台與介系詞
+   - 特寫單字・自然發音・單複數空間句型大看板 (#voxelZoomBox)
    - 麥塊合成台闖關 (Crafting Slots)
    - 空間介系詞三選一挑戰
-   - 1 秒防洩題視覺提示卡
    ========================================================================= */
 
 window.LESSON_CONFIG = window.LESSON_CONFIG || {};
@@ -13,34 +12,36 @@ LESSON_CONFIG.words = [
   {
     id: "tree",
     order: 1,
-    word: "pine tree",
+    word: "Christmas tree",
     baseWord: "tree",
-    chunks: ["pine", "tree"],
-    ttsChunks: ["pine", "tree"],
+    chunks: ["Christ", "mas", "tree"],
+    wordBreakAfterChunk: [1],
+    ttsChunks: ["Christ", "mas", "tree"],
     distractorChunks: ["palm", "cone", "bell"],
-    phonicsNote: "pine + tree ➔ pine tree (常綠松樹)",
-    zh: "針葉松樹",
+    phonicsNote: "Christ + mas + tree ➔ Christmas tree (聖誕樹)",
+    zh: "聖誕樹",
     emoji: "🌲",
     color: "#84cc16",
     prep: "by",
     prepZh: "在…旁邊 (by)",
     grammarTag: "單數問答 (Where is...? / It's...)",
-    qaQ: "Where is the pine tree?",
+    qaQ: "Where is the Christmas tree?",
     qaAHtml: "It's <span class='text-yellow-300 underline font-black'>by</span> the fireplace.",
-    qaASpeak: "Where is the pine tree? It's by the fireplace.",
+    qaASpeak: "Where is the Christmas tree? It's by the fireplace.",
     culture: {
-      flag: "🇩🇪",
+      flag: "",
       country: "德國 Germany",
-      title: "🇩🇪 德國：聖誕樹的故鄉",
+      title: "德國：聖誕樹的故鄉",
       enSentence: "In Germany, people put trees in the house.",
       foreignFact: "德國是現代聖誕樹發源地，冬天將常綠松樹搬進屋內象徵長青與希望。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣過年時，家裡會擺放開運竹或金桔樹象徵大吉大利！",
-      quizQEn: "In Germany 🇩🇪, people put green _____ in the house!",
-      quizQZh: "🇩🇪 國際文化挑戰：德國是聖誕樹的發源地，人們會把哪種樹搬進屋內裝飾？"
+      taiwanCompare: "台灣在地比較：就像台灣過年時，家裡會擺放開運竹或金桔樹象徵大吉大利！",
+      quizQEn: "What do people in Germany put in the house?",
+      quizQZh: "國際文化挑戰：德國是聖誕樹的發源地，人們會把哪種樹搬進屋內裝飾？",
+      quizOptionWord: "Christmas trees"
     },
     layerKey: "layer_tree",
     thumbKey: "thumb_tree",
-    coordHint: "點擊壁爐旁邊的松樹",
+    coordHint: "點擊壁爐旁邊的聖誕樹",
     layerRect: { x: 110, y: 135, w: 565, h: 560 },
     hotspotRect: { x: 120, y: 135, w: 535, h: 560 },
     labelPos: { x: 155, y: 475 },
@@ -62,21 +63,21 @@ LESSON_CONFIG.words = [
     prepZh: "圍繞在…周圍 (around)",
     grammarTag: "單數問答 (Where is...? / It's...)",
     qaQ: "Where is the ribbon?",
-    qaAHtml: "It's <span class='text-yellow-300 underline font-black'>around</span> the pine tree.",
-    qaASpeak: "Where is the ribbon? It's around the pine tree.",
+    qaAHtml: "It's <span class='text-yellow-300 underline font-black'>around</span> the Christmas tree.",
+    qaASpeak: "Where is the ribbon? It's around the Christmas tree.",
     culture: {
-      flag: "🇫🇷",
+      flag: "",
       country: "法國 France",
-      title: "🇫🇷 法國：優雅節慶緞帶",
+      title: "法國：優雅節慶緞帶",
       enSentence: "In France, ribbons tie holiday joy together.",
       foreignFact: "法國擁有悠久緞帶工藝，聖誕節用精緻絲帶包裝禮物，象徵把家人心意繫在一起。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣過年時，我們會在盆栽與賀禮繫上吉祥紅色金蔥緞帶！",
-      quizQEn: "In France 🇫🇷, people tie colorful _____ on gifts!",
-      quizQZh: "🇫🇷 國際文化挑戰：法國人喜歡用什麼漂亮的裝飾把禮物與松樹繫在一起？"
+      taiwanCompare: "台灣在地比較：就像台灣過年時，我們會在盆栽與賀禮繫上吉祥紅色金蔥緞帶！",
+      quizQEn: "What do people in France tie on gifts?",
+      quizQZh: "國際文化挑戰：法國人喜歡用什麼漂亮的裝飾把禮物與聖誕樹繫在一起？"
     },
     layerKey: "layer_ribbon",
     thumbKey: "thumb_ribbon",
-    coordHint: "點擊松樹上的絲帶",
+    coordHint: "點擊聖誕樹上的絲帶",
     layerRect: { x: 110, y: 135, w: 565, h: 560 },
     hotspotRect: { x: 230, y: 205, w: 330, h: 105 },
     labelPos: { x: 450, y: 225 },
@@ -101,14 +102,14 @@ LESSON_CONFIG.words = [
     qaAHtml: "They're <span class='text-yellow-300 underline font-black'>on</span> the tree.",
     qaASpeak: "Where are the ornaments? They're on the tree.",
     culture: {
-      flag: "🇲🇽",
+      flag: "",
       country: "墨西哥 Mexico",
-      title: "🇲🇽 墨西哥：手工彩色吊飾",
+      title: "墨西哥：手工彩色吊飾",
       enSentence: "In Mexico, bright ornaments bring joy.",
       foreignFact: "墨西哥聖誕節會懸掛五彩手工吹製玻璃飾品與裝滿糖果的星形皮納塔。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣元宵節時孩子們提著色彩繽紛的花燈與生肖提燈！",
-      quizQEn: "In Mexico 🇲🇽, colorful _____ are hung for Christmas!",
-      quizQZh: "🇲🇽 國際文化挑戰：墨西哥慶典會懸掛色彩繽紛的什麼物品來帶來歡樂？"
+      taiwanCompare: "台灣在地比較：就像台灣元宵節時孩子們提著色彩繽紛的花燈與生肖提燈！",
+      quizQEn: "What do people in Mexico hang for Christmas?",
+      quizQZh: "國際文化挑戰：墨西哥慶典會懸掛色彩繽紛的什麼物品來帶來歡樂？"
     },
     layerKey: "layer_ball",
     thumbKey: "thumb_ball",
@@ -126,7 +127,7 @@ LESSON_CONFIG.words = [
     chunks: ["st", "ar"],
     ttsChunks: ["st", "ar"],
     distractorChunks: ["sp", "or", "er"],
-    phonicsNote: "st-ar ➔ star (樹頂金星)",
+    phonicsNote: "st-ar ➔ star (樹頂星星)",
     zh: "樹頂星星",
     emoji: "⭐",
     color: "#eab308",
@@ -137,18 +138,18 @@ LESSON_CONFIG.words = [
     qaAHtml: "It's <span class='text-yellow-300 underline font-black'>on the top of</span> the tree.",
     qaASpeak: "Where is the star? It's on the top of the tree.",
     culture: {
-      flag: "🇵🇭",
+      flag: "",
       country: "菲律賓 Philippines",
-      title: "🇵🇭 菲律賓：星芒燈籠 Parol",
+      title: "菲律賓：星芒燈籠 Parol",
       enSentence: "In the Philippines, star lanterns light the street.",
       foreignFact: "菲律賓家家戶戶會在窗前掛上五角發光星芒燈籠 Parol，象徵引領希望之星。",
-      taiwanCompare: "🇹🇼 台灣在地比較：就像台灣元宵節大街小巷掛起美麗燈籠一樣熱鬧！",
-      quizQEn: "In the Philippines 🇵🇭, the bright _____ lantern is called a Parol!",
-      quizQZh: "🇵🇭 國際文化挑戰：菲律賓傳統的 Parol 是什麼形狀的希望燈籠？"
+      taiwanCompare: "台灣在地比較：就像台灣元宵節大街小巷掛起美麗燈籠一樣熱鬧！",
+      quizQEn: "What shape is the lantern in the Philippines?",
+      quizQZh: "國際文化挑戰：菲律賓傳統的 Parol 是什麼形狀的希望燈籠？"
     },
     layerKey: "layer_star",
     thumbKey: "thumb_star",
-    coordHint: "點擊松樹最頂端的黃金星星",
+    coordHint: "點擊聖誕樹最頂端的黃金星星",
     layerRect: { x: 305, y: 48, w: 175, h: 170 },
     hotspotRect: { x: 310, y: 55, w: 165, h: 160 },
     labelPos: { x: 395, y: 25 },
@@ -168,23 +169,23 @@ LESSON_CONFIG.words = [
     color: "#ef4444",
     prep: "above",
     prepZh: "在…上方 (above)",
-    grammarTag: "單數問答 (Where is...? / It's...)",
-    qaQ: "Where is the stocking?",
-    qaAHtml: "It's <span class='text-yellow-300 underline font-black'>above</span> the fireplace.",
-    qaASpeak: "Where is the stocking? It's above the fireplace.",
+    grammarTag: "複數問答 (Where are...? / They're...)",
+    qaQ: "Where are the stockings?",
+    qaAHtml: "They're <span class='text-yellow-300 underline font-black'>above</span> the fireplace.",
+    qaASpeak: "Where are the stockings? They're above the fireplace.",
     culture: {
-      flag: "🇬🇧",
+      flag: "",
       country: "英國 United Kingdom",
-      title: "🇬🇧 英國：壁爐長襪傳說",
+      title: "英國：壁爐長襪傳說",
       enSentence: "In the UK, children hang stockings by the fire.",
       foreignFact: "英國孩子傳統上把長襪掛在壁爐烘乾等待禮物，底部常放一顆象徵黃金的橘子。",
-      taiwanCompare: "🇹🇼 台灣在地比較：台灣多數家庭沒有壁爐，小朋友通常把聖誕襪掛在床頭或書桌旁等待驚喜！",
-      quizQEn: "In the UK 🇬🇧, children hang a _____ by the fire for gifts!",
-      quizQZh: "🇬🇧 國際文化挑戰：英國小朋友傳統上會把什麼掛在壁爐旁裝禮物？"
+      taiwanCompare: "台灣在地比較：台灣多數家庭沒有壁爐，小朋友通常把聖誕襪掛在床頭或書桌旁等待驚喜！",
+      quizQEn: "What do children in the UK hang by the fire?",
+      quizQZh: "國際文化挑戰：英國小朋友傳統上會把什麼掛在壁爐旁裝禮物？"
     },
     layerKey: "layer_stocking",
     thumbKey: "thumb_stocking",
-    coordHint: "點擊壁爐上方的紅色長襪",
+    coordHint: "點擊壁爐上方的聖誕長襪",
     layerRect: { x: 740, y: 252, w: 418, h: 246 },
     hotspotRect: { x: 750, y: 255, w: 390, h: 230 },
     labelPos: { x: 830, y: 205 },
@@ -209,18 +210,18 @@ LESSON_CONFIG.words = [
     qaAHtml: "They're <span class='text-yellow-300 underline font-black'>under</span> the tree.",
     qaASpeak: "Where are the presents? They're under the tree.",
     culture: {
-      flag: "🇺🇸",
+      flag: "",
       country: "美國 USA",
-      title: "🇺🇸 美國：聖誕樹下的驚喜禮物",
+      title: "美國：聖誕樹下的驚喜禮物",
       enSentence: "In the USA, presents wait under the tree.",
       foreignFact: "美國家庭習慣將包裝好的禮物堆在聖誕樹下，等到 25 日早晨全家一起開心拆開。",
-      taiwanCompare: "🇹🇼 台灣在地比較：台灣學校在聖誕節最受歡迎的活動是全班一起玩『聖誕交換禮物』！",
-      quizQEn: "In the USA 🇺🇸, families put colorful _____ under the tree!",
-      quizQZh: "🇺🇸 國際文化挑戰：美國家庭習慣將什麼禮品堆在聖誕樹下？"
+      taiwanCompare: "台灣在地比較：台灣學校在聖誕節最受歡迎的活動是全班一起玩『聖誕交換禮物』！",
+      quizQEn: "What do families in the USA put under the tree?",
+      quizQZh: "國際文化挑戰：美國家庭習慣將什麼禮品堆在聖誕樹下？"
     },
     layerKey: "layer_gift",
     thumbKey: "thumb_gift",
-    coordHint: "點擊松樹底下的禮物盒",
+    coordHint: "點擊聖誕樹底下的禮物盒",
     layerRect: { x: 65, y: 535, w: 630, h: 215 },
     hotspotRect: { x: 85, y: 560, w: 590, h: 185 },
     labelPos: { x: 260, y: 690 },
@@ -232,10 +233,11 @@ LESSON_CONFIG.words = [
     word: "Santa Claus",
     baseWord: "Santa",
     chunks: ["Santa", "Claus"],
+    wordBreakAfterChunk: [0],
     ttsChunks: ["Santa", "Claus"],
     distractorChunks: ["Sandy", "Cross", "Cloud"],
     phonicsNote: "Santa + Claus ➔ Santa Claus (聖誕老人)",
-    zh: "聖誕老公公",
+    zh: "聖誕老人",
     emoji: "🎅",
     color: "#dc2626",
     prep: "in",
@@ -245,18 +247,18 @@ LESSON_CONFIG.words = [
     qaAHtml: "He is <span class='text-yellow-300 underline font-black'>in</span> the room.",
     qaASpeak: "Where is Santa Claus? He is in the room.",
     culture: {
-      flag: "🇦🇺",
+      flag: "",
       country: "澳洲 Australia",
-      title: "🇦🇺 澳洲：衝浪聖誕老人",
+      title: "澳洲：衝浪聖誕老人",
       enSentence: "In Australia, Santa surfs at the sunny beach.",
       foreignFact: "南半球 12 月是炎熱夏天，澳洲聖誕老人會換上短褲到海灘衝浪送禮物！",
-      taiwanCompare: "🇹🇼 台灣在地比較：台灣 12 月是涼爽冬天需要穿薄外套；澳洲卻是在海邊衝浪吃冰淇淋！",
-      quizQEn: "In Australia 🇦🇺, _____ wears shorts and surfs at the beach!",
-      quizQZh: "🇦🇺 國際文化挑戰：南半球 12 月是夏天，澳洲是誰常在海邊衝浪？"
+      taiwanCompare: "台灣在地比較：台灣 12 月是涼爽冬天需要穿薄外套；澳洲卻是在海邊衝浪吃冰淇淋！",
+      quizQEn: "Who wears shorts and surfs at the beach in Australia?",
+      quizQZh: "國際文化挑戰：南半球 12 月是夏天，澳洲是誰常在海邊衝浪？"
     },
     layerKey: "layer_santa",
     thumbKey: "thumb_santa",
-    coordHint: "點擊木屋中央的聖誕老人",
+    coordHint: "點擊木屋右側的聖誕老人",
     layerRect: { x: 1055, y: 335, w: 300, h: 425 },
     hotspotRect: { x: 1070, y: 345, w: 275, h: 410 },
     labelPos: { x: 1060, y: 292 },
@@ -284,14 +286,14 @@ function triggerFlashHint(target) {
 
   const layerEl = document.getElementById(`voxel-layer-${target.id}`);
   if (layerEl) {
-    layerEl.classList.add("voxel-hint-highlight");
+    layerEl.classList.add("voxel-glow-gold");
   }
 
   setTimeout(() => {
     hintBox.classList.add("hidden");
     hintBox.classList.remove("flash-hint-active");
     if (layerEl) {
-      layerEl.classList.remove("voxel-hint-highlight");
+      layerEl.classList.remove("voxel-glow-gold");
     }
   }, 1000);
 }
@@ -313,17 +315,16 @@ function openVoxelZoomBox(wordId, autoSpeakRate = null) {
   document.getElementById("zoomGrammarBadge").textContent = `📍 ${item.grammarTag}`;
   document.getElementById("zoomBoxImg").src = assets[item.thumbKey] || "";
   document.getElementById("zoomWordZh").textContent = `${item.emoji} ${item.zh}`;
-  document.getElementById("zoomAltWordBadge").textContent = item.baseWord;
 
   const colors = ["text-yellow-300", "text-lime-300", "text-sky-300", "text-pink-300"];
+  const breaks = item.wordBreakAfterChunk || [];
   document.getElementById("zoomGiantWord").innerHTML = item.chunks
-    .map((ch, idx) => `<span class="${colors[idx % colors.length]}">${ch}</span>`)
+    .map((ch, idx) => `<span class="${colors[idx % colors.length]}">${ch}</span>${breaks.includes(idx) ? " " : ""}`)
     .join("");
 
   const chunksRow = document.getElementById("zoomChunksRow");
   chunksRow.innerHTML = "";
   item.chunks.forEach((ch) => {
-    // 由老師親自教音節：純靜態視覺拆解標籤，不可點擊、無任何音效無音檔
     const chip = document.createElement("span");
     chip.className = "px-3.5 py-1 rounded-xl bg-black/80 border-2 border-amber-300 font-black text-base sm:text-xl text-yellow-300 shadow-md select-none cursor-default";
     chip.textContent = ch;
@@ -366,8 +367,17 @@ function renderWordsStage(autoSpeak = false) {
   zone.innerHTML = "";
   const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
 
+  const nametagBox = document.getElementById("promptNametagBox");
+  const stepBadge = document.getElementById("promptStepBadge");
+  const slowBtn = document.getElementById("bannerSpeakSlowBtn");
+  const speakBtn = document.getElementById("bannerSpeakBtn");
+
   if (state.wordsSubMode === "learn") {
-    document.getElementById("promptStepBadge").textContent = "🔤 Words & Grammar · 升級單字、音節拆解與單複數空間句型";
+    nametagBox?.classList.remove("hidden");
+    stepBadge?.classList.add("hidden");
+    slowBtn?.classList.add("hidden");
+    speakBtn?.classList.add("hidden");
+
     document.getElementById("promptLineA").textContent = "Click a block! Practice Phonics & 'Where is / Where are...?'";
     document.getElementById("promptLineB").classList.add("hidden");
     document.getElementById("promptSubZh").textContent = "點選下方 7 張圖卡，帶全班練習自然發音音節拆解，以及單數 (It's) 與複數 (They're) 的空間介系詞問答！";
@@ -388,7 +398,7 @@ function renderWordsStage(autoSpeak = false) {
         <span class="absolute top-1 right-1.5 text-[10px] sm:text-xs font-black px-1.5 py-0.2 rounded ${active ? "bg-red-950 text-amber-200" : "bg-emerald-900 text-lime-200"}">${item.prep}</span>
         <img src="${assets[item.thumbKey] || ""}" alt="${item.word}" class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border-2 ${active ? "border-red-950" : "border-amber-300/70"} shadow mt-3" />
         <span class="text-xs sm:text-base font-black leading-none tracking-tight truncate w-full text-center">${item.word}</span>
-        <span class="text-[10px] sm:text-xs font-bold ${active ? "text-red-900" : "text-amber-200"} truncate w-full text-center">${item.zh.split(" ")[0]}</span>
+        <span class="text-[10px] sm:text-xs font-bold ${active ? "text-red-900" : "text-amber-200"} truncate w-full text-center">${item.zh}</span>
       `;
       btn.addEventListener("click", () => {
         state.focusedWordId = item.id;
@@ -422,14 +432,19 @@ function renderWordsStage(autoSpeak = false) {
   }
 
   if (state.wordsSubMode === "spell") {
+    nametagBox?.classList.add("hidden");
+    stepBadge?.classList.remove("hidden");
+    slowBtn?.classList.add("hidden");
+    speakBtn?.classList.add("hidden");
+
     state.craftedChunks = new Array(target.chunks.length).fill(null);
-    document.getElementById("promptStepBadge").textContent = `🔤 麥塊合成台拼字挑戰 (${(state.spellQueueIdx || 0) + 1} / 7)`;
+    stepBadge.textContent = `🔤 麥塊合成台拼字挑戰 (${(state.spellQueueIdx || 0) + 1} / 7)`;
     const slotCount = target.chunks.length;
     const slotGuide = target.chunks.map((_, i) => `【方塊 ${i + 1}】`).join(" + ");
     document.getElementById("promptLineA").textContent = `👂 Listen & Craft: ${target.emoji} "${target.zh}"  [ ${slotGuide} ]`;
     document.getElementById("promptLineB").classList.add("hidden");
     document.getElementById("promptSubZh").textContent = `請聽發音，將下方「${slotCount} 個音節磚」依序放入合成槽！`;
-    if (typeof window.setRpgSpeaker === "function") window.setRpgSpeaker(`Crafting: ${target.word}`, "⚒️", assets[target.thumbKey], false);
+    if (typeof window.setRpgSpeaker === "function") window.setRpgSpeaker("", "⚒️", assets[target.thumbKey], false);
 
     const wrapper = document.createElement("div");
     wrapper.className = "w-full flex items-center justify-between gap-2.5 sm:gap-3.5 bg-black/60 px-3 py-1.5 rounded-2xl border-2 border-amber-400/60";
@@ -459,7 +474,7 @@ function renderWordsStage(autoSpeak = false) {
     hintBtn.id = "spellHintBtn";
     hintBtn.className = "h-[32px] sm:h-[36px] px-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs mc-btn flex items-center justify-center gap-1 shadow-md";
     hintBtn.innerHTML = "💡 視覺提示";
-    hintBtn.title = "在 3D 木屋閃示目標物件 1 秒鐘 (不洩漏英文拼字)";
+    hintBtn.title = "在 3D 木屋閃示目標物件 1 秒鐘";
     hintBtn.addEventListener("click", () => triggerFlashHint(target));
 
     const clearBtn = document.createElement("button");
@@ -548,17 +563,15 @@ function renderWordsStage(autoSpeak = false) {
       poolButtons.push(cBtn);
 
       cBtn.addEventListener("click", () => {
-        // 依序填入第一個未填滿的槽位
         const firstEmptySlotIdx = state.craftedChunks.findIndex(x => x === null);
         if (firstEmptySlotIdx === -1) return;
 
-        playSfx("drop"); // 純系統方塊放置音
+        playSfx("drop");
         state.craftedChunks[firstEmptySlotIdx] = { text: chunkObj.text, poolIndex: poolIdx, locked: false };
         cBtn.disabled = true;
         cBtn.classList.add("opacity-30", "pointer-events-none");
         refreshCraftingSlotsUI();
 
-        // 檢查是否所有格子都已填滿
         const isAllFilled = state.craftedChunks.every(x => x !== null);
         if (isAllFilled) {
           const validationStates = state.craftedChunks.map((item, i) => item && item.text === target.chunks[i]);
@@ -570,12 +583,10 @@ function renderWordsStage(autoSpeak = false) {
             state.craftedChunks.forEach(item => { if (item) item.locked = true; });
             handleQuizSuccess(target, "words");
           } else {
-            playSfx("oops"); // 系統輕微錯誤警示音
-            // 依建議：更改提示文字為「答錯囉！請再作答一次！」
+            playSfx("oops");
             showToast("答錯囉！請再作答一次！", "💡", false);
 
             setTimeout(() => {
-              // 依建議機制：將正確的音節固定於作答格子中；僅退回放錯的方塊
               for (let i = 0; i < target.chunks.length; i++) {
                 if (validationStates[i] === true) {
                   if (state.craftedChunks[i]) state.craftedChunks[i].locked = true;
@@ -600,12 +611,17 @@ function renderWordsStage(autoSpeak = false) {
     updateSceneAndStars();
     if (autoSpeak) speakText(target.word, LESSON_CONFIG.speechRateNormal);
   } else if (state.wordsSubMode === "prep") {
-    document.getElementById("promptStepBadge").textContent = `📍 空間位置問答挑戰 (${(state.prepQueueIdx || 0) + 1} / 7)`;
+    nametagBox?.classList.add("hidden");
+    stepBadge?.classList.remove("hidden");
+    slowBtn?.classList.remove("hidden");
+    speakBtn?.classList.remove("hidden");
+
+    stepBadge.textContent = `📍 空間位置問答挑戰 (${(state.prepQueueIdx || 0) + 1} / 7)`;
     document.getElementById("promptLineA").textContent = `${target.qaQ}`;
     document.getElementById("promptLineB").classList.remove("hidden");
     document.getElementById("promptLineB").innerHTML = target.qaAHtml.replace(/<span[^>]*>[^<]+<\/span>/, "<span class='text-yellow-300 underline font-black px-2 bg-black/40 rounded'>[ ? ]</span>");
     document.getElementById("promptSubZh").textContent = `觀察 3D 木屋畫面：「${target.zh} (${target.word})」在哪裡？請選擇正確的空間介系詞！`;
-    if (typeof window.setRpgSpeaker === "function") window.setRpgSpeaker("Where is it? 📍", "📍", assets[target.thumbKey], false);
+    if (typeof window.setRpgSpeaker === "function") window.setRpgSpeaker("", "📍", assets[target.thumbKey], false);
 
     const ALL_PREPOSITIONS = [
       { prep: "by", icon: "◀️", zh: "在…旁邊 (by)" },
@@ -641,6 +657,7 @@ function renderWordsStage(autoSpeak = false) {
         </div>
       `;
       btn.addEventListener("click", () => {
+        if (state.isAdvancingQuiz) return;
         if (opt.prep === target.prep) {
           handleQuizSuccess(target, "words");
         } else {
@@ -657,7 +674,7 @@ function renderWordsStage(autoSpeak = false) {
     if (autoSpeak) speakText(target.qaQ, LESSON_CONFIG.speechRateNormal);
   }
 }
-// 依建議：完成 3.空間介係詞問答後，提供「返回主畫面」與「進入下一關」雙按鈕
+
 window.renderWordsStageCompleteButton = function() {
   const zone = document.getElementById("wordsInteractiveZone");
   if (!zone) return;

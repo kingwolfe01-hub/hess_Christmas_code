@@ -447,8 +447,8 @@ function renderStoryQuiz(stepObj) {
         speakText(q.correctSpeech, LESSON_CONFIG.speechRateNormal);
         btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-lime-600 border-lime-300 text-white font-black text-xs sm:text-sm shadow";
         fb.className = "mt-2.5 p-2 rounded-xl text-xs sm:text-sm font-black bg-lime-900/90 border border-lime-400 text-lime-200 block";
-        fb.innerHTML = `🎉 ${opt.feedback} <span class="text-amber-300">(+1 🌟 獲得星數！)</span>`;
-        showToast("答對了！+1 🌟 獲得學習星星！", "⭐", true);
+        fb.innerHTML = `🎉 ${opt.feedback}`;
+        showToast(opt.feedback || "答對了！", stepObj.step === 6 ? "🦌" : "🔥", true);
       } else {
         playSfx("error");
         btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-red-950/80 border-red-500 text-red-200 font-black text-xs sm:text-sm";
