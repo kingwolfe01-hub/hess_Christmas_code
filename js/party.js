@@ -16,8 +16,15 @@ LESSON_CONFIG.globalGreetings = [
 ];
 
 let fireworkShowInterval = null;
+let pkSpinnerTimer = null;
 let currentPkAnswerRevealer = null;
 let currentPartyGreeting = null;
+window.stopPkSpinner = function() {
+  if (pkSpinnerTimer) {
+    clearInterval(pkSpinnerTimer);
+    pkSpinnerTimer = null;
+  }
+};
 
 function renderPartyGreetings() {
   const grid = document.getElementById("partyGreetingsGrid");
@@ -31,6 +38,9 @@ function renderPartyGreetings() {
       <span class="text-xs sm:text-sm font-black text-yellow-300 truncate w-full text-center">${g.phrase}</span>
     `;
     btn.addEventListener("click", () => {
+      if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+      currentPkAnswerRevealer = null;
+      document.getElementById("bannerRevealAnswerBtn")?.classList.add("hidden");
       currentPartyGreeting = g;
       const topBanner = document.getElementById("topPromptBanner");
       if (topBanner) {
@@ -51,19 +61,30 @@ function renderPartyGreetings() {
 }
 
 function runRandomPkSpinner() {
+  if (pkSpinnerTimer) {
+    clearInterval(pkSpinnerTimer);
+    pkSpinnerTimer = null;
+  }
   closeAllOverlays();
   const revealBtn = document.getElementById("bannerRevealAnswerBtn");
   if (revealBtn) revealBtn.classList.add("hidden");
 
   let ticks = 0;
   const maxTicks = 10;
-  const timer = setInterval(() => {
+  pkSpinnerTimer = setInterval(() => {
+    const homeEl = document.getElementById("homeScreenView");
+    if (state.stage !== "party" || (homeEl && !homeEl.classList.contains("hidden"))) {
+      clearInterval(pkSpinnerTimer);
+      pkSpinnerTimer = null;
+      return;
+    }
     const randItem = LESSON_CONFIG.words[Math.floor(Math.random() * LESSON_CONFIG.words.length)];
     state.focusedWordId = randItem.id;
     updateSceneAndStars();
     ticks++;
     if (ticks >= maxTicks) {
-      clearInterval(timer);
+      clearInterval(pkSpinnerTimer);
+      pkSpinnerTimer = null;
       playSfx("ding");
 
       const challengeTypes = [

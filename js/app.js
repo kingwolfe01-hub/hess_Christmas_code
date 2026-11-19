@@ -29,6 +29,8 @@ const state = window.state = {
   prepQueueIdx: 0,
   cultureQueueIdx: 0,
   isAdvancingQuiz: false,
+  quizSessionToken: 0,
+  allQuizCompleted: false,
   craftedChunks: [],
   scoreRed: 0,
   scoreGreen: 0,
@@ -139,7 +141,7 @@ function initSvgScene() {
       if (state.stage === "culture") {
         openCultureCompareBoard(item.id, null);
       } else {
-        openVoxelZoomBox(item.id, null);
+        openVoxelZoomBox(item.id, LESSON_CONFIG.speechRateNormal);
       }
     });
     hotspotsGroup.appendChild(gHs);
@@ -151,6 +153,8 @@ function updateSceneAndStars() {
     (state.stage === "words" && (state.wordsSubMode === "spell" || state.wordsSubMode === "prep")) ||
     (state.stage === "culture" && state.cultureSubMode === "quiz");
 
+  const isSpellMode = (state.stage === "words" && state.wordsSubMode === "spell");
+
   LESSON_CONFIG.words.forEach(item => {
     const layerEl = document.getElementById(`voxel-layer-${item.id}`);
     const hsEl = document.getElementById(`scene-hs-${item.id}`);
@@ -161,11 +165,28 @@ function updateSceneAndStars() {
 
     const isCultureExplore = (state.stage === "culture" && state.cultureSubMode === "explore");
     const isWordsLearn = (state.stage === "words" && state.wordsSubMode === "learn");
+    const isWordsPrep = (state.stage === "words" && state.wordsSubMode === "prep");
     const isFocusedInExplore = (isCultureExplore || isWordsLearn) && state.focusedWordId === item.id;
     const isParty = (state.stage === "party");
+    const isTree = (item.id === "tree");
 
     if (isParty) {
       layerEl.setAttribute("class", "voxel-unlocked");
+    } else if (isTree && state.stage !== "story") {
+      // 聖誕樹在各教學/測驗情境一律保持明亮顯眼，不變透明灰階
+      let treeCls = "voxel-unlocked";
+      if (isSpellMode) {
+        treeCls += " voxel-max-bright";
+      } else if (isCurrentGameTarget || isFocusedInExplore) {
+        treeCls += " voxel-glow-gold";
+      }
+      layerEl.setAttribute("class", treeCls);
+    } else if (isWordsPrep) {
+      if (isCurrentGameTarget) {
+        layerEl.setAttribute("class", "voxel-unlocked");
+      } else {
+        layerEl.setAttribute("class", "voxel-unlocked voxel-dimmed-bg");
+      }
     } else if (isCultureExplore || isWordsLearn) {
       if (isFocusedInExplore) {
         layerEl.setAttribute("class", "voxel-unlocked");
@@ -174,9 +195,9 @@ function updateSceneAndStars() {
       }
     } else if (isQuizActive) {
       if (isCurrentGameTarget) {
-        layerEl.setAttribute("class", isUnlocked ? "voxel-unlocked" : "voxel-layer-locked");
+        layerEl.setAttribute("class", isUnlocked ? (isSpellMode ? "voxel-unlocked voxel-max-bright" : "voxel-unlocked") : "voxel-layer-locked");
       } else if (isUnlocked) {
-        layerEl.setAttribute("class", "voxel-unlocked voxel-dimmed-bg");
+        layerEl.setAttribute("class", isSpellMode ? "voxel-unlocked voxel-max-bright" : "voxel-unlocked voxel-dimmed-bg");
       } else {
         layerEl.setAttribute("class", "voxel-layer-locked");
       }
@@ -188,7 +209,10 @@ function updateSceneAndStars() {
       }
     }
 
-    if (isCurrentGameTarget || isFocusedInExplore) {
+    // 拼字台未點擊視覺提示前，不顯示空地板上的虛線框
+    if (isSpellMode) {
+      hsEl.classList.remove("is-focused", "is-active-target");
+    } else if (isCurrentGameTarget || isFocusedInExplore) {
       hsEl.classList.add("is-focused", "is-active-target");
     } else {
       hsEl.classList.remove("is-focused", "is-active-target");
@@ -421,8 +445,10 @@ function showToast(text, emoji, isSuccess) {
 async function handleQuizSuccess(target, sourceStage) {
   if (state.isAdvancingQuiz) return;
   state.isAdvancingQuiz = true;
+  const myToken = state.quizSessionToken;
 
   state.unlockedIds.add(target.id);
+  updateSceneAndStars();
   playSfx("anvil_craft");
   setTimeout(() => playSfx("fanfare"), 160);
   setTimeout(() => playSfx("ding"), 340);
@@ -431,11 +457,19 @@ async function handleQuizSuccess(target, sourceStage) {
   const layerEl = document.getElementById(`voxel-layer-${target.id}`);
   if (layerEl) {
     layerEl.classList.add("voxel-glow-gold");
-    setTimeout(() => layerEl.classList.remove("voxel-glow-gold"), 1400);
+    setTimeout(() => {
+      layerEl.classList.remove("voxel-glow-gold");
+    }, 1400);
   }
 
-  // 依建議：移除聖誕單字前方國旗代碼小字 (如 MX, FR)
-  showToast(`★ 合成成功！${target.word} (${target.zh}) 已放進木屋！`, "🌟", true);
+  const isPrepMode = (sourceStage === "words" && state.wordsSubMode === "prep");
+  showToast(
+    isPrepMode
+      ? `★ 答對了！${target.zh} ➔ ${target.prepZh}`
+      : `★ 合成成功！${target.word} (${target.zh}) 已放進木屋！`,
+    "🌟",
+    true
+  );
 
   try {
     const minDelayPromise = new Promise(r => setTimeout(r, 1200));
@@ -443,6 +477,10 @@ async function handleQuizSuccess(target, sourceStage) {
       await speakText("Awesome!", LESSON_CONFIG.speechRateNormal);
       await new Promise(r => setTimeout(r, 250));
       await speakText(target.culture.enSentence, LESSON_CONFIG.speechRateNormal);
+    } else if (isPrepMode) {
+      await speakText("Great job!", LESSON_CONFIG.speechRateNormal);
+      await new Promise(r => setTimeout(r, 250));
+      await speakText(target.qaASpeak, LESSON_CONFIG.speechRateNormal);
     } else {
       await speakText("Great job!", LESSON_CONFIG.speechRateNormal);
       await new Promise(r => setTimeout(r, 250));
@@ -452,27 +490,37 @@ async function handleQuizSuccess(target, sourceStage) {
   } catch (_) {
     await new Promise(r => setTimeout(r, 1200));
   } finally {
-    state.isAdvancingQuiz = false;
+    if (myToken === state.quizSessionToken) {
+      state.isAdvancingQuiz = false;
+    }
   }
+
+  if (myToken !== state.quizSessionToken) return;
 
   if (sourceStage === "words") {
     if (state.wordsSubMode === "spell") {
       if (state.spellQueueIdx >= LESSON_CONFIG.words.length - 1) {
         playSfx("fanfare");
-        // 完成 2.麥塊音節拼字台全部 7 題後，跳轉至 3.空間介系詞問答
         state.spellQueueIdx = 0;
-        state.wordsSubMode = "prep";
-        state.prepQueueIdx = 0;
-        state.gameQueueIdx = 0;
-        state.focusedWordId = LESSON_CONFIG.words[0].id;
-        renderWordsStage(false);
+        updateSceneAndStars();
+        if (typeof renderSpellStageCompleteButton === "function") {
+          renderSpellStageCompleteButton();
+        } else {
+          state.wordsSubMode = "prep";
+          state.prepQueueIdx = 0;
+          state.gameQueueIdx = 0;
+          state.focusedWordId = LESSON_CONFIG.words[0].id;
+          renderWordsStage(true);
+        }
       } else {
         state.spellQueueIdx = (state.spellQueueIdx || 0) + 1;
-        renderWordsStage(false);
+        renderWordsStage(true);
       }
     } else if (state.wordsSubMode === "prep") {
       if (state.prepQueueIdx >= LESSON_CONFIG.words.length - 1) {
         playSfx("fanfare");
+        state.allQuizCompleted = true;
+        updateSceneAndStars();
         if (typeof renderWordsStageCompleteButton === "function") {
           renderWordsStageCompleteButton();
         } else {
@@ -484,7 +532,7 @@ async function handleQuizSuccess(target, sourceStage) {
         if (LESSON_CONFIG.words[state.prepQueueIdx]) {
           state.focusedWordId = LESSON_CONFIG.words[state.prepQueueIdx].id;
         }
-        renderWordsStage(false);
+        renderWordsStage(true);
       }
     } else {
       renderWordsStage(false);
@@ -493,6 +541,8 @@ async function handleQuizSuccess(target, sourceStage) {
     if ((state.cultureQueueIdx || 0) >= LESSON_CONFIG.words.length - 1) {
       playSfx("fanfare");
       state.cultureQueueIdx = 0;
+      state.allQuizCompleted = true;
+      updateSceneAndStars();
       if (typeof renderCultureStageCompleteButton === "function") {
         renderCultureStageCompleteButton();
       } else {
@@ -501,7 +551,7 @@ async function handleQuizSuccess(target, sourceStage) {
     } else {
       state.cultureQueueIdx = (state.cultureQueueIdx || 0) + 1;
       state.gameQueueIdx = state.cultureQueueIdx;
-      renderCultureStage(false);
+      renderCultureStage(true);
     }
   } else {
     renderWordsStage(false);
@@ -543,6 +593,9 @@ window.setRpgSpeaker = function(speakerName, icon = "💬", imgUrl = null, isSpe
 function switchStage(newStage) {
   state.stage = newStage;
   state.isAdvancingQuiz = false;
+  state.quizSessionToken++;
+  if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
   // 切換任何單元時，確保非第 6 幕的馴鹿實體層隱藏
   document.getElementById("rudolphOverlayContainer")?.classList.add("hidden");
   const revealBtn = document.getElementById("bannerRevealAnswerBtn");
@@ -851,8 +904,12 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   window.returnToHomeScreen = function() {
+    state.quizSessionToken++;
+    state.isAdvancingQuiz = false;
     if (typeof playSfx === "function") playSfx("click");
     if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     // 依建議：回到首頁時立即停止「傳送」「風雪」「馴鹿」之背景環境音
     if (typeof stopStorySceneBgm === "function") stopStorySceneBgm();
     // 依建議：確保馴鹿不再停留殘留於畫面上
@@ -1031,18 +1088,33 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("wordsSubModeLearnBtn")?.addEventListener("click", () => {
+    state.quizSessionToken++;
+    state.isAdvancingQuiz = false;
+    if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     state.wordsSubMode = "learn";
     renderWordsStage(false);
   });
   document.getElementById("wordsSubModeSpellBtn")?.addEventListener("click", () => {
+    state.quizSessionToken++;
+    state.isAdvancingQuiz = false;
+    if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     state.wordsSubMode = "spell";
     closeAllOverlays();
-    renderWordsStage(false);
+    renderWordsStage(true);
   });
   document.getElementById("wordsSubModePrepBtn")?.addEventListener("click", () => {
+    state.quizSessionToken++;
+    state.isAdvancingQuiz = false;
+    if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     state.wordsSubMode = "prep";
     closeAllOverlays();
-    renderWordsStage(false);
+    renderWordsStage(true);
   });
 
   const mainContainerEl = document.getElementById("stageMainContainer") || document.body;
@@ -1150,13 +1222,23 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("cultureSubModeExploreBtn")?.addEventListener("click", () => {
+    state.quizSessionToken++;
+    state.isAdvancingQuiz = false;
+    if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     state.cultureSubMode = "explore";
     renderCultureStage(false);
   });
   document.getElementById("cultureSubModeQuizBtn")?.addEventListener("click", () => {
+    state.quizSessionToken++;
+    state.isAdvancingQuiz = false;
+    if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     state.cultureSubMode = "quiz";
     closeAllOverlays();
-    renderCultureStage(false);
+    renderCultureStage(true);
   });
   document.getElementById("cultureSlowSpeakBtn")?.addEventListener("click", () => {
     const item = getWordObj(state.focusedWordId);
@@ -1188,6 +1270,8 @@ window.addEventListener("DOMContentLoaded", () => {
       if (typeof stopStorySceneBgm === "function") stopStorySceneBgm();
       if (typeof stopChiptuneBgm === "function") stopChiptuneBgm();
       if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
+    if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
+  if (typeof window.stopPkSpinner === "function") window.stopPkSpinner();
     } else {
       state.playingMusic = true;
       if (state.stage === "story" && typeof playStorySceneBgm === "function") {
@@ -1285,6 +1369,8 @@ window.addEventListener("DOMContentLoaded", () => {
     state.prepQueueIdx = 0;
     state.cultureQueueIdx = 0;
     state.isAdvancingQuiz = false;
+    state.quizSessionToken++;
+    state.allQuizCompleted = false;
     state.wordsSubMode = "learn";
     state.cultureSubMode = "explore";
     state.focusedWordId = "tree";

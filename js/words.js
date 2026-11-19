@@ -285,15 +285,23 @@ function triggerFlashHint(target) {
   hintBox.classList.add("flash-hint-active");
 
   const layerEl = document.getElementById(`voxel-layer-${target.id}`);
+  const hsEl = document.getElementById(`scene-hs-${target.id}`);
   if (layerEl) {
-    layerEl.classList.add("voxel-glow-gold");
+    layerEl.classList.add("voxel-unlocked", "voxel-glow-gold", "voxel-max-bright");
+  }
+  if (hsEl) {
+    hsEl.classList.add("is-focused", "is-active-target");
   }
 
   setTimeout(() => {
     hintBox.classList.add("hidden");
     hintBox.classList.remove("flash-hint-active");
     if (layerEl) {
-      layerEl.classList.remove("voxel-glow-gold");
+      layerEl.classList.remove("voxel-glow-gold", "voxel-max-bright");
+      updateSceneAndStars();
+    }
+    if (hsEl && state.stage === "words" && state.wordsSubMode === "spell") {
+      hsEl.classList.remove("is-focused", "is-active-target");
     }
   }, 1000);
 }
@@ -403,7 +411,7 @@ function renderWordsStage(autoSpeak = false) {
       btn.addEventListener("click", () => {
         state.focusedWordId = item.id;
         renderWordsStage(false);
-        openVoxelZoomBox(item.id, null);
+        openVoxelZoomBox(item.id, LESSON_CONFIG.speechRateNormal);
       });
       grid.appendChild(btn);
     });
@@ -427,6 +435,7 @@ function renderWordsStage(autoSpeak = false) {
     }
     state.gameQueueIdx = state.spellQueueIdx;
     target = LESSON_CONFIG.words[state.spellQueueIdx];
+    state.focusedWordId = target.id;
   } else {
     target = getWordObj(state.focusedWordId) || LESSON_CONFIG.words[0];
   }
@@ -480,7 +489,20 @@ function renderWordsStage(autoSpeak = false) {
     const clearBtn = document.createElement("button");
     clearBtn.className = "h-[32px] sm:h-[36px] px-2.5 rounded-lg bg-rose-900/85 hover:bg-rose-800 text-rose-100 font-black text-xs mc-btn flex items-center justify-center gap-1";
     clearBtn.innerHTML = "🔄 清空";
-    clearBtn.addEventListener("click", () => renderWordsStage(false));
+    clearBtn.addEventListener("click", () => {
+      playSfx("click");
+      for (let i = 0; i < state.craftedChunks.length; i++) {
+        const entry = state.craftedChunks[i];
+        if (entry && !entry.locked) {
+          state.craftedChunks[i] = null;
+          if (poolButtons[entry.poolIndex]) {
+            poolButtons[entry.poolIndex].disabled = false;
+            poolButtons[entry.poolIndex].classList.remove("opacity-30", "pointer-events-none");
+          }
+        }
+      }
+      refreshCraftingSlotsUI();
+    });
 
     btnCol.appendChild(hintBtn);
     btnCol.appendChild(clearBtn);
@@ -609,7 +631,14 @@ function renderWordsStage(autoSpeak = false) {
 
     refreshCraftingSlotsUI();
     updateSceneAndStars();
-    if (autoSpeak) speakText(target.word, LESSON_CONFIG.speechRateNormal);
+    if (autoSpeak) {
+      const speakToken = state.quizSessionToken;
+      setTimeout(() => {
+        if (speakToken === state.quizSessionToken && state.stage === "words" && state.wordsSubMode === "spell") {
+          speakText(target.word, LESSON_CONFIG.speechRateNormal);
+        }
+      }, 250);
+    }
   } else if (state.wordsSubMode === "prep") {
     nametagBox?.classList.add("hidden");
     stepBadge?.classList.remove("hidden");
@@ -640,7 +669,15 @@ function renderWordsStage(autoSpeak = false) {
       zh: target.prepZh || target.prep
     };
 
-    const distractors = ALL_PREPOSITIONS.filter(p => p.prep !== target.prep);
+    const conflictMap = {
+      "on": ["on the top of"],
+      "on the top of": ["on"],
+      "above": ["on"],
+      "in": ["in front of"],
+      "in front of": ["in"]
+    };
+    const excludedPreps = conflictMap[target.prep] || [];
+    const distractors = ALL_PREPOSITIONS.filter(p => p.prep !== target.prep && !excludedPreps.includes(p.prep));
     const shuffledDistractors = [...distractors].sort(() => Math.random() - 0.5).slice(0, 2);
     const prepOptions = [correctPrepObj, ...shuffledDistractors].sort(() => Math.random() - 0.5);
 
@@ -664,16 +701,66 @@ function renderWordsStage(autoSpeak = false) {
           playSfx("oops");
           btn.classList.add("opacity-45", "border-rose-400");
           speakText(`Try again! ${target.qaQ}`, LESSON_CONFIG.speechRateSlow);
-          showToast(`再觀察一下畫面喔！提示：${target.prepZh}`, "👀", false);
+          showToast(`再觀察一下黃色箭頭指的位置喔！(${target.zh})`, "👀", false);
         }
       });
       grid.appendChild(btn);
     });
     zone.appendChild(grid);
     updateSceneAndStars();
-    if (autoSpeak) speakText(target.qaQ, LESSON_CONFIG.speechRateNormal);
+    if (autoSpeak) {
+      const speakToken = state.quizSessionToken;
+      setTimeout(() => {
+        if (speakToken === state.quizSessionToken && state.stage === "words" && state.wordsSubMode === "prep") {
+          speakText(target.qaQ, LESSON_CONFIG.speechRateNormal);
+        }
+      }, 250);
+    }
   }
 }
+
+
+window.renderSpellStageCompleteButton = function() {
+  const zone = document.getElementById("wordsInteractiveZone");
+  if (!zone) return;
+  zone.innerHTML = `
+    <div class="w-full flex flex-col items-center justify-center p-3.5 sm:p-4 bg-black/80 rounded-2xl border-4 border-lime-400 text-center gap-2 animate-fade-in max-w-2xl mx-auto shadow-2xl my-1">
+      <div class="text-lg sm:text-2xl font-black text-amber-300">🎉 太棒了！【麥塊音節拼字台】7 題全數過關！</div>
+      <div class="text-xs sm:text-sm text-white/90">7 個聖誕方塊已全部拼字完成！請選擇下一步：</div>
+      <div class="flex items-center gap-2.5 sm:gap-3 mt-1 flex-wrap justify-center">
+        <button id="btnSpellCompleteReplay" class="px-4 py-2 rounded-2xl bg-[#38261a] hover:bg-[#4e3626] border-2 border-amber-300 text-amber-200 font-black text-xs sm:text-base mc-btn shadow-xl flex items-center justify-center gap-1.5 transition hover:scale-105 active:scale-95">
+          <span>🔄</span> <span>再玩一次</span>
+        </button>
+        <button id="btnSpellCompleteBackHome" class="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 border-2 border-yellow-200 text-slate-950 font-black text-xs sm:text-base mc-btn shadow-xl flex items-center justify-center gap-1.5 transition hover:scale-105 active:scale-95">
+          <span>🏠</span> <span>返回主畫面</span>
+        </button>
+        <button id="btnSpellCompleteNextPrep" class="px-5 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 border-2 border-lime-300 text-white font-black text-xs sm:text-base mc-btn shadow-xl flex items-center justify-center gap-1.5 animate-bounce">
+          <span>📍</span> <span>下一關：空間介系詞問答</span> <span>▶</span>
+        </button>
+      </div>
+    </div>
+  `;
+  document.getElementById("btnSpellCompleteReplay")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("click");
+    state.spellQueueIdx = 0;
+    state.gameQueueIdx = 0;
+    state.wordsSubMode = "spell";
+    renderWordsStage(true);
+  });
+  document.getElementById("btnSpellCompleteBackHome")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (typeof returnToHomeScreen === "function") returnToHomeScreen();
+  });
+  document.getElementById("btnSpellCompleteNextPrep")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("portal");
+    state.spellQueueIdx = 0;
+    state.wordsSubMode = "prep";
+    state.prepQueueIdx = 0;
+    state.gameQueueIdx = 0;
+    state.focusedWordId = LESSON_CONFIG.words[0].id;
+    renderWordsStage(true);
+  });
+};
 
 window.renderWordsStageCompleteButton = function() {
   const zone = document.getElementById("wordsInteractiveZone");

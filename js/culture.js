@@ -151,7 +151,7 @@ function renderCultureStage(autoSpeak = false) {
           playSfx("oops");
           btn.classList.add("opacity-45", "border-rose-400");
           speakText("Try again!", LESSON_CONFIG.speechRateSlow);
-          showToast(`再想一下喔！提示：${target.culture.country} · ${target.zh}`, "🌍", false);
+          showToast(`再想一下喔！提示：${target.culture.country}`, "🌍", false);
         }
       });
       grid.appendChild(btn);
