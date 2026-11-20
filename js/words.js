@@ -95,12 +95,12 @@ LESSON_CONFIG.words = [
     zh: "裝飾彩球",
     emoji: "🔮",
     color: "#ec4899",
-    prep: "on",
-    prepZh: "在…上面 (on)",
+    prep: "in",
+    prepZh: "在…裡面 (in)",
     grammarTag: "複數問答 (Where are...? / They're...)",
     qaQ: "Where are the ornaments?",
-    qaAHtml: "They're <span class='text-yellow-300 underline font-black'>on</span> the tree.",
-    qaASpeak: "Where are the ornaments? They're on the tree.",
+    qaAHtml: "They're <span class='text-yellow-300 underline font-black'>in</span> the tree.",
+    qaASpeak: "Where are the ornaments? They're in the tree.",
     culture: {
       flag: "",
       country: "墨西哥 Mexico",
@@ -673,7 +673,7 @@ function renderWordsStage(autoSpeak = false) {
       "on": ["on the top of"],
       "on the top of": ["on"],
       "above": ["on"],
-      "in": ["in front of"],
+      "in": ["in front of", "on"],
       "in front of": ["in"]
     };
     const excludedPreps = conflictMap[target.prep] || [];
