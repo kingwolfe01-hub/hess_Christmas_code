@@ -950,10 +950,34 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
 
   const SHARE_URL = "https://kingwolfe01-hub.github.io/hess_Christmas_code/";
-  const SHARE_TEXT = `🎄 推薦超好玩的免費國小英語「3D 麥塊聖誕大冒險」互動教學網頁！\n開箱即用，歡迎老師課堂使用與分享（出處：鍠嘉文化教育用品社／感謝：何嘉仁國際文教集團－推廣部）\n👉 ${SHARE_URL}`;
+  const SHARE_TEXT = `推薦超好玩的免費國小英語「3D 麥塊聖誕大冒險」互動教學網頁！\n開箱即用，歡迎老師課堂使用與分享（何嘉仁）\n${SHARE_URL}`;
 
-  document.getElementById("btnHomeThreadsLike")?.addEventListener("click", () => {
-    if (window.Analytics) window.Analytics.track("threads_like_click", { stage: "home" });
+  document.getElementById("btnHomeLineShare")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (window.Analytics) window.Analytics.track("line_share_click", { stage: "home" });
+    const lineUrl = "https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(SHARE_URL) + "&text=" + encodeURIComponent(SHARE_TEXT);
+    window.open(lineUrl, "_blank", "noopener,noreferrer");
+  });
+
+  document.getElementById("btnHomeFbShare")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (window.Analytics) window.Analytics.track("fb_share_click", { stage: "home" });
+    const fbUrl = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(SHARE_URL);
+    window.open(fbUrl, "_blank", "noopener,noreferrer");
+  });
+
+  document.getElementById("btnHomeIgShare")?.addEventListener("click", async () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (window.Analytics) window.Analytics.track("ig_share_click", { stage: "home" });
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(SHARE_TEXT);
+      }
+      showToast("已複製推廣文案與網址，請在 IG 貼文或限動貼上分享！", "📷", true);
+    } catch (_) {
+      showToast("請複製網址於 IG 分享：" + SHARE_URL, "📷", true);
+    }
+    window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
   });
 
   document.getElementById("btnHomeThreadsShare")?.addEventListener("click", () => {

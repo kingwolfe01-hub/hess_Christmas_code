@@ -549,7 +549,7 @@ const EXACT_AUDIO_MAP = {
   "in mexico, bright ornaments bring joy.": "in_mexico__bright_ornaments_bring_joy.mp3",
   "in the philippines, star lanterns light the street.": "in_the_philippines__star_lanterns_light_the_street.mp3",
   "in the uk, children hang stockings by the fire.": "in_the_uk__children_hang_stockings_by_the_fire.mp3",
-  "in the usa, presents wait under the tree.": "in_the_usa__presents_wait_under_the_tree.mp3",
+  "in the usa, presents are under the christmas tree.": "in_the_usa__presents_are_under_the_christmas_tree.mp3",
   "in australia, santa surfs at the sunny beach.": "in_australia__santa_surfs_at_the_sunny_beach.mp3",
 
   // 【E 組】自然發音音節拆解方塊
@@ -562,12 +562,11 @@ const EXACT_AUDIO_MAP = {
   "or": "chunk_or.mp3",
   "na": "chunk_na.mp3",
   "ment": "chunk_ment.mp3",
-  "st": "chunk_st.mp3",
-  "ar": "chunk_ar.mp3",
+  "star": "star.mp3",
   "stock": "chunk_stock.mp3",
   "ing": "chunk_ing.mp3",
-  "pre": "chunk_pre.mp3",
-  "sent": "chunk_sent.mp3",
+  "pres": "chunk_pres.mp3",
+  "ent": "chunk_ent.mp3",
   "santa": "chunk_santa.mp3",
   "claus": "chunk_claus.mp3",
 

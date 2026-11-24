@@ -48,15 +48,8 @@
     </div>
 
     <!-- 首頁頂部快捷列 -->
-    <header class="relative z-10 flex justify-between items-center px-2 py-1 gap-2 flex-wrap">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="px-3 py-1 rounded-xl bg-black/75 border border-amber-400/50 text-amber-200 text-xs font-black tracking-wide shadow">
-          🏷️ 鍠嘉文化教育用品社
-        </span>
-        <span class="px-2.5 py-1 rounded-xl bg-emerald-950/85 border border-emerald-400/50 text-emerald-200 text-xs font-bold shadow">
-          🎁 免費公益推廣版
-        </span>
-      </div>
+    <header class="relative z-10 flex justify-between items-center px-2 py-1">
+      <div class="flex items-center gap-2"></div>
       <div class="flex items-center gap-2">
         <button id="homeSoundToggleBtn" class="px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-500/50 text-xs font-bold text-amber-300 transition mc-btn">
           <span id="homeSoundIcon">🔊</span> <span>音樂配樂</span>
@@ -129,22 +122,26 @@
       </div>
     </div>
 
-    <!-- 首頁底部狀態提示與版權致謝 / Threads 互動區 -->
-    <footer class="relative z-10 flex flex-wrap justify-between items-center gap-2 px-4 py-2 text-stone-300 text-xs border-t border-white/15 bg-black/45">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="font-bold text-amber-200">版權：鍠嘉文化教育用品社</span>
-        <span class="text-stone-500">｜</span>
-        <span class="text-stone-200">特別感謝：何嘉仁國際文教集團－推廣部</span>
+    <!-- 首頁底部：左下角去背 HESS Logo ＋ 右下角 Threads 互動區 -->
+    <footer class="relative z-10 flex flex-wrap justify-between items-end gap-2 px-4 py-2 text-stone-300 text-xs border-t border-white/15 bg-black/35">
+      <div class="flex items-center">
+        <img src="assets/hess_logo.png" alt="HESS" class="h-11 sm:h-14 w-auto object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]" />
       </div>
-      <div class="flex items-center gap-2 flex-wrap">
-        <a id="btnHomeThreadsLike" href="https://www.threads.com/share/Bn_TmEHEXD" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-xl bg-rose-950/85 hover:bg-rose-800 border border-rose-400/60 text-rose-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>❤️</span> <span>Threads 按讚支持</span>
-        </a>
-        <button id="btnHomeThreadsShare" class="px-3 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-400/50 text-amber-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>🧵</span> <span>分享到 Threads</span>
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
+        <button id="btnHomeLineShare" class="px-2.5 py-1 rounded-xl bg-emerald-950/90 hover:bg-emerald-800 border border-emerald-400/60 text-emerald-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>💬</span> <span>LINE</span>
         </button>
-        <button id="btnHomeCopyShare" class="px-3 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-stone-500/60 text-stone-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>🔗</span> <span>複製推廣連結</span>
+        <button id="btnHomeFbShare" class="px-2.5 py-1 rounded-xl bg-blue-950/90 hover:bg-blue-800 border border-blue-400/60 text-blue-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>📘</span> <span>Facebook</span>
+        </button>
+        <button id="btnHomeIgShare" class="px-2.5 py-1 rounded-xl bg-fuchsia-950/90 hover:bg-fuchsia-800 border border-pink-400/60 text-pink-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>📷</span> <span>IG</span>
+        </button>
+        <button id="btnHomeThreadsShare" class="px-2.5 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-400/50 text-amber-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>🧵</span> <span>Threads</span>
+        </button>
+        <button id="btnHomeCopyShare" class="px-2.5 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-stone-500/60 text-stone-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>🔗</span> <span>複製連結</span>
         </button>
       </div>
     </footer>
