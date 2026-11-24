@@ -30,3 +30,9 @@ window.LESSON_CONFIG = window.LESSON_CONFIG || {};
 window.LESSON_CONFIG.title = "🌍 World Christmas Craft (中高年級 3D 麥塊跨國冒險)";
 window.LESSON_CONFIG.speechRateSlow = 0.75; // 慢速朗讀：調降至 0.70，確保語速有明顯差異
 window.LESSON_CONFIG.speechRateNormal = 1.00; // 正常標準語速 1.00
+window.LESSON_CONFIG.analytics = {
+  enabled: true,
+  endpoint: "https://script.google.com/macros/s/AKfycbyRZjkw9XHEhtTAkdpimLIxLe_6jhWpfKeRnwxaA4OZE8IRaLMPHhb2cKT-QtwlQM8U/exec", // 請貼上 Google Apps Script 部署後的網頁應用程式網址 (/exec)
+  unitId: "world_christmas_craft_v10",
+  ipGeoEnabled: true // 自動在背景辨識縣市層級（不存完整 IP）
+};

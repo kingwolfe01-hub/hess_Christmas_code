@@ -217,6 +217,7 @@ async function speakStoryDialogue(stepObj, rate = null) {
 
 function renderStoryStage(autoSpeak = false) {
   const stepObj = LESSON_CONFIG.storySteps[state.storyStepIdx];
+  if (window.Analytics && stepObj) window.Analytics.track("story_step", { stage: "story", target_id: "step_" + stepObj.step, detail: { title: stepObj.titleZh || "" } });
   const assets = new Proxy({}, { get: (_, k) => getAsset(k) });
   const imgWrapper = document.getElementById("storySceneImgWrapper");
   const imgEl = document.getElementById("storySceneImgEl");
@@ -406,6 +407,7 @@ function renderStoryQuiz(stepObj) {
     btn.className = "story-quiz-btn py-2 px-2.5 rounded-xl bg-[#38261a] border-[#8c6649] text-amber-100 font-black text-xs sm:text-sm hover:bg-[#4d3423] text-left";
     btn.textContent = opt.text;
     btn.addEventListener("click", () => {
+      if (window.Analytics) window.Analytics.track("quiz_attempt", { stage: "story", target_id: "step_" + stepObj.step, is_correct: !!opt.correct, detail: { quiz_type: "story", chosen: opt.text } });
       if (opt.correct) {
         playSfx("reindeer_happy");
         playSfx("ding");

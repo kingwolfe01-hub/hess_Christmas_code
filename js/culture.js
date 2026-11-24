@@ -92,6 +92,7 @@ function renderCultureStage(autoSpeak = false) {
       `;
       btn.addEventListener("click", () => {
         state.focusedWordId = item.id;
+        if (window.Analytics) window.Analytics.track("culture_explore", { stage: "culture", target_id: item.id, detail: { country: item.culture ? item.culture.country : "" } });
         renderCultureStage(false);
         openCultureCompareBoard(item.id, LESSON_CONFIG.speechRateNormal);
       });
@@ -145,6 +146,7 @@ function renderCultureStage(autoSpeak = false) {
       `;
       btn.addEventListener("click", () => {
         if (state.isAdvancingQuiz) return;
+        if (window.Analytics) window.Analytics.track("quiz_attempt", { stage: "culture", target_id: target.id, is_correct: choice.id === target.id, detail: { quiz_type: "culture", chosen: choice.id } });
         if (choice.id === target.id) {
           handleQuizSuccess(target, "culture");
         } else {

@@ -491,6 +491,7 @@ function renderWordsStage(autoSpeak = false) {
     clearBtn.innerHTML = "🔄 清空";
     clearBtn.addEventListener("click", () => {
       playSfx("click");
+      if (window.Analytics && target) window.Analytics.track("spell_clear", { stage: "words", target_id: target.id });
       for (let i = 0; i < state.craftedChunks.length; i++) {
         const entry = state.craftedChunks[i];
         if (entry && !entry.locked) {
@@ -601,6 +602,7 @@ function renderWordsStage(autoSpeak = false) {
 
           refreshCraftingSlotsUI(validationStates);
 
+          if (window.Analytics) window.Analytics.track("quiz_attempt", { stage: "words", target_id: target.id, is_correct: !!isAllCorrect, detail: { quiz_type: "spell" } });
           if (isAllCorrect) {
             state.craftedChunks.forEach(item => { if (item) item.locked = true; });
             handleQuizSuccess(target, "words");
@@ -695,6 +697,7 @@ function renderWordsStage(autoSpeak = false) {
       `;
       btn.addEventListener("click", () => {
         if (state.isAdvancingQuiz) return;
+        if (window.Analytics) window.Analytics.track("quiz_attempt", { stage: "words", target_id: target.id, is_correct: opt.prep === target.prep, detail: { quiz_type: "prep", chosen: opt.prep } });
         if (opt.prep === target.prep) {
           handleQuizSuccess(target, "words");
         } else {

@@ -448,6 +448,12 @@ async function handleQuizSuccess(target, sourceStage) {
   const myToken = state.quizSessionToken;
 
   state.unlockedIds.add(target.id);
+  if (window.Analytics) {
+    window.Analytics.track("quiz_complete", { stage: sourceStage || state.stage, target_id: target.id, is_correct: true, detail: { sub_mode: sourceStage === "words" ? state.wordsSubMode : state.cultureSubMode, total_unlocked: state.unlockedIds.size } });
+    if (state.unlockedIds.size >= (LESSON_CONFIG.words ? LESSON_CONFIG.words.length : 7) && !state.allQuizCompleted) {
+      window.Analytics.track("unit_all_complete", { stage: sourceStage || state.stage, target_id: "all_7_unlocked" });
+    }
+  }
   updateSceneAndStars();
   playSfx("anvil_craft");
   setTimeout(() => playSfx("fanfare"), 160);
@@ -591,6 +597,10 @@ window.setRpgSpeaker = function(speakerName, icon = "💬", imgUrl = null, isSpe
 };
 
 function switchStage(newStage) {
+  const prevStage = state.stage;
+  if (window.Analytics && prevStage !== newStage) {
+    window.Analytics.trackStageTransition(prevStage, newStage);
+  }
   state.stage = newStage;
   state.isAdvancingQuiz = false;
   state.quizSessionToken++;
@@ -1290,6 +1300,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // 單元操作教學彈窗 (#unitHelpModal)
   function openUnitHelpModal() {
+    if (window.Analytics) window.Analytics.track("help_open", { stage: state.stage });
     const modal = document.getElementById("unitHelpModal");
     const titleEl = document.getElementById("helpModalTitle");
     const contentEl = document.getElementById("helpModalContent");

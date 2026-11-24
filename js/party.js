@@ -47,6 +47,7 @@ function renderPartyGreetings() {
         topBanner.classList.remove("rpg-bottom-docked");
         topBanner.classList.add("rpg-top-floating");
       }
+      if (window.Analytics) window.Analytics.track("party_greeting", { stage: "party", target_id: g.country, detail: { phrase: g.phrase } });
       triggerBurstParticles();
       speakText(g.speakText, 0.9, g.lang, g.role);
       document.getElementById("promptNametagBox")?.classList.add("hidden");
@@ -121,6 +122,7 @@ function runRandomPkSpinner() {
       ];
 
       const picked = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
+      if (window.Analytics) window.Analytics.track("party_pk_spin", { stage: "party", target_id: randItem.id, detail: { challenge_type: picked.type, score_red: state.scoreRed, score_green: state.scoreGreen } });
 
       closeAllOverlays();
 

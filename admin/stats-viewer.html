@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>聖誕節大冒險 · 獨立統計分析後台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", sans-serif; }
+    .bar-fill { transition: width 0.4s ease; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <div class="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+    <!-- 頂部控制列 -->
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-200">
+      <div>
+        <div class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-1">獨立後台檢視器（與主教學程式完全隔離）</div>
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900">🎄 聖誕節大冒險 · 使用數據統計分析</h1>
+        <p class="text-sm text-slate-600 mt-1">依「大方向總覽 → 關卡漏斗 → 教學細節」分層呈現 Google 試算表即時數據。</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btnDemo" class="px-3.5 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-bold transition">
+          載入示範數據預覽
+        </button>
+        <button id="btnRefresh" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold shadow-sm transition">
+          🔄 重新抓取最新統計
+        </button>
+      </div>
+    </header>
+
+    <!-- GAS 連線設定 -->
+    <section class="mt-6 bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+        <div class="md:col-span-7">
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="gasUrlInput">Google Apps Script 網頁應用程式網址 (Endpoint URL)</label>
+          <input id="gasUrlInput" type="url" placeholder="https://script.google.com/macros/s/xxxxx/exec" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" />
+        </div>
+        <div class="md:col-span-3">
+          <label class="block text-xs font-bold text-slate-700 mb-1" for="viewerKeyInput">檢視密碼 (VIEWER_KEY)</label>
+          <input id="viewerKeyInput" type="password" placeholder="預設 xmas2026" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" />
+        </div>
+        <div class="md:col-span-2">
+          <button id="btnSaveConnect" class="w-full px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition">
+            儲存並讀取
+          </button>
+        </div>
+      </div>
+      <div id="statusMsg" class="text-xs text-slate-500 mt-2">尚未連線至 Google 試算表，可貼上 GAS 網址或先點「載入示範數據預覽」。</div>
+    </section>
+
+    <!-- 第一層：大方向總覽 -->
+    <section class="mt-8">
+      <h2 class="text-lg font-black text-slate-900 mb-3 flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-teal-100 text-teal-800 text-xs">第一層</span>
+        大方向總覽：開啟次數、地區與上線時段
+      </h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-bold text-slate-500">總開啟次數 (Sessions)</div>
+          <div id="kpiSessions" class="text-3xl font-black text-teal-700 mt-1">-</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-bold text-slate-500">總互動事件筆數</div>
+          <div id="kpiEvents" class="text-3xl font-black text-slate-900 mt-1">-</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-bold text-slate-500">7 物件全解鎖過關數</div>
+          <div id="kpiComplete" class="text-3xl font-black text-emerald-600 mt-1">-</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-bold text-slate-500">慢速語音 (0.75x) 比例</div>
+          <div id="kpiSlowRatio" class="text-3xl font-black text-blue-600 mt-1">-</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">📍 縣市分佈 (IP 自動估算)</h3>
+          <div id="chartCity" class="space-y-2 text-sm text-slate-600">尚無資料</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">🏫 推廣區域 / 學校參數 (?area=)</h3>
+          <div id="chartArea" class="space-y-2 text-sm text-slate-600">尚無資料</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">💻 教學裝置類型 & 上線尖峰時段</h3>
+          <div id="chartDevice" class="space-y-2 text-sm text-slate-600 mb-4">尚無資料</div>
+          <div id="chartHour" class="space-y-1.5 text-xs text-slate-600 pt-3 border-t border-slate-100"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第二層：關卡與漏斗 -->
+    <section class="mt-8">
+      <h2 class="text-lg font-black text-slate-900 mb-3 flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs">第二層</span>
+        關卡流程與操作漏斗
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">🗺️ 4 大教學階段進入次數</h3>
+          <div id="chartStages" class="space-y-2.5 text-sm text-slate-600">尚無資料</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">❓ 單元說明視窗點擊次數 (易用性指標)</h3>
+          <div id="chartHelp" class="space-y-2.5 text-sm text-slate-600">尚無資料</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 第三層：教學細節洞察 -->
+    <section class="mt-8 pb-12">
+      <h2 class="text-lg font-black text-slate-900 mb-3 flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs">第三層</span>
+        教學細節洞察：單字難度、語音與文化互動
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">🔤 拼字清空重試熱區 (最難單字)</h3>
+          <div id="chartSpellClear" class="space-y-2 text-sm text-slate-600">尚無資料</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">🌍 7 國文化 & 5 國祝福語熱度</h3>
+          <div id="chartCultureParty" class="space-y-2 text-sm text-slate-600">尚無資料</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">🎯 測驗答對率與常見誤選 (前 8 項)</h3>
+          <div id="chartQuiz" class="space-y-2 text-xs text-slate-600">尚無資料</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const LS_URL = "xmas_stats_gas_url";
+    const LS_KEY = "xmas_stats_viewer_key";
+
+    const gasUrlInput = document.getElementById("gasUrlInput");
+    const viewerKeyInput = document.getElementById("viewerKeyInput");
+    const statusMsg = document.getElementById("statusMsg");
+
+    gasUrlInput.value = localStorage.getItem(LS_URL) || "https://script.google.com/macros/s/AKfycbyRZjkw9XHEhtTAkdpimLIxLe_6jhWpfKeRnwxaA4OZE8IRaLMPHhb2cKT-QtwlQM8U/exec";
+    viewerKeyInput.value = localStorage.getItem(LS_KEY) || "xmas2026";
+
+    function renderBarList(containerId, obj, colorClass = "bg-teal-600") {
+      const el = document.getElementById(containerId);
+      const entries = Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        el.innerHTML = `<div class="text-slate-400 text-xs">尚無紀錄</div>`;
+        return;
+      }
+      const maxVal = Math.max(...entries.map(e => e[1]), 1);
+      el.innerHTML = entries.slice(0, 10).map(([label, val]) => {
+        const pct = Math.round((val / maxVal) * 100);
+        return `
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-0.5">
+              <span class="truncate pr-2 text-slate-700">${label}</span>
+              <span class="font-mono text-slate-900 shrink-0">${val}</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+              <div class="${colorClass} h-2 rounded-full bar-fill" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderDashboard(data) {
+      const ov = data.overview || {};
+      const fn = data.funnel || {};
+      const dt = data.details || {};
+
+      document.getElementById("kpiSessions").textContent = ov.totalSessions ?? 0;
+      document.getElementById("kpiEvents").textContent = ov.totalEvents ?? 0;
+      document.getElementById("kpiComplete").textContent = ov.allComplete ?? 0;
+
+      const sp = dt.audioSpeed || { normal: 0, slow: 0 };
+      const totalAudio = (sp.normal || 0) + (sp.slow || 0);
+      document.getElementById("kpiSlowRatio").textContent = totalAudio > 0 ? `${Math.round((sp.slow / totalAudio) * 100)}%` : "0%";
+
+      renderBarList("chartCity", ov.byCity, "bg-teal-600");
+      renderBarList("chartArea", ov.byArea, "bg-emerald-600");
+      renderBarList("chartDevice", ov.byDevice, "bg-indigo-600");
+      renderBarList("chartHour", ov.byHour, "bg-slate-500");
+
+      renderBarList("chartStages", fn.stages, "bg-blue-600");
+      renderBarList("chartHelp", fn.helpOpen, "bg-amber-500");
+
+      renderBarList("chartSpellClear", dt.spellClear, "bg-rose-500");
+
+      const combinedCultureParty = {};
+      Object.entries(dt.cultureExplore || {}).forEach(([k, v]) => combinedCultureParty[`文化:${k}`] = v);
+      Object.entries(dt.partyGreetings || {}).forEach(([k, v]) => combinedCultureParty[`祝福:${k}`] = v);
+      if (dt.partyPkCount) combinedCultureParty["派對隨機PK抽題"] = dt.partyPkCount;
+      renderBarList("chartCultureParty", combinedCultureParty, "bg-purple-600");
+
+      const quizEl = document.getElementById("chartQuiz");
+      const qEntries = Object.entries(dt.quizStats || {});
+      if (qEntries.length === 0) {
+        quizEl.innerHTML = `<div class="text-slate-400 text-xs">尚無測驗紀錄</div>`;
+      } else {
+        quizEl.innerHTML = qEntries.slice(0, 8).map(([key, stat]) => {
+          const total = stat.correct + stat.wrong;
+          const acc = total > 0 ? Math.round((stat.correct / total) * 100) : 0;
+          const wrongTop = Object.entries(stat.wrongChoices || {}).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([w, c]) => `${w}(${c})`).join(", ");
+          return `
+            <div class="pb-2 border-b border-slate-100 last:border-0">
+              <div class="flex justify-between font-bold text-slate-800">
+                <span>${key}</span>
+                <span class="${acc < 60 ? 'text-rose-600' : 'text-emerald-700'}">${acc}% (${stat.correct}/${total})</span>
+              </div>
+              ${wrongTop ? `<div class="text-[11px] text-rose-600 mt-0.5">常見誤選：${wrongTop}</div>` : ""}
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    async function fetchLiveStats() {
+      const url = gasUrlInput.value.trim();
+      const key = viewerKeyInput.value.trim();
+      if (!url) {
+        statusMsg.textContent = "請先輸入 Google Apps Script 網頁應用程式網址。";
+        statusMsg.className = "text-xs text-rose-600 mt-2";
+        return;
+      }
+      localStorage.setItem(LS_URL, url);
+      localStorage.setItem(LS_KEY, key);
+      statusMsg.textContent = "正在從 Google 試算表讀取最新統計資料...";
+      statusMsg.className = "text-xs text-teal-700 mt-2";
+
+      try {
+        const sep = url.includes("?") ? "&" : "?";
+        const res = await fetch(`${url}${sep}key=${encodeURIComponent(key)}`);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "讀取失敗");
+        renderDashboard(data);
+        statusMsg.textContent = `已更新最新資料（最後同步：${new Date().toLocaleTimeString()}）`;
+        statusMsg.className = "text-xs text-emerald-700 mt-2";
+      } catch (err) {
+        statusMsg.textContent = `連線失敗：${err.message}（請確認 GAS 已部署為「所有人可存取」且密碼正確）`;
+        statusMsg.className = "text-xs text-rose-600 mt-2";
+      }
+    }
+
+    document.getElementById("btnSaveConnect").addEventListener("click", fetchLiveStats);
+    document.getElementById("btnRefresh").addEventListener("click", fetchLiveStats);
+    document.getElementById("btnDemo").addEventListener("click", () => {
+      renderDashboard({
+        overview: {
+          totalSessions: 148,
+          totalEvents: 3820,
+          allComplete: 94,
+          byCity: { "Changhua": 68, "Taichung": 41, "Taipei": 22, "Kaohsiung": 17 },
+          byArea: { "changhua/yuanlin_es": 42, "changhua/dacun_es": 26, "taichung/demo": 19, "未帶參數": 61 },
+          byDevice: { "desktop_large": 92, "tablet": 48, "mobile": 8 },
+          byHour: { "08:00": 35, "09:00": 48, "10:00": 29, "14:00": 21, "19:00": 15 }
+        },
+        funnel: {
+          stages: { "story": 142, "words": 135, "culture": 112, "party": 96 },
+          helpOpen: { "words": 18, "party": 9, "story": 4 }
+        },
+        details: {
+          spellClear: { "ornament": 44, "stocking": 27, "ribbon": 15, "present": 9 },
+          audioSpeed: { normal: 610, slow: 245 },
+          cultureExplore: { "stocking": 52, "santa": 48, "star": 39, "tree": 35 },
+          partyGreetings: { "法國": 41, "日本": 38, "德國": 29, "美國": 25 },
+          partyPkCount: 118,
+          quizStats: {
+            "prep:ornament": { correct: 82, wrong: 34, wrongChoices: { "under": 22, "above": 12 } },
+            "spell:ornament": { correct: 91, wrong: 44, wrongChoices: {} },
+            "culture:stocking": { correct: 96, wrong: 12, wrongChoices: { "present": 8 } }
+          }
+        }
+      });
+      statusMsg.textContent = "目前顯示「示範數據預覽」模式。";
+      statusMsg.className = "text-xs text-blue-700 mt-2";
+    });
+  </script>
+</body>
+</html>

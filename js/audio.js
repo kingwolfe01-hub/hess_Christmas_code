@@ -750,6 +750,7 @@ async function speakText(text, rate = null, lang = "en-US", role = "default") {
   if (!text) return;
 
   const actualRate = rate !== null ? rate : (typeof LESSON_CONFIG !== "undefined" ? LESSON_CONFIG.speechRateNormal : 0.96);
+  if (window.Analytics) window.Analytics.track("audio_play", { target_id: String(text).slice(0, 60), detail: { speed_mode: actualRate < 0.9 ? "slow" : "normal", rate: actualRate } });
   stopCurrentSpeech();
   setBgmDucking(true);
 
