@@ -73,50 +73,59 @@
       <div class="text-amber-200 font-bold text-xs sm:text-sm tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] mb-1">
         🎄 聖誕節大冒險 · 跨國文化與方塊救援行動 🎄
       </div>
-      <p class="text-stone-300 text-xs drop-shadow bg-black/60 px-4 py-0.5 rounded-full border border-white/10 mb-1.5">
+      <p class="text-stone-300 text-xs drop-shadow bg-black/60 px-4 py-0.5 rounded-full border border-white/10 mb-3 sm:mb-4">
         攜手聖誕老人穿越紫色蟲洞，拯救 Rudolph 並重燃極地木屋！
       </p>
-      <p class="text-amber-200/95 text-xs font-bold drop-shadow bg-amber-950/60 px-4 py-0.5 rounded-full border border-amber-400/35 mb-3 sm:mb-4">
-        ✨ 歡迎老師自由分享與課堂使用，轉載或公開演示請標記出處
-      </p>
 
-      <!-- 垂直置中 4 顆純淨主按鈕 -->
-      <div class="w-full max-w-md mx-auto flex flex-col space-y-2.5 px-3 select-none">
+      <!-- 垂直置中 4 顆放大主按鈕（含導引說明） -->
+      <div class="w-full max-w-xl mx-auto flex flex-col space-y-3 px-3 select-none">
         
         <!-- 按鈕 1: 麥塊極地繪本 -->
-        <button id="btnHomeStory" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-amber-950/90 via-amber-800/90 to-amber-950/90 hover:from-amber-700 hover:to-amber-600 border-2 border-amber-400 text-amber-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl group-hover:scale-110 transition-transform">📖</span>
-            <span class="tracking-wide text-amber-200">麥塊極地繪本</span>
+        <button id="btnHomeStory" class="w-full h-[64px] sm:h-[72px] px-5 sm:px-6 rounded-2xl bg-gradient-to-r from-amber-950/90 via-amber-800/90 to-amber-950/90 hover:from-amber-700 hover:to-amber-600 border-2 border-amber-400 text-amber-100 font-black mc-btn flex items-center justify-between gap-2 shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">📖</span>
+            <div class="flex items-baseline gap-2 flex-wrap text-left">
+              <span class="tracking-wide text-amber-200 text-lg sm:text-2xl">麥塊極地繪本</span>
+              <span class="text-xs sm:text-sm font-bold text-amber-100/90">- 聽故事，認識聖誕節</span>
+            </div>
           </div>
-          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-amber-400/50 text-amber-300 text-xs font-bold font-mono tracking-wider">STORY ▶</span>
+          <span class="px-3 py-1 rounded-md bg-black/50 border border-amber-400/50 text-amber-300 text-xs sm:text-sm font-bold font-mono tracking-wider shrink-0">STORY ▶</span>
         </button>
 
         <!-- 按鈕 2: 單字拼字與句型 -->
-        <button id="btnHomeWords" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-emerald-800/90 to-emerald-950/90 hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400 text-emerald-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl group-hover:scale-110 transition-transform">🔤</span>
-            <span class="tracking-wide text-emerald-200">單字拼字與句型</span>
+        <button id="btnHomeWords" class="w-full h-[64px] sm:h-[72px] px-5 sm:px-6 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-emerald-800/90 to-emerald-950/90 hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400 text-emerald-100 font-black mc-btn flex items-center justify-between gap-2 shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">🔤</span>
+            <div class="flex items-baseline gap-2 flex-wrap text-left">
+              <span class="tracking-wide text-emerald-200 text-lg sm:text-2xl">單字拼字與句型</span>
+              <span class="text-xs sm:text-sm font-bold text-emerald-100/90">- 學單字，練習發音</span>
+            </div>
           </div>
-          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-emerald-400/50 text-emerald-300 text-xs font-bold font-mono tracking-wider">WORDS ▶</span>
+          <span class="px-3 py-1 rounded-md bg-black/50 border border-emerald-400/50 text-emerald-300 text-xs sm:text-sm font-bold font-mono tracking-wider shrink-0">WORDS ▶</span>
         </button>
 
         <!-- 按鈕 3: 國際聖誕文化 -->
-        <button id="btnHomeCulture" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-sky-950/90 via-sky-800/90 to-sky-950/90 hover:from-sky-700 hover:to-sky-600 border-2 border-sky-400 text-sky-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl group-hover:scale-110 transition-transform">🌍</span>
-            <span class="tracking-wide text-sky-200">國際聖誕文化</span>
+        <button id="btnHomeCulture" class="w-full h-[64px] sm:h-[72px] px-5 sm:px-6 rounded-2xl bg-gradient-to-r from-sky-950/90 via-sky-800/90 to-sky-950/90 hover:from-sky-700 hover:to-sky-600 border-2 border-sky-400 text-sky-100 font-black mc-btn flex items-center justify-between gap-2 shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">🌍</span>
+            <div class="flex items-baseline gap-2 flex-wrap text-left">
+              <span class="tracking-wide text-sky-200 text-lg sm:text-2xl">國際聖誕文化</span>
+              <span class="text-xs sm:text-sm font-bold text-sky-100/90">- 探索各國聖誕文化</span>
+            </div>
           </div>
-          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-sky-400/50 text-sky-300 text-xs font-bold font-mono tracking-wider">CULTURE ▶</span>
+          <span class="px-3 py-1 rounded-md bg-black/50 border border-sky-400/50 text-sky-300 text-xs sm:text-sm font-bold font-mono tracking-wider shrink-0">CULTURE ▶</span>
         </button>
 
         <!-- 按鈕 4: 五國祝福與大PK -->
-        <button id="btnHomeParty" class="w-full h-[52px] sm:h-[56px] px-5 rounded-2xl bg-gradient-to-r from-purple-950/90 via-purple-800/90 to-purple-950/90 hover:from-purple-700 hover:to-purple-600 border-2 border-purple-400 text-purple-100 font-black text-base sm:text-lg mc-btn flex items-center justify-between shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl group-hover:scale-110 transition-transform">🎉</span>
-            <span class="tracking-wide text-purple-200">五國祝福與大PK</span>
+        <button id="btnHomeParty" class="w-full h-[64px] sm:h-[72px] px-5 sm:px-6 rounded-2xl bg-gradient-to-r from-purple-950/90 via-purple-800/90 to-purple-950/90 hover:from-purple-700 hover:to-purple-600 border-2 border-purple-400 text-purple-100 font-black mc-btn flex items-center justify-between gap-2 shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">🎉</span>
+            <div class="flex items-baseline gap-2 flex-wrap text-left">
+              <span class="tracking-wide text-purple-200 text-lg sm:text-2xl">五國祝福與大PK</span>
+              <span class="text-xs sm:text-sm font-bold text-purple-100/90">- 玩遊戲，挑戰學習力</span>
+            </div>
           </div>
-          <span class="px-2.5 py-0.5 rounded-md bg-black/50 border border-purple-400/50 text-purple-300 text-xs font-bold font-mono tracking-wider">PARTY PK ▶</span>
+          <span class="px-3 py-1 rounded-md bg-black/50 border border-purple-400/50 text-purple-300 text-xs sm:text-sm font-bold font-mono tracking-wider shrink-0">PARTY PK ▶</span>
         </button>
 
       </div>
@@ -127,23 +136,7 @@
       <div class="flex items-center">
         <img src="assets/hess_logo.png" alt="HESS" class="h-11 sm:h-14 w-auto object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]" />
       </div>
-      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
-        <button id="btnHomeLineShare" class="px-2.5 py-1 rounded-xl bg-emerald-950/90 hover:bg-emerald-800 border border-emerald-400/60 text-emerald-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>💬</span> <span>LINE</span>
-        </button>
-        <button id="btnHomeFbShare" class="px-2.5 py-1 rounded-xl bg-blue-950/90 hover:bg-blue-800 border border-blue-400/60 text-blue-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>📘</span> <span>Facebook</span>
-        </button>
-        <button id="btnHomeIgShare" class="px-2.5 py-1 rounded-xl bg-fuchsia-950/90 hover:bg-fuchsia-800 border border-pink-400/60 text-pink-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>📷</span> <span>IG</span>
-        </button>
-        <button id="btnHomeThreadsShare" class="px-2.5 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-400/50 text-amber-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>🧵</span> <span>Threads</span>
-        </button>
-        <button id="btnHomeCopyShare" class="px-2.5 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-stone-500/60 text-stone-200 font-bold text-xs transition mc-btn flex items-center gap-1">
-          <span>🔗</span> <span>複製連結</span>
-        </button>
-      </div>
+      <div></div>
     </footer>
   </div>
 

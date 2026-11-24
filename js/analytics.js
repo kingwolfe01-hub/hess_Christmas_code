@@ -85,37 +85,41 @@
     const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
     const timer = controller ? setTimeout(() => controller.abort(), 2000) : null;
     try {
-      const res = await fetch("https://ipapi.co/json/", {
-        signal: controller ? controller.signal : undefined
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && (data.city || data.region)) {
-          geoMeta = {
-            country: data.country_name || data.country || "",
-            city: data.city || data.region || ""
-          };
-        }
+      if (window.location.protocol !== "file:") {
+        try {
+          const res = await fetch("https://ipapi.co/json/", {
+            signal: controller ? controller.signal : undefined
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.city || data.region)) {
+              geoMeta = {
+                country: data.country_name || data.country || "",
+                city: data.city || data.region || ""
+              };
+            }
+          }
+        } catch (_) {}
       }
       if (!geoMeta.city) {
-        const res2 = await fetch("https://ipwho.is/", {
-          signal: controller ? controller.signal : undefined
-        });
-        if (res2.ok) {
-          const d2 = await res2.json();
-          if (d2 && d2.success !== false) {
-            geoMeta = {
-              country: d2.country || "",
-              city: d2.city || d2.region || ""
-            };
+        try {
+          const res2 = await fetch("https://ipwho.is/", {
+            signal: controller ? controller.signal : undefined
+          });
+          if (res2.ok) {
+            const d2 = await res2.json();
+            if (d2 && d2.success !== false) {
+              geoMeta = {
+                country: d2.country || "",
+                city: d2.city || d2.region || ""
+              };
+            }
           }
-        }
+        } catch (_) {}
       }
       if (geoMeta.city) {
         try { sessionStorage.setItem(GEO_CACHE_KEY, JSON.stringify(geoMeta)); } catch (_) {}
       }
-    } catch (_) {
-      // 靜默容錯，不阻斷教學
     } finally {
       if (timer) clearTimeout(timer);
     }

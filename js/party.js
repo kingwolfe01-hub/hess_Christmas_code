@@ -9,10 +9,10 @@ window.LESSON_CONFIG = window.LESSON_CONFIG || {};
 
 LESSON_CONFIG.globalGreetings = [
   { country: "美國 the USA", phrase: "Merry Christmas!", phonetic: "Merry Christmas!", lang: "en-US", speakText: "Merry Christmas!", role: "greeting_en" },
-  { country: "墨西哥 Mexico", phrase: "¡Feliz Navidad!", phonetic: "費利斯 納維達", lang: "es-ES", speakText: "Feliz Navidad!", role: "greeting_es" },
-  { country: "德國 Germany", phrase: "Frohe Weihnachten!", phonetic: "弗洛赫 懷納赫滕", lang: "de-DE", speakText: "Frohe Weihnachten!", role: "greeting_de" },
-  { country: "法國 France", phrase: "Joyeux Noël!", phonetic: "ジュワユ 諾艾爾", lang: "fr-FR", speakText: "Joyeux Noël!", role: "greeting_fr" },
-  { country: "日本 Japan", phrase: "メリークリスマス!", phonetic: "Merī Kurisumasu", lang: "ja-JP", speakText: "メリークリスマス", role: "greeting_ja" }
+  { country: "墨西哥 Mexico", phrase: "¡Feliz Navidad!", phonetic: "Fe-liz Na-vi-dad", lang: "es-ES", speakText: "Feliz Navidad!", role: "greeting_es" },
+  { country: "德國 Germany", phrase: "Frohe Weihnachten!", phonetic: "Fro-he Vai-nakh-ten", lang: "de-DE", speakText: "Frohe Weihnachten!", role: "greeting_de" },
+  { country: "法國 France", phrase: "Joyeux Noël!", phonetic: "Zhwa-yeuh no-el", lang: "fr-FR", speakText: "Joyeux Noël!", role: "greeting_fr" },
+  { country: "日本 Japan", phrase: "メリークリスマス!", phonetic: "Merii kurisumasu", lang: "ja-JP", speakText: "メリークリスマス", role: "greeting_ja" }
 ];
 
 let fireworkShowInterval = null;

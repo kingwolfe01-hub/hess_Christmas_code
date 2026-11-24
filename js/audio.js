@@ -545,12 +545,12 @@ const EXACT_AUDIO_MAP = {
 
   // 【D 組】7 國文化介紹短句
   "in germany, people put trees in the house.": "in_germany__people_put_trees_in_the_house.mp3",
-  "in france, ribbons tie holiday joy together.": "in_france__ribbons_tie_holiday_joy_together.mp3",
-  "in mexico, bright ornaments bring joy.": "in_mexico__bright_ornaments_bring_joy.mp3",
+  "in sweden, people decorate straw christmas goats with red ribbons.": "in_sweden__people_decorate_straw_christmas_goats_with_red_ribbons.mp3",
+  "in czechia, people make shiny glass ornaments.": "in_czechia__people_make_shiny_glass_ornaments.mp3",
   "in the philippines, star lanterns light the street.": "in_the_philippines__star_lanterns_light_the_street.mp3",
-  "in the uk, children hang stockings by the fire.": "in_the_uk__children_hang_stockings_by_the_fire.mp3",
-  "in the usa, presents are under the christmas tree.": "in_the_usa__presents_are_under_the_christmas_tree.mp3",
-  "in australia, santa surfs at the sunny beach.": "in_australia__santa_surfs_at_the_sunny_beach.mp3",
+  "in the uk, kids hang stockings on christmas eve.": "in_the_uk__kids_hang_stockings_on_christmas_eve.mp3",
+  "in finland, santa prepares presents for kids.": "in_finland__santa_prepares_presents_for_kids.mp3",
+  "in australia, you may see santa claus at the beach.": "in_australia__you_may_see_santa_claus_at_the_beach.mp3",
 
   // 【E 組】自然發音音節拆解方塊
   "christ": "chunk_christ.mp3",
@@ -583,12 +583,12 @@ const EXACT_AUDIO_MAP = {
 
   // 【G 組】國際文化搶答正常英語問句 (Culture Quiz Questions)
   "what do people in germany put in the house?": "cq_germany_blank.mp3",
-  "what do people in france tie on gifts?": "cq_france_blank.mp3",
-  "what do people in mexico hang for christmas?": "cq_mexico_blank.mp3",
+  "what do people in sweden tie on straw christmas goats?": "cq_sweden_blank.mp3",
+  "what do people in czechia make out of glass for christmas trees?": "cq_czechia_blank.mp3",
   "what shape is the lantern in the philippines?": "cq_philippines_blank.mp3",
-  "what do children in the uk hang by the fire?": "cq_uk_blank.mp3",
-  "what do families in the usa put under the tree?": "cq_usa_blank.mp3",
-  "who wears shorts and surfs at the beach in australia?": "cq_australia_blank.mp3",
+  "what do kids in the uk hang on christmas eve?": "cq_uk_blank.mp3",
+  "what does santa prepare for kids in finland?": "cq_finland_blank.mp3",
+  "who may you see at the beach in australia in december?": "cq_australia_blank.mp3",
 
   // 【H 組】環遊世界 5 國語言聖誕祝福語
   "merry christmas!": "greeting_en_merry_christmas.mp3",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🎄 聖誕節大冒險 - Azure AI Speech 全套 87 支音檔批次轉檔腳本 (角色音色校正版)
+🎄 聖誕節大冒險 - Azure AI Speech 全套 86 支音檔批次轉檔腳本 (角色音色校正版)
 -------------------------------------------------------------------------
 角色音色・性別・年紀設定（已對齊 story.js / words.js / culture.js / party.js）：
 - Steve  (10–12 歲活潑男孩): en-US-ChristopherNeural, pitch="+8%",  rate="-12%" (Story 1–8 幕 roleA)
@@ -43,8 +43,18 @@ OBSOLETE_FILES = [
     "audio/chunk_ar.mp3",
     "audio/chunk_pre.mp3",
     "audio/chunk_sent.mp3",
-    "audio/chunk_santa.mp3",
+    "audio/chunk_san.mp3",
+    "audio/chunk_ta.mp3",
     "audio/in_the_usa__presents_wait_under_the_tree.mp3",
+    "audio/in_the_usa__presents_are_under_the_christmas_tree.mp3",
+    "audio/in_france__ribbons_tie_holiday_joy_together.mp3",
+    "audio/in_mexico__bright_ornaments_bring_joy.mp3",
+    "audio/in_the_uk__children_hang_stockings_by_the_fire.mp3",
+    "audio/in_australia__santa_surfs_at_the_sunny_beach.mp3",
+    "audio/cq_france_blank.mp3",
+    "audio/cq_mexico_blank.mp3",
+    "audio/cq_usa_blank.mp3",
+    "audio/in_finland__people_can_visit_santa_claus.mp3",
 ]
 
 # segment 格式: (voice_name, rate, pitch, text_or_ssml)
@@ -97,8 +107,7 @@ CLIPS = [
     {"file": "audio/chunk_ing.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", "ing")]},
     {"file": "audio/chunk_pres.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", '<phoneme alphabet="ipa" ph="prɛz">pres</phoneme>')]},
     {"file": "audio/chunk_ent.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", '<phoneme alphabet="ipa" ph="ənt">ent</phoneme>')]},
-    {"file": "audio/chunk_san.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", '<phoneme alphabet="ipa" ph="sæn">San</phoneme>')]},
-    {"file": "audio/chunk_ta.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", '<phoneme alphabet="ipa" ph="tə">ta</phoneme>')]},
+    {"file": "audio/chunk_santa.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", "Santa")]},
     {"file": "audio/chunk_claus.mp3", "lang": "en-US", "segments": [(V_ARIA, "-18%", "+0%", "Claus")]},
 
     # 5. 階段二：空間介系詞單獨問句 (9 支 · 老師 Aria -12%)
@@ -127,19 +136,19 @@ CLIPS = [
 
     # 7. 階段三：7 國文化句子與搶答題幹 (14 支 · 老師 Aria -15%)
     {"file": "audio/in_germany__people_put_trees_in_the_house.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In Germany, people put trees in the house.")]},
-    {"file": "audio/in_france__ribbons_tie_holiday_joy_together.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In France, ribbons tie holiday joy together.")]},
-    {"file": "audio/in_mexico__bright_ornaments_bring_joy.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In Mexico, bright ornaments bring joy.")]},
+    {"file": "audio/in_sweden__people_decorate_straw_christmas_goats_with_red_ribbons.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In Sweden, people decorate straw Christmas goats with red ribbons.")]},
+    {"file": "audio/in_czechia__people_make_shiny_glass_ornaments.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In Czechia, people make shiny glass ornaments.")]},
     {"file": "audio/in_the_philippines__star_lanterns_light_the_street.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In the Philippines, star lanterns light the street.")]},
-    {"file": "audio/in_the_uk__children_hang_stockings_by_the_fire.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In the UK, children hang stockings by the fire.")]},
-    {"file": "audio/in_the_usa__presents_are_under_the_christmas_tree.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", f"In the USA, {IPA_PRESENTS} are under the Christmas tree.")]},
-    {"file": "audio/in_australia__santa_surfs_at_the_sunny_beach.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In Australia, Santa surfs at the sunny beach.")]},
+    {"file": "audio/in_the_uk__kids_hang_stockings_on_christmas_eve.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In the UK, kids hang stockings on Christmas Eve.")]},
+    {"file": "audio/in_finland__santa_prepares_presents_for_kids.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", f"In Finland, Santa prepares {IPA_PRESENTS} for kids.")]},
+    {"file": "audio/in_australia__you_may_see_santa_claus_at_the_beach.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "In Australia, you may see Santa Claus at the beach.")]},
     {"file": "audio/cq_germany_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do people in Germany put in the house?")]},
-    {"file": "audio/cq_france_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do people in France tie on gifts?")]},
-    {"file": "audio/cq_mexico_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do people in Mexico hang for Christmas?")]},
+    {"file": "audio/cq_sweden_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do people in Sweden tie on straw Christmas goats?")]},
+    {"file": "audio/cq_czechia_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do people in Czechia make out of glass for Christmas trees?")]},
     {"file": "audio/cq_philippines_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What shape is the lantern in the Philippines?")]},
-    {"file": "audio/cq_uk_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do children in the UK hang by the fire?")]},
-    {"file": "audio/cq_usa_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do families in the USA put under the tree?")]},
-    {"file": "audio/cq_australia_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "Who wears shorts and surfs at the beach in Australia?")]},
+    {"file": "audio/cq_uk_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What do kids in the UK hang on Christmas Eve?")]},
+    {"file": "audio/cq_finland_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "What does Santa prepare for kids in Finland?")]},
+    {"file": "audio/cq_australia_blank.mp3", "lang": "en-US", "segments": [(V_ARIA, "-15%", "+0%", "Who may you see at the beach in Australia in December?")]},
 
     # 8. 階段四：5 國聖誕祝福語 (5 支 · 母語聲優 -10%)
     {"file": "audio/greeting_en_merry_christmas.mp3", "lang": "en-US", "segments": [(V_ARIA, "-10%", "+0%", "Merry Christmas!")]},
@@ -190,7 +199,7 @@ def synthesize_with_retry(clip: dict, key: str, region: str) -> None:
             raise
 
 def main():
-    parser = argparse.ArgumentParser(description="Azure AI Speech 全套 87 支音檔批次轉檔工具")
+    parser = argparse.ArgumentParser(description="Azure AI Speech 全套 86 支音檔批次轉檔工具")
     parser.add_argument("--region", default=AZURE_SPEECH_REGION, help="Azure 資源區域 (預設 eastasia)")
     parser.add_argument("--delay", type=float, default=3.2, help="每支間隔秒數 (免費層 F0 建議 3.2 秒)")
     parser.add_argument("--skip-existing", action="store_true", help="略過已存在的檔案")
@@ -225,7 +234,7 @@ def main():
             print(f"[{idx:02d}/{total}] ❌ 失敗 {clip['file']}: HTTP {err.code} - {err.read().decode('utf-8', 'ignore')}")
             sys.exit(1)
 
-    print("🎉 全部 87 支角色音色校正版音檔轉檔完成！")
+    print("🎉 全部 86 支角色音色校正版音檔轉檔完成！")
 
 if __name__ == "__main__":
     main()
