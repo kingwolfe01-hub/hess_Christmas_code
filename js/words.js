@@ -447,6 +447,7 @@ function renderWordsStage(autoSpeak = false) {
     speakBtn?.classList.add("hidden");
 
     state.craftedChunks = new Array(target.chunks.length).fill(null);
+    let isSpellChecking = false;
     stepBadge.textContent = `🔤 麥塊合成台拼字挑戰 (${(state.spellQueueIdx || 0) + 1} / 7)`;
     const slotCount = target.chunks.length;
     const slotGuide = target.chunks.map((_, i) => `【方塊 ${i + 1}】`).join(" + ");
@@ -490,6 +491,7 @@ function renderWordsStage(autoSpeak = false) {
     clearBtn.className = "h-[32px] sm:h-[36px] px-2.5 rounded-lg bg-rose-900/85 hover:bg-rose-800 text-rose-100 font-black text-xs mc-btn flex items-center justify-center gap-1";
     clearBtn.innerHTML = "🔄 清空";
     clearBtn.addEventListener("click", () => {
+      if (state.isAdvancingQuiz || isSpellChecking) return;
       playSfx("click");
       if (window.Analytics && target) window.Analytics.track("spell_clear", { stage: "words", target_id: target.id });
       for (let i = 0; i < state.craftedChunks.length; i++) {
@@ -563,6 +565,7 @@ function renderWordsStage(autoSpeak = false) {
             `;
             slotBtn.title = "點擊退回這個音節方塊";
             slotBtn.addEventListener("click", () => {
+              if (state.isAdvancingQuiz || isSpellChecking) return;
               playSfx("click");
               state.craftedChunks[slotIdx] = null;
               if (poolButtons[entry.poolIndex]) {
@@ -586,6 +589,7 @@ function renderWordsStage(autoSpeak = false) {
       poolButtons.push(cBtn);
 
       cBtn.addEventListener("click", () => {
+        if (state.isAdvancingQuiz || isSpellChecking) return;
         const firstEmptySlotIdx = state.craftedChunks.findIndex(x => x === null);
         if (firstEmptySlotIdx === -1) return;
 
@@ -600,17 +604,21 @@ function renderWordsStage(autoSpeak = false) {
           const validationStates = state.craftedChunks.map((item, i) => item && item.text === target.chunks[i]);
           const isAllCorrect = validationStates.every(v => v === true);
 
-          refreshCraftingSlotsUI(validationStates);
-
           if (window.Analytics) window.Analytics.track("quiz_attempt", { stage: "words", target_id: target.id, is_correct: !!isAllCorrect, detail: { quiz_type: "spell" } });
           if (isAllCorrect) {
             state.craftedChunks.forEach(item => { if (item) item.locked = true; });
+            refreshCraftingSlotsUI(validationStates);
             handleQuizSuccess(target, "words");
           } else {
+            isSpellChecking = true;
+            const checkToken = state.quizSessionToken;
+            refreshCraftingSlotsUI(validationStates);
             playSfx("oops");
             showToast("答錯囉！請再作答一次！", "💡", false);
 
             setTimeout(() => {
+              isSpellChecking = false;
+              if (checkToken !== state.quizSessionToken || state.stage !== "words" || state.wordsSubMode !== "spell") return;
               for (let i = 0; i < target.chunks.length; i++) {
                 if (validationStates[i] === true) {
                   if (state.craftedChunks[i]) state.craftedChunks[i].locked = true;
@@ -745,6 +753,7 @@ window.renderSpellStageCompleteButton = function() {
   `;
   document.getElementById("btnSpellCompleteReplay")?.addEventListener("click", () => {
     if (typeof playSfx === "function") playSfx("click");
+    state.spellUnlockedIds.clear();
     state.spellQueueIdx = 0;
     state.gameQueueIdx = 0;
     state.wordsSubMode = "spell";

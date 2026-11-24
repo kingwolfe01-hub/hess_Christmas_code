@@ -48,8 +48,15 @@
     </div>
 
     <!-- 首頁頂部快捷列 -->
-    <header class="relative z-10 flex justify-between items-center px-2 py-1">
-      <div class="flex items-center gap-2"></div>
+    <header class="relative z-10 flex justify-between items-center px-2 py-1 gap-2 flex-wrap">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="px-3 py-1 rounded-xl bg-black/75 border border-amber-400/50 text-amber-200 text-xs font-black tracking-wide shadow">
+          🏷️ 鍠嘉文化教育用品社
+        </span>
+        <span class="px-2.5 py-1 rounded-xl bg-emerald-950/85 border border-emerald-400/50 text-emerald-200 text-xs font-bold shadow">
+          🎁 免費公益推廣版
+        </span>
+      </div>
       <div class="flex items-center gap-2">
         <button id="homeSoundToggleBtn" class="px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-500/50 text-xs font-bold text-amber-300 transition mc-btn">
           <span id="homeSoundIcon">🔊</span> <span>音樂配樂</span>
@@ -73,8 +80,11 @@
       <div class="text-amber-200 font-bold text-xs sm:text-sm tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] mb-1">
         🎄 聖誕節大冒險 · 跨國文化與方塊救援行動 🎄
       </div>
-      <p class="text-stone-300 text-xs drop-shadow bg-black/60 px-4 py-0.5 rounded-full border border-white/10 mb-3 sm:mb-4">
+      <p class="text-stone-300 text-xs drop-shadow bg-black/60 px-4 py-0.5 rounded-full border border-white/10 mb-1.5">
         攜手聖誕老人穿越紫色蟲洞，拯救 Rudolph 並重燃極地木屋！
+      </p>
+      <p class="text-amber-200/95 text-xs font-bold drop-shadow bg-amber-950/60 px-4 py-0.5 rounded-full border border-amber-400/35 mb-3 sm:mb-4">
+        ✨ 歡迎老師自由分享與課堂使用，轉載或公開演示請標記出處
       </p>
 
       <!-- 垂直置中 4 顆純淨主按鈕 -->
@@ -119,11 +129,23 @@
       </div>
     </div>
 
-    <!-- 首頁底部狀態提示 -->
-    <footer class="relative z-10 flex flex-wrap justify-between items-center px-4 py-2 text-stone-400 text-xs border-t border-white/10">
-      <div class="flex items-center gap-2"></div>
-      <div>
-        ✨ 專為國小英語大屏教學與 iPad 互動設計 · 支援單檔隨開即用
+    <!-- 首頁底部狀態提示與版權致謝 / Threads 互動區 -->
+    <footer class="relative z-10 flex flex-wrap justify-between items-center gap-2 px-4 py-2 text-stone-300 text-xs border-t border-white/15 bg-black/45">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="font-bold text-amber-200">版權：鍠嘉文化教育用品社</span>
+        <span class="text-stone-500">｜</span>
+        <span class="text-stone-200">特別感謝：何嘉仁國際文教集團－推廣部</span>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <a id="btnHomeThreadsLike" href="https://www.threads.com/share/GZwgg_IJE" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-xl bg-rose-950/85 hover:bg-rose-800 border border-rose-400/60 text-rose-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>❤️</span> <span>Threads 按讚支持</span>
+        </a>
+        <button id="btnHomeThreadsShare" class="px-3 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-amber-400/50 text-amber-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>🧵</span> <span>分享到 Threads</span>
+        </button>
+        <button id="btnHomeCopyShare" class="px-3 py-1 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-stone-500/60 text-stone-200 font-bold text-xs transition mc-btn flex items-center gap-1">
+          <span>🔗</span> <span>複製推廣連結</span>
+        </button>
       </div>
     </footer>
   </div>

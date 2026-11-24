@@ -606,7 +606,7 @@ function triggerStorySceneProp() {
     playSfx("anvil_craft");
     if (typeof triggerConfetti === "function") triggerConfetti();
     svgEl.classList.add("tree-sparkle-active");
-    LESSON_CONFIG.words.forEach(w => state.unlockedIds.add(w.id));
+    state.storyPartyStarted = true;
     updateSceneAndStars();
     modalBody.innerHTML = `
       <div class="text-sm sm:text-lg font-bold text-white leading-relaxed mb-2">${stepObj.actionOverlayBody}</div>

@@ -24,6 +24,8 @@ const state = window.state = {
   wordsSubMode: "learn",
   cultureSubMode: "explore",
   unlockedIds: new Set(),
+  spellUnlockedIds: new Set(),
+  storyPartyStarted: false,
   gameQueueIdx: 0,
   spellQueueIdx: 0,
   prepQueueIdx: 0,
@@ -160,7 +162,7 @@ function updateSceneAndStars() {
     const hsEl = document.getElementById(`scene-hs-${item.id}`);
     if (!layerEl || !hsEl) return;
 
-    const isUnlocked = state.unlockedIds.has(item.id);
+    const isUnlocked = isSpellMode ? state.spellUnlockedIds.has(item.id) : state.unlockedIds.has(item.id);
     const isCurrentGameTarget = isQuizActive && LESSON_CONFIG.words[state.gameQueueIdx]?.id === item.id;
 
     const isCultureExplore = (state.stage === "culture" && state.cultureSubMode === "explore");
@@ -168,16 +170,15 @@ function updateSceneAndStars() {
     const isWordsPrep = (state.stage === "words" && state.wordsSubMode === "prep");
     const isFocusedInExplore = (isCultureExplore || isWordsLearn) && state.focusedWordId === item.id;
     const isParty = (state.stage === "party");
+    const isStoryPartyAllLit = (state.stage === "story" && state.storyStepIdx === 7 && state.storyPartyStarted);
     const isTree = (item.id === "tree");
 
-    if (isParty) {
+    if (isParty || isStoryPartyAllLit) {
       layerEl.setAttribute("class", "voxel-unlocked");
-    } else if (isTree && state.stage !== "story") {
-      // 聖誕樹在各教學/測驗情境一律保持明亮顯眼，不變透明灰階
+    } else if (isTree && state.stage !== "story" && !isSpellMode) {
+      // 非拼字台情境下，聖誕樹保持明亮顯眼
       let treeCls = "voxel-unlocked";
-      if (isSpellMode) {
-        treeCls += " voxel-max-bright";
-      } else if (isCurrentGameTarget || isFocusedInExplore) {
+      if (isCurrentGameTarget || isFocusedInExplore) {
         treeCls += " voxel-glow-gold";
       }
       layerEl.setAttribute("class", treeCls);
@@ -195,7 +196,7 @@ function updateSceneAndStars() {
       }
     } else if (isQuizActive) {
       if (isCurrentGameTarget) {
-        layerEl.setAttribute("class", isUnlocked ? (isSpellMode ? "voxel-unlocked voxel-max-bright" : "voxel-unlocked") : "voxel-layer-locked");
+        layerEl.setAttribute("class", isUnlocked ? (isSpellMode ? "voxel-unlocked voxel-max-bright voxel-glow-gold" : "voxel-unlocked") : "voxel-layer-locked");
       } else if (isUnlocked) {
         layerEl.setAttribute("class", isSpellMode ? "voxel-unlocked voxel-max-bright" : "voxel-unlocked voxel-dimmed-bg");
       } else {
@@ -220,7 +221,7 @@ function updateSceneAndStars() {
   });
 
   const arrowEl = document.getElementById("svgPointerArrow");
-  if (state.stage === "story" || (isQuizActive && state.wordsSubMode !== "prep")) {
+  if (state.stage === "story" || (state.stage === "culture" && state.cultureSubMode === "quiz")) {
     arrowEl?.classList.add("hidden");
   } else {
     const target = getWordObj(state.focusedWordId);
@@ -448,9 +449,12 @@ async function handleQuizSuccess(target, sourceStage) {
   const myToken = state.quizSessionToken;
 
   state.unlockedIds.add(target.id);
+  const isSpellSuccess = (sourceStage === "words" && state.wordsSubMode === "spell");
+  if (isSpellSuccess) state.spellUnlockedIds.add(target.id);
   if (window.Analytics) {
-    window.Analytics.track("quiz_complete", { stage: sourceStage || state.stage, target_id: target.id, is_correct: true, detail: { sub_mode: sourceStage === "words" ? state.wordsSubMode : state.cultureSubMode, total_unlocked: state.unlockedIds.size } });
-    if (state.unlockedIds.size >= (LESSON_CONFIG.words ? LESSON_CONFIG.words.length : 7) && !state.allQuizCompleted) {
+    const activeCount = isSpellSuccess ? state.spellUnlockedIds.size : state.unlockedIds.size;
+    window.Analytics.track("quiz_complete", { stage: sourceStage || state.stage, target_id: target.id, is_correct: true, detail: { sub_mode: sourceStage === "words" ? state.wordsSubMode : state.cultureSubMode, total_unlocked: activeCount } });
+    if (activeCount >= (LESSON_CONFIG.words ? LESSON_CONFIG.words.length : 7) && !state.allQuizCompleted) {
       window.Analytics.track("unit_all_complete", { stage: sourceStage || state.stage, target_id: "all_7_unlocked" });
     }
   }
@@ -602,6 +606,7 @@ function switchStage(newStage) {
     window.Analytics.trackStageTransition(prevStage, newStage);
   }
   state.stage = newStage;
+  if (newStage !== "story") document.getElementById("fireplaceSvg")?.classList.remove("tree-sparkle-active");
   state.isAdvancingQuiz = false;
   state.quizSessionToken++;
   if (typeof stopCurrentSpeech === "function") stopCurrentSpeech();
@@ -943,6 +948,33 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnHomeWords")?.addEventListener("click", () => enterLessonFromHome("words"));
   document.getElementById("btnHomeCulture")?.addEventListener("click", () => enterLessonFromHome("culture"));
   document.getElementById("btnHomeParty")?.addEventListener("click", () => enterLessonFromHome("party"));
+
+  const SHARE_URL = "https://kingwolfe01-hub.github.io/hess_Christmas_code/";
+  const SHARE_TEXT = `🎄 推薦超好玩的免費國小英語「3D 麥塊聖誕大冒險」互動教學網頁！\n開箱即用，歡迎老師課堂使用與分享（出處：鍠嘉文化教育用品社／感謝：何嘉仁國際文教集團－推廣部）\n👉 ${SHARE_URL}`;
+
+  document.getElementById("btnHomeThreadsLike")?.addEventListener("click", () => {
+    if (window.Analytics) window.Analytics.track("threads_like_click", { stage: "home" });
+  });
+
+  document.getElementById("btnHomeThreadsShare")?.addEventListener("click", () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (window.Analytics) window.Analytics.track("threads_share_click", { stage: "home" });
+    const intentUrl = "https://www.threads.net/intent/post?text=" + encodeURIComponent(SHARE_TEXT);
+    window.open(intentUrl, "_blank", "noopener,noreferrer");
+  });
+
+  document.getElementById("btnHomeCopyShare")?.addEventListener("click", async () => {
+    if (typeof playSfx === "function") playSfx("click");
+    if (window.Analytics) window.Analytics.track("copy_share_click", { stage: "home" });
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(SHARE_TEXT);
+      }
+      showToast("已複製推廣連結與出處說明，歡迎分享給老師！", "🔗", true);
+    } catch (_) {
+      showToast("請複製網址分享：" + SHARE_URL, "🔗", true);
+    }
+  });
 
   document.getElementById("backToHomeBtn")?.addEventListener("click", returnToHomeScreen);
   document.getElementById("wordsBackHomeBtn")?.addEventListener("click", returnToHomeScreen);
@@ -1373,6 +1405,8 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
     state.unlockedIds.clear();
+    state.spellUnlockedIds.clear();
+    state.storyPartyStarted = false;
     state.storyStepIdx = 0;
     state.cabinFireplaceLit = false;
     state.gameQueueIdx = 0;

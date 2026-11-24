@@ -152,7 +152,7 @@
     flushTimer = setTimeout(() => {
       flushTimer = null;
       flush(false);
-    }, 5000);
+    }, 10000);
   }
 
   function track(eventName, opts = {}) {
@@ -179,7 +179,7 @@
     };
 
     queue.push(ev);
-    if (queue.length >= 8) {
+    if (queue.length >= 15) {
       if (flushTimer) {
         clearTimeout(flushTimer);
         flushTimer = null;
