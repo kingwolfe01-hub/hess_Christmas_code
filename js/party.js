@@ -92,7 +92,7 @@ function runRandomPkSpinner() {
         {
           type: "🔤 音節拼字 PK",
           board: "words",
-          lineA: `🎲 PK 搶答: Spell "${randItem.zh}"! (${randItem.chunks.length} 個音節)`,
+          lineA: `🎲 PK 搶答: Spell "${randItem.zh}"!`,
           subZh: `請兩隊搶答拼出這個單字！學生搶答後，教師請點擊上方「👁️ 揭曉答案」驗證！`,
           revealAction: () => {
             openVoxelZoomBox(randItem.id, LESSON_CONFIG.speechRateNormal);
